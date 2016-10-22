@@ -42,14 +42,14 @@
         android:id="@+id/tv_currentposition"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="00:00"
+        android:text=""
         android:layout_above="@+id/layout_control"
         />
     <TextView 
         android:id="@+id/tv_duration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="05:00"
+        android:text=""
         android:layout_above="@+id/layout_control"
         android:layout_alignRight="@+id/pb_music_progress"
         />

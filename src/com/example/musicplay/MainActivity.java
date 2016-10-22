@@ -3,11 +3,14 @@ package com.example.musicplay;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.media.MediaCryptoException;
 import android.media.MediaDrmException;
 import android.media.MediaDrmResetException;
@@ -36,11 +39,11 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 	private File dir;
 	private MediaPlayer player;
 	private String data[];
-	private int musicIndex;
+	private int musicIndex=0;
 	private ImageButton ibPlayOrPuase,last,next;
 	private static String TAG="MusicService";
 	private MyService musicservice;
-	private boolean tag=false,pause=false;
+	private boolean tag=false,pause=false,islastwj=false;
 	MusicAdpater musicAdpater;
 	ListView listView;
 	//int position;
@@ -49,9 +52,11 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 	int hg=0,huotime;
 	private TextView tv_duration,tv_currentposition,tv_music_title;
 	private SeekBar pb_music_progress;
-	Handler mTimeHandler,myTimelenth;
-	int max;
-	
+	private Handler mTimeHandler,myTimelenth;
+	int max=0,danqian=0;
+	private Intent intent;
+	private String lujin;
+	private Boolean islast;
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -69,15 +74,53 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		tv_currentposition=(TextView) findViewById(R.id.tv_currentposition);
 		pb_music_progress=(SeekBar) findViewById(R.id.pb_music_progress);
 		tv_music_title=(TextView) findViewById(R.id.tv_music_title);
-		//Toast.makeText(this, "MusicServicecActivity", 1000).show();
-		//Log.e(TAG, "MusicServicecActivity");
-		Connection();
 		
+
+  //读取数据
+		SharedPreferences peizhi=this.getSharedPreferences("peizhi", Context.MODE_PRIVATE);
+		String istile=peizhi.getString("tile", null);
+		tv_music_title.setText(istile);
+		max=peizhi.getInt("max", 0);
+		pb_music_progress.setMax(max);
+		pb_music_progress.setProgress(peizhi.getInt("dantime", 0));
+		tv_duration.setText(peizhi.getString("length", null));
+		tv_currentposition.setText(peizhi.getString("danqian_length", null));
+		musicIndex=peizhi.getInt("musicIndex", 0);
+		islast=peizhi.getBoolean("ismylast", false);
+		danqian=peizhi.getInt("dantime", 0);
+		//Log.d("wenti", ""+peizhi.getInt("danqian", 0));
+		
+		Connection();		
 		musicAdpater=new MusicAdpater(this, data,listView);
 		listView.setAdapter(musicAdpater);
 		//listView.setSelection(0);
 		setListtem();
 		//musicservice.mPlerFinish();
+		//
+		
+		//检查文件
+		int i=0;
+		for(i=0;i<data.length-1;i++)
+		{
+			String test="播放："+data[i].toString();
+			if (istile.equals(test)) {
+				islastwj=true;
+				System.out.println("文件已找到");
+				break;
+			}
+			System.out.println(test);
+
+		}
+		if (!islastwj) {
+			Log.d("是否存在文件", "没有找到"+istile);
+			pb_music_progress.setMax(0);
+			pb_music_progress.setProgress(0);
+			tv_duration.setText("");
+			tv_currentposition.setText("");
+			tv_music_title.setText("");
+			islast=false;
+		}
+		
 		listView.setOnItemSelectedListener(this);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
@@ -170,16 +213,35 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 			}
 			break;
 		case R.id.ib_previous:
-		
-			musicIndex--;
-			if (musicIndex <0) {
-				musicIndex = 0;
+			if (!tag) {
+				musicIndex--;
+				islast=false;
+				myplay();
 			}
-			myplay();
+			else {
+		        intent  = new Intent(); 
+		        intent.putExtra("msg", "last");
+		        intent.setAction("guang93");  
+		        sendBroadcast(intent);  
+			}
+
 			break;
 
 		case R.id.ib_next:
-			next();
+			//next();
+			if (!tag) {
+				musicIndex++;
+				islast=false;
+				myplay();
+			}
+			else {
+		        intent  = new Intent(); 
+		        intent.putExtra("msg", "next");
+		        intent.setAction("guang93");  
+		        sendBroadcast(intent);  
+				
+			}
+
 			break;
 
 		default:
@@ -195,7 +257,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		//isplay=false;
 	}
 	public void myplay() {
-		final Timezh timezh=new Timezh();
+	
 		if (isplay&&hg==musicIndex) {
 			musicservice.jixuplay();
 			pause=true;
@@ -203,11 +265,12 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 			
 		}
 		else{
-		musicservice.play(dir, data, musicIndex, tv_duration, tv_currentposition, tv_music_title, pb_music_progress, MainActivity.this);
+		musicservice.play(dir, data, musicIndex, tv_duration, tv_currentposition, tv_music_title, pb_music_progress, MainActivity.this,islast,danqian);
 		//Toast.makeText(MainActivity.this, "播放中", 1000).show();
 		tag=true;
 		isplay=true;
 		pause=true;
+		islast=false;
 		//listView.setSelection(musicIndex);
 		ibPlayOrPuase.setImageResource(android.R.drawable.ic_media_pause);
 		hg=musicIndex;
@@ -221,14 +284,13 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		//this.musicIndex=0;
 		isplay=false;
 	}
-	public void next() {
-		musicIndex++;
-		if (musicIndex > data.length - 1) {
-			musicIndex = 0;
-		}
-		//musicservice.next(dir, data, musicIndex);
-		myplay();
-	}
 
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		unbindService(sc);
+		super.onDestroy();
+	}
+	
 	
 }
