@@ -106,6 +106,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 			if (istile.equals(test)) {
 				islastwj=true;
 				System.out.println("文件已找到");
+				musicIndex=i;
 				break;
 			}
 			System.out.println(test);
@@ -120,7 +121,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 			tv_music_title.setText("");
 			islast=false;
 		}
-		
+		listView.setSelection(musicIndex);
 		listView.setOnItemSelectedListener(this);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
