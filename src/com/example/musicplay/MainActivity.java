@@ -132,6 +132,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				// TODO Auto-generated method stub
 				musicIndex=position;
+				islast=false;
 				myplay();
 				
 				}
