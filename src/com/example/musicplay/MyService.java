@@ -353,21 +353,21 @@ public class MyService extends Service implements OnCompletionListener          
 	            		mytv_currentposition.setText(danqian_length);
 	        			sendEmptyMessageDelayed(0, 1000); 
 	        			} 
-//	        		//通知栏
-//	                remoteViews = new RemoteViews(getPackageName(),  
-//	                        R.layout.customnotice);  
-//	          //remoteViews.setImageViewBitmap(R.id.widget_album, bitmap); 
-//	                
-//	            	 // remoteViews.setTextViewText(R.id.title,s2);             
-//                  	                //remoteViews.setTextViewText(R.id.widget_artist, info.getArtist());  
-//                if (mPlayer.isPlaying()) {  
-//	                    remoteViews.setImageViewResource(R.id.play, R.drawable.pause);  
-//                }else {  
-//                    remoteViews.setImageViewResource(R.id.play, R.drawable.play);  
-//                }  
-//              
-//                setNotification();  
-//        		
+	        		//通知栏
+	          remoteViews = new RemoteViews(getPackageName(),  
+	                        R.layout.customnotice);  
+	          //remoteViews.setImageViewBitmap(R.id.widget_album, bitmap); 
+	                
+	            remoteViews.setTextViewText(R.id.title,s2);
+                  	   //remoteViews.setTextViewText(R.id.widget_artist, info.getArtist());  
+                if (mPlayer.isPlaying()) {  
+	                    remoteViews.setImageViewResource(R.id.play, R.drawable.pause);  
+                }else {  
+                    remoteViews.setImageViewResource(R.id.play, R.drawable.play);  
+                }  
+              
+                setNotification();  
+        		
 	        		}
 	        	}; //在你的onCreate的类似的方法里面启动这个Handler就可以了： mTimeHandler.sendEmptyMessageDelayed(0, 1000);
 	        mTimeHandler.sendEmptyMessageDelayed(0, 10000);
