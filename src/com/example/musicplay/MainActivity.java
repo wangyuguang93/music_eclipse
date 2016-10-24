@@ -28,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.KeyEvent;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
@@ -277,9 +278,13 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
+		switch (item.getItemId()) {
+		case R.id.action_exit:
+			finish();
+			break;
+
+		default:
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -381,5 +386,13 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		super.onDestroy();
 	}
 	
-	
+	@Override  
+	 public boolean onKeyDown(int keyCode, KeyEvent event) {  
+	        if (keyCode == KeyEvent.KEYCODE_BACK) {  
+	            moveTaskToBack(false);  
+	            return true;  
+	        }  
+	        return super.onKeyDown(keyCode, event);  
+	    }  
+
 }

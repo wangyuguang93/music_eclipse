@@ -2,6 +2,10 @@ package com.example.musicplay;
 import java.io.File;
 
 import android.Manifest.permission;
+import android.app.Notification;
+import android.app.Notification.Builder;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,11 +20,13 @@ import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.provider.SyncStateContract.Constants;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.RemoteViews;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -36,14 +42,16 @@ public class MyService extends Service implements OnCompletionListener          
 	private TextView mytv_duration,mytv_currentposition,mytv_music_title,mytv_guqu_num;
 	private SeekBar mypb_music_progress;
 	private Context mycontext;
-	private Handler mTimeHandler;
+	private Handler mTimeHandler,myhandler;
 	private String tile,playlujin;
 	private String[] mylujin;
 	private int gbpb;
 	private int max,dantime;
 	private Boolean ismylast,isSave=false;
 	private BroadcastReceiver mbcr;
-	
+	private NotificationManager manager;
+	private RemoteViews remoteViews;
+	private Boolean isgengxitile=false;
 	public class MusicBinder extends Binder{
 		MyService getService(){
 			return MyService.this;
@@ -74,13 +82,18 @@ public class MyService extends Service implements OnCompletionListener          
         IntentFilter filter = new IntentFilter("guang93");  
         registerReceiver(mbcr, filter);  
         System.out.println("服务被创建....");  
+        
+        //通知栏
+        manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        
+        
 		super.onCreate();
-		
 	}
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// TODO Auto-generated method stub
+		
 		return super.onStartCommand(intent, flags, startId);
 	}
 
@@ -110,7 +123,13 @@ public class MyService extends Service implements OnCompletionListener          
 		if (mbcr!=null) {
 			unregisterReceiver(mbcr);
 		}
-		
+		//取消通知栏
+        if (remoteViews != null) {  
+            manager.cancel(100);  
+        }  
+//        if (receiver != null) {  
+//            unregisterReceiver(receiver);  
+//        }  
 		
 	}
 	
@@ -145,7 +164,7 @@ public class MyService extends Service implements OnCompletionListener          
 			mPlayer=new MediaPlayer();
 			
 		}
-		
+		isgengxitile=false;
 		
 		playlujin=mylujin[mymusicIndex];
 		//Log.d("hhh", ""+playlujin);
@@ -297,7 +316,7 @@ public class MyService extends Service implements OnCompletionListener          
         	mytv_guqu_num.setText(gequ_num);
         	final Timezh timezh=new Timezh();
         	String s1=mylujin[mymusicIndex];
-        	String s2=s1.substring(s1.lastIndexOf('/')+1);
+        	final String s2=s1.substring(s1.lastIndexOf('/')+1);
         	tile="播放："+s2;
 			mytv_music_title.setText(tile);
 			
@@ -314,7 +333,7 @@ public class MyService extends Service implements OnCompletionListener          
     		length=""+timezh.mm(max)+":"+ss2;
     		mytv_duration.setText(length);
     	
-    		
+
 	        mTimeHandler = new Handler() {
 	        	
 	        	public void handleMessage(android.os.Message msg) { 
@@ -334,10 +353,27 @@ public class MyService extends Service implements OnCompletionListener          
 	            		mytv_currentposition.setText(danqian_length);
 	        			sendEmptyMessageDelayed(0, 1000); 
 	        			} 
+//	        		//通知栏
+//	                remoteViews = new RemoteViews(getPackageName(),  
+//	                        R.layout.customnotice);  
+//	          //remoteViews.setImageViewBitmap(R.id.widget_album, bitmap); 
+//	                
+//	            	 // remoteViews.setTextViewText(R.id.title,s2);             
+//                  	                //remoteViews.setTextViewText(R.id.widget_artist, info.getArtist());  
+//                if (mPlayer.isPlaying()) {  
+//	                    remoteViews.setImageViewResource(R.id.play, R.drawable.pause);  
+//                }else {  
+//                    remoteViews.setImageViewResource(R.id.play, R.drawable.play);  
+//                }  
+//              
+//                setNotification();  
+//        		
 	        		}
-	        	};   //在你的onCreate的类似的方法里面启动这个Handler就可以了： mTimeHandler.sendEmptyMessageDelayed(0, 1000);
-	        	mTimeHandler.sendEmptyMessageDelayed(0, 1000);
-	        	mypb_music_progress.setMax(max);
+	        	}; //在你的onCreate的类似的方法里面启动这个Handler就可以了： mTimeHandler.sendEmptyMessageDelayed(0, 1000);
+	        mTimeHandler.sendEmptyMessageDelayed(0, 10000);
+
+	        	
+	        	mypb_music_progress.setMax(max); 
 	        	mypb_music_progress.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 					
 					@Override
@@ -371,7 +407,7 @@ public class MyService extends Service implements OnCompletionListener          
 					
 					}
 				});
-			
+	        
 		}
 
 		@Override
@@ -435,4 +471,66 @@ public class MyService extends Service implements OnCompletionListener          
 	          
 	    }  		
 
+//通知栏方法
+		/**
+		 * 设置通知
+		 */
+		private void setNotification() {
+
+			Notification.Builder builder = new Builder(this);
+
+			Intent intent = new Intent(this, MainActivity.class);
+			// 点击跳转到主界面
+			PendingIntent intent_go = PendingIntent.getActivity(this, 5, intent,
+					PendingIntent.FLAG_UPDATE_CURRENT);
+			remoteViews.setOnClickPendingIntent(R.id.notice, intent_go);
+
+			// 4个参数context, requestCode, intent, flags
+			PendingIntent intent_close = PendingIntent.getActivity(this, 0, intent,
+					PendingIntent.FLAG_UPDATE_CURRENT);
+			remoteViews.setOnClickPendingIntent(R.id.widget_close, intent_close);
+
+			// 设置上一曲
+			Intent last = new Intent();
+			last.putExtra("msg", "last");
+			last.setAction("guang93");  
+			PendingIntent intent_prev = PendingIntent.getBroadcast(this, 1, last,
+					PendingIntent.FLAG_UPDATE_CURRENT);
+			remoteViews.setOnClickPendingIntent(R.id.last, intent_prev);
+
+			// 设置播放
+			if (mPlayer.isPlaying()) {
+				Intent playorpause = new Intent();
+				playorpause.putExtra("msg", "pause");
+				playorpause.setAction("guang93");  
+				PendingIntent intent_play = PendingIntent.getBroadcast(this, 2,
+						playorpause, PendingIntent.FLAG_UPDATE_CURRENT);
+				remoteViews.setOnClickPendingIntent(R.id.play, intent_play);
+			}
+			if (!mPlayer.isPlaying()) {
+				Intent playorpause = new Intent();
+				playorpause.putExtra("msg", "play");
+				playorpause.setAction("guang93");  
+				PendingIntent intent_play = PendingIntent.getBroadcast(this, 6,
+						playorpause, PendingIntent.FLAG_UPDATE_CURRENT);
+				remoteViews.setOnClickPendingIntent(R.id.play, intent_play);
+			}
+
+			// 下一曲
+			Intent next = new Intent();
+			next.putExtra("msg", "next");
+			next.setAction("guang93");  
+			PendingIntent intent_next = PendingIntent.getBroadcast(this, 3, next,
+					PendingIntent.FLAG_UPDATE_CURRENT);
+			remoteViews.setOnClickPendingIntent(R.id.next, intent_next);
+			
+			 builder.setSmallIcon(R.drawable.music_ico); // 设置顶部图标  
+			 Notification notify = builder.build();  
+		     notify.contentView = remoteViews; // 设置下拉图标  
+		     notify.bigContentView = remoteViews; // 防止显示不完全,需要添加apisupport  
+		     notify.flags = Notification.FLAG_ONGOING_EVENT;  
+		     notify.icon = R.drawable.music_tile;  
+		     manager.notify(100, notify); 
+		}
+		
     }
