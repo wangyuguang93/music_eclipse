@@ -32,12 +32,13 @@ public class MyService extends Service implements OnCompletionListener          
 	private int mymusicIndex=0;
 	private ImageButton myibPlayOrPuase;
 	private MediaPlayer mPlayer;
-	public String danqian_length,length;//当前播放长度
-	private TextView mytv_duration,mytv_currentposition,mytv_music_title;
+	public String danqian_length,length,gequ_num;//当前播放长度
+	private TextView mytv_duration,mytv_currentposition,mytv_music_title,mytv_guqu_num;
 	private SeekBar mypb_music_progress;
 	private Context mycontext;
 	private Handler mTimeHandler;
-	private String lujin,tile;
+	private String tile,playlujin;
+	private String[] mylujin;
 	private int gbpb;
 	private int max,dantime;
 	private Boolean ismylast,isSave=false;
@@ -90,7 +91,7 @@ public class MyService extends Service implements OnCompletionListener          
 		if(isSave){
 		SharedPreferences peizhi=getSharedPreferences("peizhi", Context.MODE_PRIVATE);
 		Editor editor=peizhi.edit();
-		editor.putString("lujin", lujin);
+		editor.putString("lujin", playlujin);
 		editor.putInt("max",max);
 		editor.putString("tile", tile);
 		editor.putInt("dantime", dantime);
@@ -98,6 +99,7 @@ public class MyService extends Service implements OnCompletionListener          
 		editor.putString("length", length);
 		editor.putBoolean("ismylast", ismylast);
 		editor.putInt("musicIndex", mymusicIndex);
+		editor.putString("gequ_num", gequ_num);
 		editor.commit();
 		}
 		
@@ -116,9 +118,15 @@ public class MyService extends Service implements OnCompletionListener          
 		
 	}
 	
-	public void play(File dir,String data[],int musicIndex,TextView tv_duration,final TextView tv_currentposition,TextView tv_music_title,final SeekBar pb_music_progress,final Context context,Boolean islast,int seeto) {
-		mydir=dir;
-		mydata=data;
+	public void play(String lujin[],
+			int musicIndex,TextView tv_duration,
+			final TextView tv_currentposition,TextView tv_music_title,
+			final SeekBar pb_music_progress,
+			final Context context,Boolean islast,
+			int seeto,
+			final TextView tv_guqu_num) {
+		//mydir=dir;
+		//mydata=data;
 		mymusicIndex=musicIndex;
 		mycontext=context;
 		mytv_currentposition=tv_currentposition;
@@ -126,6 +134,8 @@ public class MyService extends Service implements OnCompletionListener          
 		mytv_music_title=tv_music_title;
 		mypb_music_progress=pb_music_progress;
 		ismylast=islast;
+		mytv_guqu_num=tv_guqu_num;
+		mylujin=lujin;
 		//final Timezh timezh=new Timezh();
 		
 		
@@ -135,18 +145,22 @@ public class MyService extends Service implements OnCompletionListener          
 			mPlayer=new MediaPlayer();
 			
 		}
-		lujin=mydir.getAbsolutePath()+"/"+mydata[mymusicIndex];
+		
+		
+		playlujin=mylujin[mymusicIndex];
+		//Log.d("hhh", ""+playlujin);
+		
 		if (ismylast) {
 			try{
 			mPlayer.reset();
 			//设置播放路径
-			mPlayer.setDataSource(lujin);
-			Log.d("uri", lujin);
+			mPlayer.setDataSource(playlujin);
+			//Log.d("uri", playlujin);
 			mPlayer.prepare();
 			mPlayer.start();
 			seekTo(seeto);
-			
 			jiemian();
+			mPlayer.setOnCompletionListener(this);
 			isSave=true;
 			}catch (Exception e) {
 				// TODO: handle exception
@@ -154,7 +168,7 @@ public class MyService extends Service implements OnCompletionListener          
 			}
 		}
 		else {
-			startplay(lujin);
+			startplay(playlujin);
 			ismylast=true;
 			isSave=true;
 		}
@@ -276,13 +290,19 @@ public class MyService extends Service implements OnCompletionListener          
 				mPlayer=new MediaPlayer();
 				
 			}
+        	int t1=mylujin.length-1;
+        	String zongshu=""+t1;
+        	gequ_num=""+mymusicIndex+"/"+zongshu;
         	//Log.d("data", mydata[mymusicIndex].toString());
+        	mytv_guqu_num.setText(gequ_num);
         	final Timezh timezh=new Timezh();
-        	tile="播放："+mydata[mymusicIndex].toString();
+        	String s1=mylujin[mymusicIndex];
+        	String s2=s1.substring(s1.lastIndexOf('/')+1);
+        	tile="播放："+s2;
 			mytv_music_title.setText(tile);
 			
 			max = mPlayer.getDuration();
-			mypb_music_progress.setMax(max);
+			
 			int ss3=timezh.ss(max);
 			String ss2=null;
     		if (ss3<10) {
@@ -317,7 +337,7 @@ public class MyService extends Service implements OnCompletionListener          
 	        		}
 	        	};   //在你的onCreate的类似的方法里面启动这个Handler就可以了： mTimeHandler.sendEmptyMessageDelayed(0, 1000);
 	        	mTimeHandler.sendEmptyMessageDelayed(0, 1000);
-	        	
+	        	mypb_music_progress.setMax(max);
 	        	mypb_music_progress.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 					
 					@Override
@@ -336,7 +356,19 @@ public class MyService extends Service implements OnCompletionListener          
 					@Override
 					public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 						// TODO Auto-generated method stub
-						
+						dantime=progress;
+	        			mypb_music_progress.setProgress(dantime);
+	        			int ss=timezh.ss(dantime);
+						String ss1=null;
+	            		if (ss<10) {
+	    					ss1="0"+ss;
+	    				}
+	            		else{
+	            			ss1=""+ss;
+	            		}
+						danqian_length=""+""+timezh.mm(dantime)+":"+ss1;
+	            		mytv_currentposition.setText(danqian_length);
+					
 					}
 				});
 			
@@ -347,15 +379,15 @@ public class MyService extends Service implements OnCompletionListener          
 			// TODO Auto-generated method stub
 			mymusicIndex++;
 			
-			if (mymusicIndex > mydata.length - 1) {
+			if (mymusicIndex > mylujin.length - 1) {
 				mymusicIndex = 0;
 			}
-			lujin=mydir.getAbsolutePath()+"/"+mydata[mymusicIndex];
+			playlujin=mylujin[mymusicIndex];
 			try{
 			mp.reset();
 		
 			//设置播放路径
-			mp.setDataSource(lujin);
+			mp.setDataSource(playlujin);
 			//Log.d("当前播放", ""+this.musicIndex);
 			//缓冲
 			mp.prepare();
