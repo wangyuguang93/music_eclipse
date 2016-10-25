@@ -524,7 +524,7 @@ public class MyService extends Service implements OnCompletionListener          
 					PendingIntent.FLAG_UPDATE_CURRENT);
 			remoteViews.setOnClickPendingIntent(R.id.next, intent_next);
 			
-			 builder.setSmallIcon(R.drawable.music_ico); // 设置顶部图标  
+			 builder.setSmallIcon(R.drawable.music_tile); // 设置顶部图标  
 			 Notification notify = builder.build();  
 		     notify.contentView = remoteViews; // 设置下拉图标  
 		     notify.bigContentView = remoteViews; // 防止显示不完全,需要添加apisupport  
