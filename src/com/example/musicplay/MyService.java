@@ -531,6 +531,9 @@ public class MyService extends Service implements OnCompletionListener          
 		     notify.flags = Notification.FLAG_ONGOING_EVENT;  
 		     notify.icon = R.drawable.music_tile;  
 		     manager.notify(100, notify); 
+		     /**
+		      * test
+		      */
 		}
 		
     }
