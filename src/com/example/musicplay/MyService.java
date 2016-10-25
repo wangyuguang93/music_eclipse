@@ -478,8 +478,13 @@ public class MyService extends Service implements OnCompletionListener          
 		private void setNotification() {
 
 			Notification.Builder builder = new Builder(this);
-
-			Intent intent = new Intent(this, MainActivity.class);
+			Intent intent = new Intent(Intent.ACTION_MAIN);   
+			intent.addCategory(Intent.CATEGORY_LAUNCHER);   
+			intent.setClass(this, MainActivity.class);   
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);  
+			//以上inten能跳转回上一个activity
+			
+			//Intent intent = new Intent(this, MainActivity.class);
 			// 点击跳转到主界面
 			PendingIntent intent_go = PendingIntent.getActivity(this, 5, intent,
 					PendingIntent.FLAG_UPDATE_CURRENT);
