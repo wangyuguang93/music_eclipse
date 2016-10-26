@@ -3,8 +3,8 @@ package com.example.musicplay;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
-
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -52,6 +52,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 	private boolean tag=false,pause=false,islastwj=false;
 	MusicAdpater musicAdpater;
 	ListView listView;
+	private BroadcastReceiver main;
 	//int position;
 	Boolean isplay=false;
 	Boolean isdantime=false;
@@ -69,7 +70,13 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		//File dir=Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
-		
+		//创建广播接收器
+		main=new mainReceiver();
+        IntentFilter filter = new IntentFilter("main");  
+        registerReceiver(main, filter);  
+        System.out.println("main广播接收器服务被创建...."); 
+        
+        //////////////
 		createmulu();
 		ScannerMusic();
 		Toast.makeText(this, dir.getPath().toString(), 1000).show();
@@ -294,15 +301,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.ib_play_pause:
-			if (isplay&&pause) {
-				musicservice.pause();
-				ibPlayOrPuase.setImageResource(android.R.drawable.ic_media_play);
-				pause=false;
-				
-			}			
-			else {
-				myplay();
-			}
+			bofang();
 			break;
 		case R.id.ib_previous:
 			if (!tag) {
@@ -383,6 +382,9 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		unbindService(sc);
+		if (main!=null) {
+			unregisterReceiver(main);
+		}
 		super.onDestroy();
 	}
 	
@@ -394,5 +396,41 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 	        }  
 	        return super.onKeyDown(keyCode, event);  
 	    }  
-
+	
+	private class mainReceiver extends BroadcastReceiver{  
+		  
+        @Override  
+        public void onReceive(Context context, Intent intent) {  
+            // TODO Auto-generated method stub 
+        	String msg=intent.getStringExtra("msg");
+        	if (msg.equals("play")) {
+        		Log.d("test", msg);
+        	bofang();
+        	intent  = new Intent(); 
+	        intent.putExtra("msg", "update_tongzhi");
+	        intent.setAction("guang93");  
+	        sendBroadcast(intent);  
+        	
+        	}
+        	if (msg.equals("exit")) {
+        	Log.d("test", "退出");
+        	finish();
+        	
+        	}
+        }
+    }  	
+	
+	//播放
+public void bofang() {
+	if (isplay&&pause) {
+		musicservice.pause();
+		ibPlayOrPuase.setImageResource(android.R.drawable.ic_media_play);
+		pause=false;
+		
+	}			
+	else {
+		myplay();
+	}
+	
+}
 }

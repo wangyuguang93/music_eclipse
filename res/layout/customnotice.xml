@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="100dp"
-    android:background="#ffff99"
+    android:background="#ff99cc"
     android:id="@+id/notice"
     android:orientation="horizontal" >
 
@@ -41,11 +41,11 @@
                     android:textSize="16sp" />
 
                 <ImageView
-                    android:id="@+id/widget_close"
+                    android:id="@+id/exit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                   
+                    android:layout_marginRight="10dp" 
                     android:src="@drawable/exit" />
             </LinearLayout>
 

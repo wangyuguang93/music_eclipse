@@ -50,6 +50,7 @@ public final class R {
     public static final class id {
         public static final int action_exit=0x7f080015;
         public static final int action_settings=0x7f080014;
+        public static final int exit=0x7f08000d;
         public static final int ib_next=0x7f080007;
         public static final int ib_play_pause=0x7f080006;
         public static final int ib_previous=0x7f080008;
@@ -70,7 +71,6 @@ public final class R {
         public static final int tv_music_title=0x7f080001;
         public static final int widget_album=0x7f08000b;
         public static final int widget_artist=0x7f08000e;
-        public static final int widget_close=0x7f08000d;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;

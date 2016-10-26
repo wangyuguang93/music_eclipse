@@ -19,6 +19,7 @@ import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Binder;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
 import android.provider.SyncStateContract.Constants;
 import android.util.Log;
@@ -33,10 +34,7 @@ import android.widget.TextView;
 
 public class MyService extends Service implements OnCompletionListener                        {
 	private final IBinder binder=new MusicBinder();
-	private File mydir;
-	private String mydata[];
 	private int mymusicIndex=0;
-	private ImageButton myibPlayOrPuase;
 	private MediaPlayer mPlayer;
 	public String danqian_length,length,gequ_num;//当前播放长度
 	private TextView mytv_duration,mytv_currentposition,mytv_music_title,mytv_guqu_num;
@@ -52,6 +50,7 @@ public class MyService extends Service implements OnCompletionListener          
 	private NotificationManager manager;
 	private RemoteViews remoteViews;
 	private Boolean isgengxitile=false;
+	private Notification notify;
 	public class MusicBinder extends Binder{
 		MyService getService(){
 			return MyService.this;
@@ -93,7 +92,6 @@ public class MyService extends Service implements OnCompletionListener          
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// TODO Auto-generated method stub
-		
 		return super.onStartCommand(intent, flags, startId);
 	}
 
@@ -125,7 +123,9 @@ public class MyService extends Service implements OnCompletionListener          
 		}
 		//取消通知栏
         if (remoteViews != null) {  
-            manager.cancel(100);  
+        	manager.cancel(100);
+            Log.d("test服务移除", "ok");
+         
         }  
 //        if (receiver != null) {  
 //            unregisterReceiver(receiver);  
@@ -133,10 +133,7 @@ public class MyService extends Service implements OnCompletionListener          
 		
 	}
 	
-	public void chushihua() {
-		
-	}
-	
+
 	public void play(String lujin[],
 			int musicIndex,TextView tv_duration,
 			final TextView tv_currentposition,TextView tv_music_title,
@@ -301,6 +298,12 @@ public class MyService extends Service implements OnCompletionListener          
             }
         }
         
+
+        
+        
+        
+        
+        
         /**
          * 更新界面
          */
@@ -317,7 +320,7 @@ public class MyService extends Service implements OnCompletionListener          
         	final Timezh timezh=new Timezh();
         	String s1=mylujin[mymusicIndex];
         	final String s2=s1.substring(s1.lastIndexOf('/')+1);
-        	tile="播放："+s2;
+        	tile=s2;
 			mytv_music_title.setText(tile);
 			
 			max = mPlayer.getDuration();
@@ -332,7 +335,7 @@ public class MyService extends Service implements OnCompletionListener          
     		}
     		length=""+timezh.mm(max)+":"+ss2;
     		mytv_duration.setText(length);
-    	
+    		tongzhi();
 
 	        mTimeHandler = new Handler() {
 	        	
@@ -354,25 +357,17 @@ public class MyService extends Service implements OnCompletionListener          
 	        			sendEmptyMessageDelayed(0, 1000); 
 	        			} 
 	        		//通知栏
-	          remoteViews = new RemoteViews(getPackageName(),  
-	                        R.layout.customnotice);  
-	          //remoteViews.setImageViewBitmap(R.id.widget_album, bitmap); 
-	                
-	            remoteViews.setTextViewText(R.id.title,s2);
-                  	   //remoteViews.setTextViewText(R.id.widget_artist, info.getArtist());  
-                if (mPlayer.isPlaying()) {  
-	                    remoteViews.setImageViewResource(R.id.play, R.drawable.pause);  
-                }else {  
-                    remoteViews.setImageViewResource(R.id.play, R.drawable.play);  
-                }  
-              
-                setNotification();  
+
         		
 	        		}
 	        	}; //在你的onCreate的类似的方法里面启动这个Handler就可以了： mTimeHandler.sendEmptyMessageDelayed(0, 1000);
-	        mTimeHandler.sendEmptyMessageDelayed(0, 10000);
+	        mTimeHandler.sendEmptyMessageDelayed(0, 1000);
+	        
+	       
+	       
 
-	        	
+
+  			
 	        	mypb_music_progress.setMax(max); 
 	        	mypb_music_progress.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 					
@@ -464,9 +459,13 @@ public class MyService extends Service implements OnCompletionListener          
 	        		onCompletion(mPlayer);
 	        		System.out.println("上一首");
 				}
-	           
+	        	if (msg.equals("pause")) {
+	        		mPlayer.pause();
+				}
 	            //MethodService();  
-	              
+	        	if (msg.equals("update_tongzhi")) {
+	        		tongzhi();
+				}
 	        }
 	          
 	    }  		
@@ -489,11 +488,14 @@ public class MyService extends Service implements OnCompletionListener          
 			PendingIntent intent_go = PendingIntent.getActivity(this, 5, intent,
 					PendingIntent.FLAG_UPDATE_CURRENT);
 			remoteViews.setOnClickPendingIntent(R.id.notice, intent_go);
-
-			// 4个参数context, requestCode, intent, flags
-			PendingIntent intent_close = PendingIntent.getActivity(this, 0, intent,
+			
+			//退出
+			Intent myexit = new Intent();
+			myexit.putExtra("msg", "exit");
+			myexit.setAction("main");  
+			PendingIntent myexit_cole = PendingIntent.getBroadcast(this, 4,myexit,
 					PendingIntent.FLAG_UPDATE_CURRENT);
-			remoteViews.setOnClickPendingIntent(R.id.widget_close, intent_close);
+			remoteViews.setOnClickPendingIntent(R.id.exit, myexit_cole);
 
 			// 设置上一曲
 			Intent last = new Intent();
@@ -506,8 +508,8 @@ public class MyService extends Service implements OnCompletionListener          
 			// 设置播放
 			if (mPlayer.isPlaying()) {
 				Intent playorpause = new Intent();
-				playorpause.putExtra("msg", "pause");
-				playorpause.setAction("guang93");  
+				playorpause.putExtra("msg", "play");
+				playorpause.setAction("main");  
 				PendingIntent intent_play = PendingIntent.getBroadcast(this, 2,
 						playorpause, PendingIntent.FLAG_UPDATE_CURRENT);
 				remoteViews.setOnClickPendingIntent(R.id.play, intent_play);
@@ -515,12 +517,12 @@ public class MyService extends Service implements OnCompletionListener          
 			if (!mPlayer.isPlaying()) {
 				Intent playorpause = new Intent();
 				playorpause.putExtra("msg", "play");
-				playorpause.setAction("guang93");  
+				playorpause.setAction("main");  
 				PendingIntent intent_play = PendingIntent.getBroadcast(this, 6,
 						playorpause, PendingIntent.FLAG_UPDATE_CURRENT);
 				remoteViews.setOnClickPendingIntent(R.id.play, intent_play);
 			}
-
+					
 			// 下一曲
 			Intent next = new Intent();
 			next.putExtra("msg", "next");
@@ -529,16 +531,51 @@ public class MyService extends Service implements OnCompletionListener          
 					PendingIntent.FLAG_UPDATE_CURRENT);
 			remoteViews.setOnClickPendingIntent(R.id.next, intent_next);
 			
-			 builder.setSmallIcon(R.drawable.music_tile); // 设置顶部图标  
-			 Notification notify = builder.build();  
+			 builder.setSmallIcon(R.drawable.music_tile);
+			 // 设置顶部图标  
+			 notify = builder.build();  
 		     notify.contentView = remoteViews; // 设置下拉图标  
 		     notify.bigContentView = remoteViews; // 防止显示不完全,需要添加apisupport  
-		     notify.flags = Notification.FLAG_ONGOING_EVENT;  
+		     notify.flags = Notification.FLAG_ONGOING_EVENT; 
 		     notify.icon = R.drawable.music_tile;  
 		     manager.notify(100, notify); 
+		     startForeground(100, notify);
 		     /**
 		      * test
 		      */
+		
 		}
 		
-    }
+		//更新通知
+		private void tongzhi() {
+			// TODO Auto-generated method stub
+			  Runnable tongzhilan=new Runnable() {
+
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						// TODO Auto-generated method stub
+						  remoteViews = new RemoteViews(getPackageName(),  
+					                R.layout.customnotice);  
+					        //remoteViews.setImageViewBitmap(R.id.widget_album, bitmap);  
+					        remoteViews.setTextViewText(R.id.title, tile);  
+					       // remoteViews.setTextViewText(R.id.widget_artist, info.getArtist());  
+					        if (mPlayer.isPlaying()) {  
+					            remoteViews.setImageViewResource(R.id.play, R.drawable.pause);  
+					        }else {  
+					            remoteViews.setImageViewResource(R.id.play, R.drawable.play);  
+					        } 	
+					        setNotification();
+					}	
+};
+		myhandler=new Handler();
+		myhandler.post(tongzhilan);//设置通知栏
+		
+		}
+
+}
+		
+		
+
+
+
