@@ -111,7 +111,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		int i=0;
 		for(i=0;i<data.length-1;i++)
 		{
-			String test="播放："+data[i].toString();
+			String test=data[i].toString();
 			if (istile==null) {
 				break;
 			}
