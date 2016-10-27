@@ -7,7 +7,7 @@
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/action_settings"/>
-        <item
+    <item
         android:id="@+id/action_exit"
         android:orderInCategory="100"
         android:showAsAction="never"
@@ -17,6 +17,6 @@
         android:orderInCategory="100"
         android:showAsAction="ifRoom"
         android:icon="@drawable/search"
-        android:title="@string/action_settings"/>
+        android:title="@string/action_sousuo"/>
 
 </menu>

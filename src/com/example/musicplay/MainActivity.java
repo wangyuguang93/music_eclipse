@@ -3,7 +3,11 @@ package com.example.musicplay;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
+
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,12 +15,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.media.MediaCryptoException;
 import android.media.MediaDrmException;
 import android.media.MediaDrmResetException;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -43,6 +49,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+@TargetApi(23)
 public class MainActivity extends Activity implements OnClickListener,OnItemSelectedListener{
 	private File dir,test;
 	private MediaPlayer player;
@@ -70,12 +77,31 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 	private String lujin[];
 	private Boolean islast;
 	private Cursor cursor;
+	SousuoListFragment sousuo=new SousuoListFragment();
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		//requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_main);
-		 
+		
+		PackageManager manager = getPackageManager();
+		int hasPermission = manager.checkPermission ("android.permission.READ_EXTERNAL_STORAGE", "com.example.musicplay");
+		if (hasPermission == PackageManager.PERMISSION_GRANTED) {
+		    //you have permission
+			System.out.print("有权限");
+		}
+		else {
+			this.requestPermissions(
+					//"android.permission.READ_EXTERNAL_STORAGE", requestCode
+					 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+			;
+			Toast.makeText(this, "没有权限访问存储空间，请设置允许访问", Toast.LENGTH_SHORT).show();
+					
+		}
+		
+		
+		
+		// this.requestPermissions(permissions, requestCode);
 		//File dir=Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
 		//创建广播接收器
 		main=new mainReceiver();
@@ -86,7 +112,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
         //////////////
 		createmulu();
 		ScannerMusic();
-		Toast.makeText(this, dir.getPath().toString(), 1000).show();
+		//Toast.makeText(this, dir.getPath().toString(), 1000).show();
 		
 		findId();
 
@@ -303,7 +329,11 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		case R.id.action_exit:
 			finish();
 			break;
-
+		case R.id.sousuo:
+		//Intent sousao=new Intent(this,SousuoListFragment.class);
+		//startActivity(sousao);
+			break;
+			
 		default:
 			break;
 		}
@@ -443,24 +473,24 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
         	}
         	
         	if (msg.equals("listview")) {
-        		int zhi=intent.getIntExtra("zhi", musicIndex);
-        		musicAdpater.update(musicIndex, zhi);
-        		musicIndex=zhi;
-        		//Log.d("gggg", ""+zhi);
-        		 Handler handler=new Handler();
-        		 Runnable add=new Runnable(){
-        			 @Override
-        			 public void run() {
-        			  // TODO Auto-generated method stub
-        			 //arr.add("增加一项");//增加一项
-        			  musicAdpater.notifyDataSetChanged();    
-        			}  
-        		 };
-        	
-        		 handler.post(add);
-        		musicAdpater.notifyDataSetChanged();
-        		//listView.setAdapter(musicAdpater);
-            	}
+//        		int zhi=intent.getIntExtra("zhi", musicIndex);
+//        		musicAdpater.update(musicIndex, zhi);
+//        		musicIndex=zhi;
+//        		//Log.d("gggg", ""+zhi);
+//        		 Handler handler=new Handler();
+//        		 Runnable add=new Runnable(){
+//        			 @Override
+//        			 public void run() {
+//        			  // TODO Auto-generated method stub
+//        			 //arr.add("增加一项");//增加一项
+//        			  musicAdpater.notifyDataSetChanged();    
+//        			}  
+//        		 };
+//        	
+//        		 handler.post(add);
+//        		musicAdpater.notifyDataSetChanged();
+//        		//listView.setAdapter(musicAdpater);
+           	}
         }
     }  	
 	

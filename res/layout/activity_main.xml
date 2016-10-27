@@ -7,7 +7,8 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.musicplayer.MainActivity"
-    android:background="#ff99cc" >
+    android:background="#ff99cc" 
+    android:id="@+id/container">
 
     <ListView
         android:id="@+id/listview"
