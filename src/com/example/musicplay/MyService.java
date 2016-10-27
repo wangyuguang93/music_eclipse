@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
@@ -26,6 +27,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RemoteViews;
 import android.widget.SeekBar;
@@ -43,6 +45,8 @@ public class MyService extends Service implements OnCompletionListener          
 	private Handler mTimeHandler,myhandler;
 	private String tile,playlujin;
 	private String[] mylujin;
+	private int id[];
+	private long alm[];
 	private int gbpb;
 	private int max,dantime;
 	private Boolean ismylast,isSave=false;
@@ -81,6 +85,8 @@ public class MyService extends Service implements OnCompletionListener          
         IntentFilter filter = new IntentFilter("guang93");  
         registerReceiver(mbcr, filter);  
         System.out.println("服务被创建....");  
+        
+        
         
         //通知栏
         manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -140,7 +146,7 @@ public class MyService extends Service implements OnCompletionListener          
 			final SeekBar pb_music_progress,
 			final Context context,Boolean islast,
 			int seeto,
-			final TextView tv_guqu_num) {
+			final TextView tv_guqu_num,int musicid[],long almid[]) {
 		//mydir=dir;
 		//mydata=data;
 		mymusicIndex=musicIndex;
@@ -152,6 +158,8 @@ public class MyService extends Service implements OnCompletionListener          
 		ismylast=islast;
 		mytv_guqu_num=tv_guqu_num;
 		mylujin=lujin;
+		id=musicid;
+		alm=almid;
 		//final Timezh timezh=new Timezh();
 		
 		
@@ -362,12 +370,12 @@ public class MyService extends Service implements OnCompletionListener          
 	        		}
 	        	}; //在你的onCreate的类似的方法里面启动这个Handler就可以了： mTimeHandler.sendEmptyMessageDelayed(0, 1000);
 	        mTimeHandler.sendEmptyMessageDelayed(0, 1000);
-	        
-	       
-	       
-
-
-  			
+			//更新listview
+			Intent listv = new Intent();
+			listv.putExtra("msg", "listview");			  
+			listv.putExtra("zhi", mymusicIndex);
+			listv.setAction("main");
+			sendBroadcast(listv); 
 	        	mypb_music_progress.setMax(max); 
 	        	mypb_music_progress.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 					
@@ -399,7 +407,7 @@ public class MyService extends Service implements OnCompletionListener          
 	            		}
 						danqian_length=""+""+timezh.mm(dantime)+":"+ss1;
 	            		mytv_currentposition.setText(danqian_length);
-					
+	            		
 					}
 				});
 	        
@@ -436,6 +444,12 @@ public class MyService extends Service implements OnCompletionListener          
 		
 			jiemian();
 			
+			//更新listview
+			Intent listv = new Intent();
+			listv.putExtra("msg", "listview");			  
+			listv.putExtra("zhi", mymusicIndex);
+			listv.setAction("main");
+			sendBroadcast(listv); 
 			}catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();
@@ -555,9 +569,11 @@ public class MyService extends Service implements OnCompletionListener          
 					public void run() {
 						// TODO Auto-generated method stub
 						// TODO Auto-generated method stub
+						Bitmap bitmap = MediaUtil.getArtwork(mycontext, id[mymusicIndex], alm[mymusicIndex], true, false);
+																																	
 						  remoteViews = new RemoteViews(getPackageName(),  
 					                R.layout.customnotice);  
-					        //remoteViews.setImageViewBitmap(R.id.widget_album, bitmap);  
+					        remoteViews.setImageViewBitmap(R.id.widget_album, bitmap);  
 					        remoteViews.setTextViewText(R.id.title, tile);  
 					       // remoteViews.setTextViewText(R.id.widget_artist, info.getArtist());  
 					        if (mPlayer.isPlaying()) {  

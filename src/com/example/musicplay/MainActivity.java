@@ -32,6 +32,7 @@ import android.view.KeyEvent;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ListView;
@@ -45,6 +46,8 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 	private File dir,test;
 	private MediaPlayer player;
 	private String data[];
+	private int musicid[];
+	private long music_albumId[];
 	private int musicIndex=0;
 	private ImageButton ibPlayOrPuase,last,next;
 	private static String TAG="MusicService";
@@ -97,9 +100,8 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		danqian=peizhi.getInt("dantime", 0);
 		tv_guqu_num.setText(peizhi.getString("gequ_num", ""));
 		//Log.d("wenti", ""+peizhi.getInt("danqian", 0));
-		
 		Connection();		
-		musicAdpater=new MusicAdpater(this, data,listView);
+		musicAdpater=new MusicAdpater(this, data,listView,musicIndex);
 		listView.setAdapter(musicAdpater);
 		//listView.setSelection(0);
 		
@@ -133,6 +135,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 			tv_music_title.setText("");
 			islast=false;
 		}
+		listView.setSelection(musicIndex);
 		//再次取得danqian的值
 		danqian=pb_music_progress.getProgress();
 		listView.setSelection(musicIndex);
@@ -195,6 +198,8 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 	Log.d("music disName=", ""+cursor.getCount());//打印出歌曲名字
 	data=new String[cursor.getCount()];
 	lujin=new String[cursor.getCount()];
+	musicid=new int[cursor.getCount()];
+	music_albumId=new long[cursor.getCount()];
 	int j=0;
 	if (cursor.moveToFirst())
 	{
@@ -215,13 +220,17 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 	String url = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
 	// 歌曲的总播放时长：MediaStore.Audio.Media.DURATION
 	int duration = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
+	long albumId = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
 	// 歌曲文件的大小 ：MediaStore.Audio.Media.SIZE
 	Long size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE));
 	// 歌曲文件显示名字
 	String disName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME));
+	
 	//Log.e("music disName=", ""+cursor.getCount());//打印出歌曲名字
 	data[j]=disName;
 	lujin[j]=url;
+	musicid[j]=id;
+	music_albumId[j]=albumId;
 	//Log.e("music disName=", ""+test1[j]);//打印出歌曲名字
 	cursor.moveToNext();
 	j++;
@@ -302,6 +311,10 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		switch (v.getId()) {
 		case R.id.ib_play_pause:
 			bofang();
+			intent  = new Intent(); 
+	        intent.putExtra("msg", "update_tongzhi");
+	        intent.setAction("guang93");  
+	        sendBroadcast(intent);  
 			break;
 		case R.id.ib_previous:
 			if (!tag) {
@@ -358,7 +371,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 			
 		}
 		else{
-		musicservice.play(lujin, musicIndex, tv_duration, tv_currentposition, tv_music_title, pb_music_progress, MainActivity.this,islast,danqian,tv_guqu_num);
+		musicservice.play(lujin, musicIndex, tv_duration, tv_currentposition, tv_music_title, pb_music_progress, MainActivity.this,islast,danqian,tv_guqu_num,musicid,music_albumId);
 		//Toast.makeText(MainActivity.this, "播放中", 1000).show();
 		tag=true;
 		isplay=true;
@@ -389,11 +402,17 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 	}
 	
 	@Override  
-	 public boolean onKeyDown(int keyCode, KeyEvent event) {  
-	        if (keyCode == KeyEvent.KEYCODE_BACK) {  
+	 public boolean onKeyDown(int keyCode, KeyEvent event) { 
+			if (!tag) {
+				finish();
+				return true;
+			}
+			else{
+	        if (keyCode == KeyEvent.KEYCODE_BACK&&tag) {  
 	            moveTaskToBack(false);  
 	            return true;  
 	        }  
+			}
 	        return super.onKeyDown(keyCode, event);  
 	    }  
 	
@@ -417,6 +436,26 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
         	finish();
         	
         	}
+        	
+        	if (msg.equals("listview")) {
+        		int zhi=intent.getIntExtra("zhi", musicIndex);
+        		musicAdpater.update(musicIndex, zhi);
+        		musicIndex=zhi;
+        		//Log.d("gggg", ""+zhi);
+        		 Handler handler=new Handler();
+        		 Runnable add=new Runnable(){
+        			 @Override
+        			 public void run() {
+        			  // TODO Auto-generated method stub
+        			 //arr.add("增加一项");//增加一项
+        			  musicAdpater.notifyDataSetChanged();    
+        			}  
+        		 };
+        	
+        		 handler.post(add);
+        		musicAdpater.notifyDataSetChanged();
+        		//listView.setAdapter(musicAdpater);
+            	}
         }
     }  	
 	
@@ -426,7 +465,7 @@ public void bofang() {
 		musicservice.pause();
 		ibPlayOrPuase.setImageResource(android.R.drawable.ic_media_play);
 		pause=false;
-		
+
 	}			
 	else {
 		myplay();
