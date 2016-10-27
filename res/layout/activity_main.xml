@@ -6,23 +6,22 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.musicplayer.MainActivity" >
+    tools:context="com.example.musicplayer.MainActivity"
+    android:background="#ff99cc" >
 
     <ListView
         android:id="@+id/listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/tv_music_title"
-        android:layout_marginBottom="10dp"
-        android:listSelector="#22aaff"
-        
-         >
+        android:listSelector="#22aaff" >
+
     </ListView>
     <TextView 
         android:id="@+id/tv_music_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text=""
+        android:text="00"
         android:layout_above="@+id/pb_music_progress"
         />
     <SeekBar 
@@ -42,14 +41,14 @@
         android:id="@+id/tv_currentposition"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
+        android:text="55"
         android:layout_above="@+id/layout_control"
         />
     <TextView 
         android:id="@+id/tv_duration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
+        android:text="77"
         android:layout_above="@+id/layout_control"
         android:layout_alignRight="@+id/pb_music_progress"
         />
@@ -91,9 +90,17 @@
         android:id="@+id/tv_gequ_num"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:text="" />
+        android:text="00" />
+
+    <ImageView
+        android:id="@+id/img_ico"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        />
 
 </RelativeLayout>
 

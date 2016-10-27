@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -50,6 +51,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 	private long music_albumId[];
 	private int musicIndex=0;
 	private ImageButton ibPlayOrPuase,last,next;
+	private ImageView img_ico;
 	private static String TAG="MusicService";
 	private MyService musicservice;
 	private boolean tag=false,pause=false,islastwj=false;
@@ -71,7 +73,9 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_main);
+		 
 		//File dir=Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
 		//创建广播接收器
 		main=new mainReceiver();
@@ -257,6 +261,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		pb_music_progress=(SeekBar) findViewById(R.id.pb_music_progress);
 		tv_music_title=(TextView) findViewById(R.id.tv_music_title);
 		tv_guqu_num=(TextView) findViewById(R.id.tv_gequ_num);
+		img_ico=(ImageView) findViewById(R.id.img_ico);
 		
 	}
 	private void Connection(){
@@ -371,7 +376,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 			
 		}
 		else{
-		musicservice.play(lujin, musicIndex, tv_duration, tv_currentposition, tv_music_title, pb_music_progress, MainActivity.this,islast,danqian,tv_guqu_num,musicid,music_albumId);
+		musicservice.play(lujin, musicIndex, tv_duration, tv_currentposition, tv_music_title, pb_music_progress, MainActivity.this,islast,danqian,tv_guqu_num,musicid,music_albumId,img_ico);
 		//Toast.makeText(MainActivity.this, "播放中", 1000).show();
 		tag=true;
 		isplay=true;

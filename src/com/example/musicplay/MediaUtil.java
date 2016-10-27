@@ -26,7 +26,7 @@ public class MediaUtil {
 		BitmapFactory.Options opts = new BitmapFactory.Options();
 		opts.inPreferredConfig = Bitmap.Config.RGB_565;
 		if(small){	//返回小图片
-			return BitmapFactory.decodeStream(context.getResources().openRawResource(R.drawable.deault_zhuanji), null, opts);
+			return BitmapFactory.decodeStream(context.getResources().openRawResource(R.drawable.deault_zhuanji_mini), null, opts);
 		}
 		return BitmapFactory.decodeStream(context.getResources().openRawResource(R.drawable.deault_zhuanji), null, opts);
 	}
@@ -119,7 +119,7 @@ public class MediaUtil {
 				/** 我们的目标是在你N pixel的画面上显示。 所以需要调用computeSampleSize得到图片缩放的比例 **/
 				/** 这里的target为800是根据默认专辑图片大小决定的，800只是测试数字但是试验后发现完美的结合 **/
 				if(small){
-					options.inSampleSize = computeSampleSize(options, 40);
+					options.inSampleSize = computeSampleSize(options, 80);
 				} else{
 					options.inSampleSize = computeSampleSize(options, 600);
 				}

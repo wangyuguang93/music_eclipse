@@ -55,6 +55,7 @@ public class MyService extends Service implements OnCompletionListener          
 	private RemoteViews remoteViews;
 	private Boolean isgengxitile=false;
 	private Notification notify;
+	private ImageView myimg_ico;
 	public class MusicBinder extends Binder{
 		MyService getService(){
 			return MyService.this;
@@ -146,7 +147,9 @@ public class MyService extends Service implements OnCompletionListener          
 			final SeekBar pb_music_progress,
 			final Context context,Boolean islast,
 			int seeto,
-			final TextView tv_guqu_num,int musicid[],long almid[]) {
+			final TextView tv_guqu_num,
+			int musicid[],long almid[],
+			ImageView img_ico) {
 		//mydir=dir;
 		//mydata=data;
 		mymusicIndex=musicIndex;
@@ -160,6 +163,7 @@ public class MyService extends Service implements OnCompletionListener          
 		mylujin=lujin;
 		id=musicid;
 		alm=almid;
+		myimg_ico=img_ico;
 		//final Timezh timezh=new Timezh();
 		
 		
@@ -407,7 +411,8 @@ public class MyService extends Service implements OnCompletionListener          
 	            		}
 						danqian_length=""+""+timezh.mm(dantime)+":"+ss1;
 	            		mytv_currentposition.setText(danqian_length);
-	            		
+	            		Bitmap bitmap = MediaUtil.getArtwork(mycontext, id[mymusicIndex], alm[mymusicIndex], true, true);
+	            		myimg_ico.setImageBitmap(bitmap);
 					}
 				});
 	        
