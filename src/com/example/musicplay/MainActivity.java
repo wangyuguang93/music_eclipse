@@ -112,7 +112,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
         //耳机插拔广播
         erji=new erjiReceiver();
        // IntentFilter myerji=new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-        IntentFilter myerji=new IntentFilter(Intent.ACTION_HEADSET_PLUG);
+        IntentFilter myerji=new IntentFilter("android.intent.action.HEADSET_PLUG");
         
         registerReceiver(erji, myerji);
         //关机广播
@@ -519,7 +519,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		public void onReceive(Context context, Intent intent) {
 			// TODO Auto-generated method stub
 			String action=intent.getAction();
-			if (Intent.ACTION_HEADSET_PLUG.equals(action)) {  
+			if (action.equals("android.intent.action.HEADSET_PLUG")) {  
 				bofang();
     			intent  = new Intent(); 
     	        intent.putExtra("msg", "update_tongzhi");
