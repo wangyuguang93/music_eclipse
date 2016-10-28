@@ -62,7 +62,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 	private ImageView img_ico;
 	private static String TAG="MusicService";
 	private MyService musicservice;
-	private boolean tag=false,pause=false,islastwj=false;
+	private boolean tag=false,pause=false,islastwj=false,iserji=false;
 	MusicAdpater musicAdpater;
 	ListView listView;
 	private BroadcastReceiver main,erji,guanji;
@@ -109,12 +109,8 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
         IntentFilter filter = new IntentFilter("main");  
         registerReceiver(main, filter);  
         System.out.println("main广播接收器服务被创建...."); 
-        //耳机插拔广播
-        erji=new erjiReceiver();
-       // IntentFilter myerji=new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-        IntentFilter myerji=new IntentFilter("android.intent.action.HEADSET_PLUG");
+
         
-        registerReceiver(erji, myerji);
         //关机广播
         guanji=new mainReceiver();
         IntentFilter myguanji=new IntentFilter("android.intent.action.ACTION_SHUTDOWN");
@@ -408,6 +404,14 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		//isplay=false;
 	}
 	public void myplay() {
+        //耳机插拔广播
+        //IntentFilter myerji=new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+		if (tag==false) {
+			erji=new erjiReceiver();	       
+	        IntentFilter intentFilter=new IntentFilter(); 
+	        intentFilter.addAction("android.intent.action.HEADSET_PLUG");
+	        registerReceiver(erji, intentFilter);   
+		}
 	
 		if (isplay&&hg==musicIndex) {
 			musicservice.jixuplay();
@@ -443,6 +447,12 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		if (main!=null) {
 			unregisterReceiver(main);
 		}
+		if (erji!=null) {
+			unregisterReceiver(erji);
+		}
+		if (guanji!=null) {
+			unregisterReceiver(guanji);
+		}
 		super.onDestroy();
 	}
 	
@@ -467,13 +477,14 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
         public void onReceive(Context context, Intent intent) {  
             // TODO Auto-generated method stub 
         	String msg=intent.getStringExtra("msg");
+        	String action=intent.getAction();
         	if (msg.equals("play")) {
         		Log.d("test", msg);
         	bofang();
-        	intent  = new Intent(); 
-	        intent.putExtra("msg", "update_tongzhi");
+        	Intent play  = new Intent(); 
+        	play.putExtra("msg", "update_tongzhi");
 	        intent.setAction("guang93");  
-	        sendBroadcast(intent);  
+	        sendBroadcast(play);  
         	
         	}
         	if (msg.equals("exit")) {
@@ -485,13 +496,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
         	if (msg.equals("android.intent.action.ACTION_SHUTDOWN")) {
 				finish();
 			}
-        	if (msg.equals(AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
-    			bofang();
-    			intent  = new Intent(); 
-    	        intent.putExtra("msg", "update_tongzhi");
-    	        intent.setAction("guang93");  
-    	        sendBroadcast(intent);  
-			}
+
         	if (msg.equals("listview")) {
 //        		int zhi=intent.getIntExtra("zhi", musicIndex);
 //        		musicAdpater.update(musicIndex, zhi);
@@ -518,14 +523,35 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			// TODO Auto-generated method stub
-			String action=intent.getAction();
-			if (action.equals("android.intent.action.HEADSET_PLUG")) {  
-				bofang();
-    			intent  = new Intent(); 
-    	        intent.putExtra("msg", "update_tongzhi");
-    	        intent.setAction("guang93");  
-    	        sendBroadcast(intent); 
-            }  
+//			String action=intent.getAction();
+//			if (action.equals("android.intent.action.HEADSET_PLUG")) {  
+//				Log.d("guangbo", "ok");
+//				Intent erplay = new Intent();
+//				erplay.putExtra("msg", "play");
+//				erplay.setAction("main");
+//				sendBroadcast(erplay);
+//            }  
+			if (iserji==false) {
+				iserji=true;
+				
+			}else {
+				 if(intent.hasExtra("state")){  
+		                if(intent.getIntExtra("state", 0)==0){  
+		                		
+								bofang();
+								
+		 
+		                }  
+		                else if(intent.getIntExtra("state", 0)==1){  
+		                  //  Toast.makeText(context, "headset  connected", Toast.LENGTH_LONG).show();
+		                	
+							bofang();
+							
+		                }  
+		                
+		            }  
+			}
+           
 		}
 		
 	}
