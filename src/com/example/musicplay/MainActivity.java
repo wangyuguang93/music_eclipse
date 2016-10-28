@@ -17,6 +17,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.media.AudioManager;
 import android.media.MediaCryptoException;
 import android.media.MediaDrmException;
 import android.media.MediaDrmResetException;
@@ -64,7 +65,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 	private boolean tag=false,pause=false,islastwj=false;
 	MusicAdpater musicAdpater;
 	ListView listView;
-	private BroadcastReceiver main;
+	private BroadcastReceiver main,erji,guanji;
 	//int position;
 	Boolean isplay=false;
 	Boolean isdantime=false;
@@ -108,7 +109,16 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
         IntentFilter filter = new IntentFilter("main");  
         registerReceiver(main, filter);  
         System.out.println("main广播接收器服务被创建...."); 
+        //耳机插拔广播
+        erji=new erjiReceiver();
+       // IntentFilter myerji=new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+        IntentFilter myerji=new IntentFilter(Intent.ACTION_HEADSET_PLUG);
         
+        registerReceiver(erji, myerji);
+        //关机广播
+        guanji=new mainReceiver();
+        IntentFilter myguanji=new IntentFilter("android.intent.action.ACTION_SHUTDOWN");
+        registerReceiver(guanji, myguanji);
         //////////////
 		createmulu();
 		ScannerMusic();
@@ -472,6 +482,16 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
         	
         	}
         	
+        	if (msg.equals("android.intent.action.ACTION_SHUTDOWN")) {
+				finish();
+			}
+        	if (msg.equals(AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
+    			bofang();
+    			intent  = new Intent(); 
+    	        intent.putExtra("msg", "update_tongzhi");
+    	        intent.setAction("guang93");  
+    	        sendBroadcast(intent);  
+			}
         	if (msg.equals("listview")) {
 //        		int zhi=intent.getIntExtra("zhi", musicIndex);
 //        		musicAdpater.update(musicIndex, zhi);
@@ -493,7 +513,22 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
            	}
         }
     }  	
-	
+	private class erjiReceiver extends BroadcastReceiver{
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// TODO Auto-generated method stub
+			String action=intent.getAction();
+			if (Intent.ACTION_HEADSET_PLUG.equals(action)) {  
+				bofang();
+    			intent  = new Intent(); 
+    	        intent.putExtra("msg", "update_tongzhi");
+    	        intent.setAction("guang93");  
+    	        sendBroadcast(intent); 
+            }  
+		}
+		
+	}
 	//播放
 public void bofang() {
 	if (isplay&&pause) {
