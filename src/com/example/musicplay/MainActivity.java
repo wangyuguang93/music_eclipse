@@ -483,7 +483,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
         	bofang();
         	Intent play  = new Intent(); 
         	play.putExtra("msg", "update_tongzhi");
-	        intent.setAction("guang93");  
+	        play.setAction("guang93");  
 	        sendBroadcast(play);  
         	
         	}
@@ -539,14 +539,20 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		                if(intent.getIntExtra("state", 0)==0){  
 		                		
 								bofang();
-								
+					        	Intent play  = new Intent(); 
+					        	play.putExtra("msg", "update_tongzhi");
+						        play.setAction("guang93");  
+						        sendBroadcast(play);  
 		 
 		                }  
 		                else if(intent.getIntExtra("state", 0)==1){  
 		                  //  Toast.makeText(context, "headset  connected", Toast.LENGTH_LONG).show();
 		                	
 							bofang();
-							
+				        	Intent play  = new Intent(); 
+				        	play.putExtra("msg", "update_tongzhi");
+					        play.setAction("guang93");  
+					        sendBroadcast(play);  
 		                }  
 		                
 		            }  
