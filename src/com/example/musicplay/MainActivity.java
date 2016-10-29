@@ -3,6 +3,8 @@ package com.example.musicplay;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -29,6 +31,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -51,7 +54,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 @TargetApi(23)
-public class MainActivity extends Activity implements OnClickListener,OnItemSelectedListener{
+public class MainActivity extends SlidingFragmentActivity implements OnClickListener,OnItemSelectedListener{
 	private File dir,test;
 	private MediaPlayer player;
 	private String data[];
@@ -59,7 +62,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 	private long music_albumId[];
 	private int musicIndex=0;
 	private ImageButton ibPlayOrPuase,last,next;
-	private ImageView img_ico;
+	private ImageView img_ico,menu_ico;
 	private static String TAG="MusicService";
 	private MyService musicservice;
 	private boolean tag=false,pause=false,islastwj=false,iserji=false;
@@ -78,11 +81,12 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 	private String lujin[];
 	private Boolean islast;
 	private Cursor cursor;
+	private Fragment mContent;
 	SousuoListFragment sousuo=new SousuoListFragment();
 	@Override
-	protected void onCreate (Bundle savedInstanceState) {
+	public void onCreate (Bundle savedInstanceState) {
+		requestWindowFeature(Window.FEATURE_NO_TITLE); // 无标题
 		super.onCreate(savedInstanceState);
-		//requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_main);
 		
 		PackageManager manager = getPackageManager();
@@ -174,6 +178,8 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		listView.setSelection(musicIndex);
 		//再次取得danqian的值
 		danqian=pb_music_progress.getProgress();
+		//设置左滑菜单
+		initSlidingMenu(savedInstanceState);
 		listView.setSelection(musicIndex);
 		listView.setOnItemSelectedListener(this);
 		listView.setOnItemClickListener(new OnItemClickListener() {
@@ -280,7 +286,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		last.setOnClickListener(this);
 		next.setOnClickListener(this);
 		ibPlayOrPuase.setOnClickListener(this);
-		
+		menu_ico.setOnClickListener(this);
 	}
 	//找控件
 	private void findId(){
@@ -294,6 +300,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		tv_music_title=(TextView) findViewById(R.id.tv_music_title);
 		tv_guqu_num=(TextView) findViewById(R.id.tv_gequ_num);
 		img_ico=(ImageView) findViewById(R.id.img_ico);
+		menu_ico=(ImageView) findViewById(R.id.menu_ico);
 		
 	}
 	private void Connection(){
@@ -390,7 +397,9 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 			}
 
 			break;
-
+		case R.id.menu_ico:
+			toggle();
+			break;
 		default:
 			break;
 		}
@@ -576,5 +585,51 @@ public void bofang() {
 		myplay();
 	}
 	
+}
+/**
+ * 切换Fragment
+ * 
+ * @param fragment
+ */
+public void switchConent(Fragment fragment) {
+	mContent = fragment;
+	getSupportFragmentManager().beginTransaction()
+			.replace(R.id.container, fragment).commit();
+	getSlidingMenu().showContent();
+}
+private void initSlidingMenu(Bundle savedInstanceState) {
+	// 如果保存的状态不为空则得到之前保存的Fragment，否则实例化MyFragment
+	if (savedInstanceState != null) {
+		mContent = getSupportFragmentManager().getFragment(
+				savedInstanceState, "mContent");
+	}
+
+	if (mContent == null) {
+		//mContent = new TodayFragment();
+	}
+
+	// 设置左侧滑动菜单
+	setBehindContentView(R.layout.menu_frame_left);
+	getSupportFragmentManager().beginTransaction()
+			.replace(R.id.menu_frame, new LeftFragment(MainActivity.this)).commit();
+
+	// 实例化滑动菜单对象
+	SlidingMenu sm = getSlidingMenu();
+	// 设置可以左右滑动的菜单
+	sm.setMode(SlidingMenu.LEFT);
+	// 设置滑动阴影的宽度
+	sm.setShadowWidthRes(R.dimen.shadow_width);
+	// 设置滑动菜单阴影的图像资源
+	sm.setShadowDrawable(null);
+	// 设置滑动菜单视图的宽度
+	//sm.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+	sm.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+	// 设置渐入渐出效果的值
+	sm.setFadeDegree(0.35f);
+	// 设置触摸屏幕的模式,这里设置为全屏
+	sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+	// 设置下方视图的在滚动时的缩放比例
+	sm.setBehindScrollScale(0.0f);
+
 }
 }
