@@ -368,7 +368,8 @@ public class MyService extends Service implements OnCompletionListener          
 			}
         	int t1=mylujin.length;
         	String zongshu=""+t1;
-        	gequ_num=""+(++mymusicIndex)+"/"+zongshu;
+        	int num=mymusicIndex;
+        	gequ_num=""+(++num)+"/"+zongshu;
         	//Log.d("data", mydata[mymusicIndex].toString());
         	mytv_guqu_num.setText(gequ_num);
         	final Timezh timezh=new Timezh();
