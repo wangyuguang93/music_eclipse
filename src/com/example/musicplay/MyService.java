@@ -146,12 +146,13 @@ public class MyService extends Service implements OnCompletionListener          
 		//取消通知栏
         if (remoteViews != null) {  
         	manager.cancel(100);
-            Log.d("test服务移除", "ok");
+            Log.d("服务移除", "ok");
          
         }  
-//        if (receiver != null) {  
-//            unregisterReceiver(receiver);  
-//        }  
+        //在锁屏时退出程序，还原壁纸
+       if (issuoping) {  
+            huanyuansuoping();  
+        }  
 		
 	}
 	
@@ -557,14 +558,9 @@ public class MyService extends Service implements OnCompletionListener          
 		        	  setsuoping();
 		        } else if (Intent.ACTION_USER_PRESENT.equals(action)) {  
 		            // 解锁  
-		        	
+		        	huanyuansuoping();
 		        	 
-		        	 try {  
-		                 wallpaperManager.setBitmap(bm);  
-		             } catch (Exception e) {  
-		                 // TODO Auto-generated catch block  
-		                 e.printStackTrace();  
-		             } 
+		        	 
 		        	 isSuopingTAG=false;
 		        	 Log.d("sp", "开屏了");
 		        }  
@@ -693,6 +689,12 @@ public void setsuoping () {
  * 还原锁屏壁纸
  */
 public void huanyuansuoping() {
+	try {  
+        wallpaperManager.setBitmap(bm);  
+    } catch (Exception e) {  
+        // TODO Auto-generated catch block  
+        e.printStackTrace();  
+    } 
 	
 }
 }
