@@ -404,6 +404,7 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		//isplay=false;
 	}
 	public void myplay() {
+		
         //耳机插拔广播
         //IntentFilter myerji=new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 		if (tag==false) {
@@ -561,6 +562,8 @@ public class MainActivity extends Activity implements OnClickListener,OnItemSele
 		}
 		
 	}
+	
+
 	//播放
 public void bofang() {
 	if (isplay&&pause) {

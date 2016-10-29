@@ -77,7 +77,7 @@ public class MediaUtil {
 			//根据options参数，减少所需要的内存
 			bm = BitmapFactory.decodeFileDescriptor(fd, null, options);
 		} catch (FileNotFoundException e) {
-			System.out.print("没有专辑图片");
+			//System.out.print("没有专辑图片");
 		}
 		return bm;
 	}

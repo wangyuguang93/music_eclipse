@@ -2,11 +2,13 @@ package com.example.musicplay;
 import java.io.File;
 
 import android.Manifest.permission;
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.Notification.Builder;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.app.WallpaperManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +16,9 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
@@ -34,6 +39,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
+@SuppressLint("ServiceCast")
 public class MyService extends Service implements OnCompletionListener                        {
 	private final IBinder binder=new MusicBinder();
 	private int mymusicIndex=0;
@@ -49,13 +55,16 @@ public class MyService extends Service implements OnCompletionListener          
 	private long alm[];
 	private int gbpb;
 	private int max,dantime;
-	private Boolean ismylast,isSave=false;
-	private BroadcastReceiver mbcr;
+	private Boolean ismylast,isSave=false,issuoping=false;
+	private BroadcastReceiver mbcr,suoping;
 	private NotificationManager manager;
 	private RemoteViews remoteViews;
-	private Boolean isgengxitile=false;
+	private Boolean isgengxitile,isSuopingTAG=false;
 	private Notification notify;
 	private ImageView myimg_ico;
+	private WallpaperManager wallpaperManager;
+	private Drawable drawable;
+	private Bitmap bm;
 	public class MusicBinder extends Binder{
 		MyService getService(){
 			return MyService.this;
@@ -99,6 +108,9 @@ public class MyService extends Service implements OnCompletionListener          
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// TODO Auto-generated method stub
+		
+
+		
 		return super.onStartCommand(intent, flags, startId);
 	}
 
@@ -127,6 +139,9 @@ public class MyService extends Service implements OnCompletionListener          
 		}
 		if (mbcr!=null) {
 			unregisterReceiver(mbcr);
+		}
+		if (suoping!=null) {
+			unregisterReceiver(suoping);
 		}
 		//取消通知栏
         if (remoteViews != null) {  
@@ -164,6 +179,12 @@ public class MyService extends Service implements OnCompletionListener          
 		id=musicid;
 		alm=almid;
 		myimg_ico=img_ico;
+		if (bm==null) {
+			wallpaperManager=(WallpaperManager) mycontext.getSystemService(Context.WALLPAPER_SERVICE);				
+			drawable=wallpaperManager.getDrawable();
+			bm = ((BitmapDrawable) drawable).getBitmap();
+		}
+		
 		//final Timezh timezh=new Timezh();
 		
 		
@@ -190,6 +211,7 @@ public class MyService extends Service implements OnCompletionListener          
 			jiemian();
 			mPlayer.setOnCompletionListener(this);
 			isSave=true;
+			issuoping=true;
 			}catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();
@@ -199,9 +221,24 @@ public class MyService extends Service implements OnCompletionListener          
 			startplay(playlujin);
 			ismylast=true;
 			isSave=true;
+			issuoping=true;
 		}
 
-		
+		//初始化锁屏广播
+		// Log.d("sp", "开始锁屏广播注册");
+		if (issuoping) {
+			if (suoping==null) {
+				suoping=new SuopingReceiver();
+		        IntentFilter sp = new IntentFilter();  
+		        sp.addAction(Intent.ACTION_SCREEN_ON);  
+		        sp.addAction(Intent.ACTION_SCREEN_OFF);  
+		        sp.addAction(Intent.ACTION_USER_PRESENT);  
+		        registerReceiver(suoping, sp);
+		       // Log.d("sp", "锁屏广播注册");
+			}
+			
+		}
+		//更换壁纸
 
 	}	
 	
@@ -320,13 +357,18 @@ public class MyService extends Service implements OnCompletionListener          
          * 更新界面
          */
         public void jiemian() {
+        	//更换壁纸
+    		if (isSuopingTAG) {
+    			Log.d("开始设置壁纸", "ok");
+    			setsuoping();
+    		}
         	if (mPlayer==null) {
 				mPlayer=new MediaPlayer();
 				
 			}
-        	int t1=mylujin.length-1;
+        	int t1=mylujin.length;
         	String zongshu=""+t1;
-        	gequ_num=""+mymusicIndex+"/"+zongshu;
+        	gequ_num=""+(++mymusicIndex)+"/"+zongshu;
         	//Log.d("data", mydata[mymusicIndex].toString());
         	mytv_guqu_num.setText(gequ_num);
         	final Timezh timezh=new Timezh();
@@ -413,6 +455,8 @@ public class MyService extends Service implements OnCompletionListener          
 	            		mytv_currentposition.setText(danqian_length);
 	            		Bitmap bitmap = MediaUtil.getArtwork(mycontext, id[mymusicIndex], alm[mymusicIndex], true, true);
 	            		myimg_ico.setImageBitmap(bitmap);
+	            		
+	            		
 					}
 				});
 	        
@@ -461,7 +505,11 @@ public class MyService extends Service implements OnCompletionListener          
 				
 			}
 		}
-		
+/**
+ * 播放操作广播
+ * @param
+ *设置播放使用的广播
+ */
 		private class MyBroadCastReceiver extends BroadcastReceiver{  
 			  
 	        @Override  
@@ -488,7 +536,41 @@ public class MyService extends Service implements OnCompletionListener          
 	        }
 	          
 	    }  		
-
+		/**
+		 * 锁屏广播类
+		 * @param
+		 * 锁屏广播类
+		 */
+		private class SuopingReceiver extends BroadcastReceiver {
+			 private String action = null; 
+			 
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				// TODO Auto-generated method stub
+				   // TODO Auto-generated method stub 
+		        action = intent.getAction();  
+		           if (Intent.ACTION_SCREEN_OFF.equals(action)) {  
+		            // 锁屏  
+		        	  Log.d("sp", "锁屏了"); 
+		        	  isSuopingTAG=true;
+		        	  setsuoping();
+		        } else if (Intent.ACTION_USER_PRESENT.equals(action)) {  
+		            // 解锁  
+		        	
+		        	 
+		        	 try {  
+		                 wallpaperManager.setBitmap(bm);  
+		             } catch (Exception e) {  
+		                 // TODO Auto-generated catch block  
+		                 e.printStackTrace();  
+		             } 
+		        	 isSuopingTAG=false;
+		        	 Log.d("sp", "开屏了");
+		        }  
+			}
+			
+		}
+		
 //通知栏方法
 		/**
 		 * 设置通知
@@ -593,7 +675,25 @@ public class MyService extends Service implements OnCompletionListener          
 		myhandler.post(tongzhilan);//设置通知栏
 		
 		}
-
+		/**
+		 * 设置锁屏壁纸
+		 */
+public void setsuoping () {
+	  try {  
+		  Bitmap bitmap = MediaUtil.getArtwork(mycontext, id[mymusicIndex], alm[mymusicIndex], true, false);
+	       wallpaperManager.setBitmap(bitmap);  
+	    } catch (Exception e) {  
+	        // TODO Auto-generated catch block  
+	        e.printStackTrace();  
+	    }  
+	
+}
+/**
+ * 还原锁屏壁纸
+ */
+public void huanyuansuoping() {
+	
+}
 }
 		
 		
