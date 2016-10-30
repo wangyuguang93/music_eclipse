@@ -32,6 +32,7 @@
         </activity>
         <service android:name="MyService"></service>
         <activity android:name="SousuoListFragment"></activity>
+        <activity android:name="Login"></activity>
     </application>
 
 </manifest>

@@ -11,6 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="35dp"
+         android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:layout_above="@+id/tv_music_title"
         android:listSelector="#22aaff" >
 
@@ -20,6 +22,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="00"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:layout_above="@+id/pb_music_progress"
         />
     <SeekBar 
@@ -40,6 +44,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="55"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:layout_above="@+id/layout_control"
         />
     <TextView 
@@ -47,6 +53,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="77"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:layout_above="@+id/layout_control"
         android:layout_alignRight="@+id/pb_music_progress"
         />
@@ -55,6 +63,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
     >
     <ImageButton 
         android:id="@+id/ib_play_pause"

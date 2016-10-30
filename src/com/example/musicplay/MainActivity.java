@@ -325,33 +325,6 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 			}
 		}
 	};
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		switch (item.getItemId()) {
-		case R.id.action_exit:
-			finish();
-			break;
-		case R.id.sousuo:
-		//Intent sousao=new Intent(this,SousuoListFragment.class);
-		//startActivity(sousao);
-			break;
-			
-		default:
-			break;
-		}
-		return super.onOptionsItemSelected(item);
-	}
 
 	@Override
 	public void onClick(View v) {
