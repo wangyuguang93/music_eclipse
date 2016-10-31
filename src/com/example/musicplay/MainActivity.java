@@ -570,6 +570,8 @@ public void switchConent(Fragment fragment) {
 			.replace(R.id.container, fragment).commit();
 	getSlidingMenu().showContent();
 }
+
+LeftFragment leftFragment=new LeftFragment(MainActivity.this);
 private void initSlidingMenu(Bundle savedInstanceState) {
 	// 如果保存的状态不为空则得到之前保存的Fragment，否则实例化MyFragment
 	if (savedInstanceState != null) {
@@ -578,13 +580,13 @@ private void initSlidingMenu(Bundle savedInstanceState) {
 	}
 
 	if (mContent == null) {
-		//mContent = new TodayFragment();
+		mContent = new TodayFragment();
 	}
 
 	// 设置左侧滑动菜单
 	setBehindContentView(R.layout.menu_frame_left);
 	getSupportFragmentManager().beginTransaction()
-			.replace(R.id.menu_frame, new LeftFragment(MainActivity.this)).commit();
+			.replace(R.id.menu_frame, leftFragment).commit();
 
 	// 实例化滑动菜单对象
 	SlidingMenu sm = getSlidingMenu();

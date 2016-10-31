@@ -67,7 +67,7 @@ public class Login extends Activity implements OnClickListener{
 			
 			final String name=username.getText().toString();
 			String passwd=userpasswd.getText().toString();
-			Mysql mysql=new Mysql(name,passwd);
+			Mysql mysql=new Mysql(name,passwd,this);
 			mysql.execute();
 			mysql.setDatafiniListener(new DatafiniListener() {
 				
@@ -77,7 +77,7 @@ public class Login extends Activity implements OnClickListener{
 					if (data.equals("ok")) {
 						Toast.makeText(Login.this, "登录成功", 1000).show();
 						 Intent intent = new Intent();  
-			             intent.putExtra("userName", name); 
+			             intent.putExtra("userName",name); 
 			             intent.putExtra("xingming", xingming); 
 			             intent.putExtra("xb", xb); 
 			             intent.putExtra("bj",bj); 
