@@ -41,15 +41,6 @@ public class Login extends Activity implements OnClickListener{
 		zhuce.setOnClickListener(this);
 	}
 	
-	private void findViews(View view) {
-		// TODO Auto-generated method stub
-		fanhui=view.findViewById(R.id.fanhui);
-		login=view.findViewById(R.id.btn_login);
-		zhuce=view.findViewById(R.id.btn_zhuce);
-		fanhui.setOnClickListener(this);
-		login.setOnClickListener(this);
-		zhuce.setOnClickListener(this);
-	}
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
