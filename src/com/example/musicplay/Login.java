@@ -26,6 +26,7 @@ public class Login extends Activity implements OnClickListener{
 	private View login,zhuce;
 	private EditText username,userpasswd;
 	private ProgressBar progressBar;
+	private TextView tv_isnull;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -35,10 +36,12 @@ public class Login extends Activity implements OnClickListener{
 		fanhui=findViewById(R.id.fanhui);
 		login=findViewById(R.id.btn_login);
 		zhuce=findViewById(R.id.btn_zhuce);
+		tv_isnull=(TextView) findViewById(R.id.tv_isnull);
 		progressBar = (ProgressBar) findViewById(R.id.loginProgressBar);
 		progressBar.setIndeterminate(true);
 		progressBar.bringToFront();
 		progressBar.setVisibility(View.INVISIBLE);
+		tv_isnull.setVisibility(View.INVISIBLE);
 		username=(EditText) findViewById(R.id.ed_userName);
 		userpasswd=(EditText) findViewById(R.id.ed_userPasswd);
 		fanhui.setOnClickListener(this);
@@ -61,8 +64,16 @@ public class Login extends Activity implements OnClickListener{
 //             setResult(1,intent);  
 //             finish();//结束当前的activity的生命周期  
 			progressBar.setVisibility(View.VISIBLE);
+			tv_isnull.setVisibility(View.INVISIBLE);
 			final String name=username.getText().toString();
 			String passwd=userpasswd.getText().toString();
+			if (name.equals("")||passwd.equals("")) {
+				//Log.e("gg",name);
+				tv_isnull.setVisibility(View.VISIBLE);
+				progressBar.setVisibility(View.INVISIBLE);
+			}
+			else{
+				//Log.e("gg2",name.toString());
 			Mysql mysql=new Mysql(name,passwd,this);
 			mysql.execute();
 			mysql.setDatafiniListener(new DatafiniListener() {
@@ -87,6 +98,7 @@ public class Login extends Activity implements OnClickListener{
 					}
 				}
 			});
+			}
 			break;
 	case R.id.btn_zhuce:
 		

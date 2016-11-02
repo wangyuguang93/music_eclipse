@@ -142,4 +142,13 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="40dp" />
 
+    <TextView
+        android:id="@+id/tv_isnull"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/checkBox1"
+        android:layout_alignLeft="@+id/loginProgressBar"
+        android:text="用户名或密码为空"
+        android:textColor="#ff0000" />
+
 </RelativeLayout>
