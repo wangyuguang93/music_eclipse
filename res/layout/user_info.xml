@@ -3,31 +3,38 @@
     android:id="@+id/RelativeLayout1"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" 
-    android:background="@drawable/login_beijing">
+    android:background="@drawable/login_beijing"
+    android:orientation="vertical" >
 
-	<LinearLayout
-	    android:layout_width="fill_parent"
-	    android:layout_height="30dp"
-	    android:background="#345689"
-	    android:orientation="horizontal" >
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:background="#345689"
+        android:orientation="horizontal" >
 
-	   <TextView 
-	       android:id="@+id/fan_exit"
-	       android:layout_width="40dp"
-	       android:layout_height="30dp"
-	       android:text="返回"
-	       android:gravity="center_vertical"
-	       android:textColor="#ffffff"/> 
-	    <TextView 
-	       android:layout_width="60dp"
-	       android:layout_height="30dp"
-	       android:text="用户信息"
-	       android:layout_marginLeft="90dp"
-	       android:gravity="center_vertical"
-	       android:textColor="#ffffff"/> 
-	    
-	</LinearLayout>
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="15dp"
+            android:layout_height="30dp"
+            android:src="@drawable/fanhui" />
+
+        <TextView
+            android:id="@+id/fan_exit"
+            android:layout_width="40dp"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:text="返回"
+            android:textColor="#ffffff" />
+
+        <TextView
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="90dp"
+            android:gravity="center_vertical"
+            android:text="用户信息"
+            android:textColor="#ffffff" />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/img_set_touxing"
@@ -36,6 +43,15 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="125dp"
         android:text="更换头像"
+        android:textSize="12sp" />
+
+    <Button
+        android:id="@+id/btn_set_passwd"
+        android:layout_width="80dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="165dp"
+        android:text="修改密码"
         android:textSize="12sp" />
 
     <TextView
@@ -56,14 +72,14 @@
         android:text="姓名"
         android:textColor="@color/white" />
 
-     <TextView
-         android:id="@+id/tv_xb"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_marginLeft="150dp"
-         android:layout_marginTop="100dp"
-         android:text="系部"
-         android:textColor="@color/white" />
+    <TextView
+        android:id="@+id/tv_xb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="150dp"
+        android:layout_marginTop="100dp"
+        android:text="系部"
+        android:textColor="@color/white" />
 
     <TextView
         android:id="@+id/tv_bj"
@@ -77,12 +93,12 @@
     <Button
         android:id="@+id/btn_exit"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tv_bj"
+        android:layout_height="20dp"
+        android:layout_below="@+id/btn_set_passwd"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
-        android:background="#F4A9A9"
-        android:text="退出登录" />
+        android:background="#14A9A9"
+        android:text="退出登录"
+        android:textSize="14sp" />
 
     <ImageView
         android:id="@+id/img_head"

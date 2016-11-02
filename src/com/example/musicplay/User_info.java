@@ -30,7 +30,7 @@ import android.widget.Toast;
 
 public class User_info extends Activity implements OnClickListener{
 	private TextView tv_id,tv_xingming,tv_xb,tv_bj,fan_exit;
-	private Button img_set_touxiang,btn_exit;
+	private Button img_set_touxiang,btn_exit,btn_set_passwd;
 	private String xuehao,xm,xb,bj;
 	private LeftFragment fragment;
 	private ImageView headImage;
@@ -83,6 +83,7 @@ public class User_info extends Activity implements OnClickListener{
 			btn_exit.setOnClickListener(this);
 			fan_exit.setOnClickListener(this);
 			img_set_touxiang.setOnClickListener(this);
+			btn_set_passwd.setOnClickListener(this);
 	}
 
 	private void readinfo() {
@@ -109,7 +110,7 @@ public class User_info extends Activity implements OnClickListener{
 		btn_exit=(Button)findViewById(R.id.btn_exit);
 		fan_exit=(TextView) findViewById(R.id.fan_exit);
 		headImage = (ImageView) findViewById(R.id.img_head);
-				
+		btn_set_passwd= (Button) findViewById(R.id.btn_set_passwd);
 				// TODO Auto-generated method stub
 				
 			

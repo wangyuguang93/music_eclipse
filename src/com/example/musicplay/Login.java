@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +25,7 @@ public class Login extends Activity implements OnClickListener{
 	private View fanhui;
 	private View login,zhuce;
 	private EditText username,userpasswd;
-	
+	private ProgressBar progressBar;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -34,6 +35,10 @@ public class Login extends Activity implements OnClickListener{
 		fanhui=findViewById(R.id.fanhui);
 		login=findViewById(R.id.btn_login);
 		zhuce=findViewById(R.id.btn_zhuce);
+		progressBar = (ProgressBar) findViewById(R.id.loginProgressBar);
+		progressBar.setIndeterminate(true);
+		progressBar.bringToFront();
+		progressBar.setVisibility(View.INVISIBLE);
 		username=(EditText) findViewById(R.id.ed_userName);
 		userpasswd=(EditText) findViewById(R.id.ed_userPasswd);
 		fanhui.setOnClickListener(this);
@@ -55,7 +60,7 @@ public class Login extends Activity implements OnClickListener{
 //             //通过Intent对象返回结果，调用setResult方法  
 //             setResult(1,intent);  
 //             finish();//结束当前的activity的生命周期  
-			
+			progressBar.setVisibility(View.VISIBLE);
 			final String name=username.getText().toString();
 			String passwd=userpasswd.getText().toString();
 			Mysql mysql=new Mysql(name,passwd,this);
@@ -78,6 +83,7 @@ public class Login extends Activity implements OnClickListener{
 					}
 					else {
 						Toast.makeText(Login.this, "用户名或密码错误", 1000).show();
+						progressBar.setVisibility(View.INVISIBLE);
 					}
 				}
 			});
