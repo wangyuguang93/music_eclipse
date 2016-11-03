@@ -53,7 +53,7 @@ public class Mysql extends AsyncTask<Void, Void, String>{
 			
 			try{
 				//String url = "jdbc:mysql://119.29.168.172:3306/stu2015";
-				String url = "jdbc:mysql://119.29.168.172:3306/stu2015";
+				String url = "jdbc:mysql://119.29.168.172:3306/stu2015?useUnicode=true&amp;characterEncoding=UTF-8";
 				Class.forName("com.mysql.jdbc.Driver");
 				//String sql="insert into test2 values ('"+username+"','"+userpassword+"')";
 				//String sql1="select * from User where '学号'='"+username+"'and '密码'='"+username+"'";

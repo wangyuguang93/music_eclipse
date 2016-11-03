@@ -88,24 +88,6 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 		requestWindowFeature(Window.FEATURE_NO_TITLE); // 无标题
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
-		PackageManager manager = getPackageManager();
-		int hasPermission = manager.checkPermission ("android.permission.READ_EXTERNAL_STORAGE", "com.example.musicplay");
-		if (hasPermission == PackageManager.PERMISSION_GRANTED) {
-		    //you have permission
-			System.out.print("有权限");
-		}
-		else {
-			this.requestPermissions(
-					//"android.permission.READ_EXTERNAL_STORAGE", requestCode
-					 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-			;
-			Toast.makeText(this, "没有权限访问存储空间，请设置允许访问", Toast.LENGTH_SHORT).show();
-					
-		}
-		
-		
-		
 		// this.requestPermissions(permissions, requestCode);
 		//File dir=Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
 		//创建广播接收器
