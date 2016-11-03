@@ -16,7 +16,7 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
-public class Mysql extends AsyncTask<Void, Void, String>{
+public class Mysql extends AsyncTask<String, Void, String>{
 	Connection conn = null;  
 	PreparedStatement ps = null;  
 	ResultSet rs = null;  
@@ -25,6 +25,7 @@ public class Mysql extends AsyncTask<Void, Void, String>{
 	private Context context;
 	boolean flag = false;
 	private String xingming,xb,bj;
+	private String url;
 	
 	public static interface DatafiniListener{
 		void datafinish(String data,String xingming,String xb,String bj);
@@ -43,42 +44,78 @@ public class Mysql extends AsyncTask<Void, Void, String>{
 		this.userpassword=userpassword;
 		this.context=context;
 	}
+	public Mysql(String username,String userpassword,String xb,String bj,String xm,Context context) {
+		// TODO Auto-generated constructor stub
+		this.username=username;
+		this.userpassword=userpassword;
+		this.xb=xb;
+		this.bj=bj;
+		this.xingming=xb;
+		this.context=context;
+	}
 	public Mysql() {
 		// TODO Auto-generated constructor stub
 		
 	}
 		@Override
-		protected String doInBackground(Void... params) {			
+		protected String doInBackground(String... params) {			
 			// TODO Auto-generated method stub
+			String sql = null;
+				
 			
 			try{
 				//String url = "jdbc:mysql://119.29.168.172:3306/stu2015";
-				String url = "jdbc:mysql://119.29.168.172:3306/stu2015?useUnicode=true&amp;characterEncoding=UTF-8";
+				if (params[0].equals("longin")) {
+					url = "jdbc:mysql://119.29.168.172:3306/stu2015?useUnicode=true&amp;characterEncoding=UTF-8";
+				}
+				if (params[0].equals("registered")) {
+					url = "jdbc:mysql://119.29.168.172:3306/user?useUnicode=true&amp;characterEncoding=UTF-8";
+				}
+				
 				Class.forName("com.mysql.jdbc.Driver");
 				//String sql="insert into test2 values ('"+username+"','"+userpassword+"')";
 				//String sql1="select * from User where '学号'='"+username+"'and '密码'='"+username+"'";
 				conn = DriverManager.getConnection(url, "root", "yu9655"); 
 				//ps=conn.prepareStatement("select * from test2");
-				ps=conn.prepareStatement("select * from User");
-				//ps.execute();				
-				rs = ps.executeQuery();
-				while(rs.next()){
-					String name = rs.getString("学号");
-					String pass = rs.getString("密码");
-//					Log.d("name", name);
-//					Log.d("username", username);
-//					Log.d("pass",pass);
-//					Log.d("username", userpassword);
-					if(username.equals(name)&&userpassword.equals(pass)){//判断用户名和密码是否正确
-						System.out.println("读取成功");
-						//textView.setText(username +"密码" + userpassword);
-						xingming=rs.getString("姓名");
-						xb=rs.getString("系部名称");
-						bj=rs.getString("班级名称");
-						return "ok";
-						
+				if (params[0].equals("longin")) {
+					
+					sql="select * from User";//登录
+					ps=conn.prepareStatement(sql);
+					//ps.execute();				
+					rs = ps.executeQuery();
+					while(rs.next()){
+						String name = rs.getString("学号");
+						String pass = rs.getString("密码");
+//						Log.d("name", name);
+//						Log.d("username", username);
+//						Log.d("pass",pass);
+//						Log.d("username", userpassword);
+						if(username.equals(name)&&userpassword.equals(pass)){//判断用户名和密码是否正确
+							System.out.println("读取成功");
+							//textView.setText(username +"密码" + userpassword);
+							xingming=rs.getString("姓名");
+							xb=rs.getString("系部名称");
+							bj=rs.getString("班级名称");
+							return "ok";
+							
+						}
 					}
 				}
+				if (params[0].equals("registered")) {
+					sql="insert into User values ('"+username+"','"+userpassword+"','"+xb+"','"+bj+"')";//注册
+					ps=conn.prepareStatement(sql);
+					ps.execute();
+//					int keyValue = -1; 
+//					rs = ps.executeQuery();
+//					if (rs.next()) {
+//						keyValue = 1;
+//					}
+//					if (keyValue==1) {
+//						return "regok";
+//					}
+					return "regok";
+				}
+				
 				return "fale";
 			}catch (SQLException e) {
 				// TODO: handle exception
@@ -131,6 +168,9 @@ public class Mysql extends AsyncTask<Void, Void, String>{
 				}
 				if(result.equals("用户已存在")){
 					Toast.makeText(context, "用户已存在", Toast.LENGTH_SHORT).show();
+				}
+				if (result.equals("regok")) {
+					Log.d("注册结果", "注册成功");
 				}
 			}
 			

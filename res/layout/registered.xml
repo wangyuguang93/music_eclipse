@@ -1,8 +1,158 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/beijing"
     android:orientation="vertical" >
-    
 
-</LinearLayout>
+    <EditText
+        android:id="@+id/ed_regbj"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tv_regbj"
+        android:layout_alignBottom="@+id/tv_regbj"
+        android:layout_alignLeft="@+id/ed_regpasswd"
+        android:ems="10" />
+
+    <TextView
+        android:id="@+id/tv_regbj"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tv_regxb"
+        android:layout_centerVertical="true"
+        android:text="班级" />
+
+    <TextView
+        android:id="@+id/tv_regxb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/ed_regbj"
+        android:layout_alignLeft="@+id/tv_regpasswd"
+        android:layout_marginBottom="15dp"
+        android:text="系部" />
+
+    <EditText
+        android:id="@+id/ed_regxb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tv_regxb"
+        android:layout_alignBottom="@+id/tv_regxb"
+        android:layout_alignLeft="@+id/ed_regpasswd"
+        android:ems="10" >
+
+        <requestFocus />
+    </EditText>
+
+    <Button
+        android:id="@+id/btn_registered"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ed_regbj"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="59dp"
+        android:text="注册" />
+
+    <TextView
+        android:id="@+id/tv_regisnull"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/btn_registered"
+        android:layout_below="@+id/ed_regbj"
+        android:layout_marginTop="17dp"
+        android:text="不能有空白"
+        android:textColor="#ff0000" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="35dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="#22cc99" >
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="15dp"
+            android:layout_height="40dp"
+            android:src="@drawable/fanhui" />
+
+        <TextView
+            android:id="@+id/tv_regfanhui"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center_vertical"
+            android:text="返回"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/tv_user_registered"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="80dp"
+            android:layout_marginTop="12dp"
+            android:text="用户注册"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar1"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/btn_registered"
+        android:layout_below="@+id/btn_registered"
+        android:layout_marginTop="15dp" />
+
+    <TextView
+        android:id="@+id/tv_regpasswd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/ed_regpasswd"
+        android:layout_alignLeft="@+id/tv_regID"
+        android:text="密码" />
+
+    <TextView
+        android:id="@+id/tv_regxm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/ed_regpasswd"
+        android:layout_toLeftOf="@+id/ed_regId"
+        android:text="姓名" />
+
+    <TextView
+        android:id="@+id/tv_regID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/ed_regxm"
+        android:layout_toLeftOf="@+id/ed_regId"
+        android:text="学号" />
+
+    <EditText
+        android:id="@+id/ed_regId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/ed_regxm"
+        android:layout_alignParentRight="true"
+        android:ems="10" />
+
+    <EditText
+        android:id="@+id/ed_regxm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tv_regxm"
+        android:layout_alignBottom="@+id/tv_regxm"
+        android:layout_alignParentRight="true"
+        android:ems="10" />
+
+    <EditText
+        android:id="@+id/ed_regpasswd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/ed_regxb"
+        android:layout_alignParentRight="true"
+        android:ems="10"
+        android:inputType="textPassword" />
+
+</RelativeLayout>

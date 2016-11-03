@@ -75,7 +75,8 @@ public class Login extends Activity implements OnClickListener{
 			else{
 				//Log.e("gg2",name.toString());
 			Mysql mysql=new Mysql(name,passwd,this);
-			mysql.execute();
+			String longin="longin";
+			mysql.execute(longin);
 			mysql.setDatafiniListener(new DatafiniListener() {
 				
 				@Override
@@ -101,7 +102,9 @@ public class Login extends Activity implements OnClickListener{
 			}
 			break;
 	case R.id.btn_zhuce:
-		
+		Intent registered=new Intent(Login.this,registered.class);
+		startActivity(registered);
+		//finish();
 		break;
 
 		default:

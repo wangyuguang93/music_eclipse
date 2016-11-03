@@ -39,6 +39,7 @@
         <activity android:name="User_info"></activity>
         <activity android:name=".MainActivity"></activity>
         <activity android:name="com.checker.quanxian.PermissionActivity"></activity>
+        <activity android:name="registered"></activity>
     </application>
 
 </manifest>
