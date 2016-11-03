@@ -102,7 +102,7 @@ public class Mysql extends AsyncTask<String, Void, String>{
 					}
 				}
 				if (params[0].equals("registered")) {
-					sql="insert into User values ('"+username+"','"+userpassword+"','"+xb+"','"+bj+"')";//注册
+					sql="insert into User values ('"+username+"','"+xingming+"','"+userpassword+"','"+xb+"','"+bj+"')";//注册
 					ps=conn.prepareStatement(sql);
 					ps.execute();
 //					int keyValue = -1; 

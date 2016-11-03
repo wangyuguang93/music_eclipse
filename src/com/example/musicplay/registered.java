@@ -16,7 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class registered extends Activity implements OnClickListener{
-	private EditText ed_regId,ed_regpasswd,ed_reghxb,ed_redbj,ed_regxm;
+	private EditText ed_regId,ed_regpasswd,ed_regxb,ed_redbj,ed_regxm;
 	private Button btn_registered;
 	private TextView tv_regisnull,tv_regfanhui;
 	private String xuehao,passwd,xb,bj,xm;
@@ -28,12 +28,12 @@ public class registered extends Activity implements OnClickListener{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.registered);
 		ed_regId=(EditText) findViewById(R.id.ed_regId);
-		ed_regpasswd=(EditText) findViewById(R.id.ed_regpasswd);
+		ed_regpasswd=(EditText) findViewById(R.id.ed_regpasswd);		
+		ed_regxb=(EditText) findViewById(R.id.ed_regxb);
+		ed_redbj=(EditText) findViewById(R.id.ed_regbj);
 		tv_regfanhui=(TextView) findViewById(R.id.tv_regfanhui);
 		ed_regxm=(EditText) findViewById(R.id.ed_regxm);
 		tv_regfanhui.setOnClickListener(this);
-		ed_reghxb=(EditText) findViewById(R.id.ed_regxb);
-		ed_redbj=(EditText) findViewById(R.id.ed_regbj);
 		tv_regisnull=(TextView) findViewById(R.id.tv_regisnull);
 		tv_regisnull.setVisibility(View.INVISIBLE);
 		progressBar = (ProgressBar) findViewById(R.id.progressBar1);
@@ -53,9 +53,15 @@ public class registered extends Activity implements OnClickListener{
 			tv_regisnull.setVisibility(View.INVISIBLE);
 			xuehao=ed_regId.getText().toString();
 			passwd=ed_regpasswd.getText().toString();
-			xb=ed_reghxb.getText().toString();
+			xb=ed_regxb.getText().toString();
 			bj=ed_redbj.getText().toString();
 			xm=ed_regxm.getText().toString();
+			if (xuehao.equals("")||passwd.equals("")||xb.equals("")||bj.equals("")||xm.equals("")) {
+				tv_regisnull.setVisibility(View.VISIBLE);
+				progressBar.setVisibility(View.INVISIBLE);
+			}
+			else {
+				
 			Mysql mysql=new Mysql(xuehao, passwd, xb, bj,xm, this);
 			String registered="registered";
 			mysql.execute(registered);
@@ -73,6 +79,7 @@ public class registered extends Activity implements OnClickListener{
 					}
 				}
 			});
+			}
 			break;
 		case R.id.tv_regfanhui:
 			finish();
