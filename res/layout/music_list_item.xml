@@ -8,16 +8,17 @@
     <TextView
         android:id="@+id/tv_music_id"
         android:layout_width="wrap_content"
-        android:layout_height="25dp"
+        android:layout_height="40dp"
         android:layout_alignBaseline="@+id/imaglab"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:text="jj" />
+        android:text="jj"
+        android:gravity="center_vertical" />
 
     <ImageView
         android:id="@+id/imaglab"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="30dp"
+        android:layout_height="40dp"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/tv_music_id"
         android:src="@drawable/lab" />
@@ -25,16 +26,17 @@
     <TextView
         android:id="@+id/tv_music_item"
         android:layout_width="wrap_content"
-        android:layout_height="20dp"
+        android:layout_height="40dp"
         android:layout_alignBaseline="@+id/imaglab"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/imaglab"
-        android:text="ggg" />
+        android:text="ggg"
+		android:gravity="center_vertical" />
 
     <ImageView
         android:id="@+id/img_bfz"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="30dp"
+        android:layout_height="40dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
          />

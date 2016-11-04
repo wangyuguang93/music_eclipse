@@ -6,17 +6,26 @@
     android:background="#ff99cc" 
     android:id="@+id/container">
 
-    <ListView
-        android:id="@+id/listview"
+    <FrameLayout
+        android:id="@+id/l_contor"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="35dp"
-         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
         android:layout_above="@+id/tv_music_title"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="35dp"
+         >
+    
+    <!--    <ListView
+        android:id="@+id/listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"    
         android:listSelector="#22aaff" >
+      
 
     </ListView>
+   -->
+  </FrameLayout>
     <TextView 
         android:id="@+id/tv_music_title"
         android:layout_width="match_parent"
@@ -133,6 +142,25 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="16dp"
             android:src="@drawable/search" />
+
+        <TextView
+            android:id="@+id/tv_network"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/imageView2"
+            android:layout_marginRight="71dp"
+            android:layout_toLeftOf="@+id/imageView2"
+            android:text="网络音乐" />
+
+        <TextView
+            android:id="@+id/tv_bendi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="19dp"
+            android:layout_toLeftOf="@+id/tv_network"
+            android:text="本地音乐" />
+
     </RelativeLayout>
 
 

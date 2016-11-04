@@ -2,4 +2,5 @@
 <resources>
     <color name="light_blue">#3399CC</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="heise">#000000</color>
 </resources>

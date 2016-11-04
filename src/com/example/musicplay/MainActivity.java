@@ -1,15 +1,15 @@
 package com.example.musicplay;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
+import com.example.musicplay.BendiFragment.Funhui;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+import com.music.network.Network_fragment;
+import com.music.network.Network_fragment.Funhui_net;
 
-import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -17,28 +17,18 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.media.AudioManager;
-import android.media.MediaCryptoException;
-import android.media.MediaDrmException;
-import android.media.MediaDrmResetException;
-import android.media.MediaPlayer;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -47,16 +37,14 @@ import android.widget.ImageView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
 @TargetApi(23)
-public class MainActivity extends SlidingFragmentActivity implements OnClickListener,OnItemSelectedListener{
-	private File dir,test;
-	private MediaPlayer player;
+public class MainActivity extends SlidingFragmentActivity implements OnClickListener,OnItemSelectedListener,Funhui,Funhui_net{
+	private File dir;
 	private String data[];
 	private int musicid[];
 	private long music_albumId[];
@@ -65,29 +53,37 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	private ImageView img_ico,menu_ico;
 	private static String TAG="MusicService";
 	private MyService musicservice;
-	private boolean tag=false,pause=false,islastwj=false,iserji=false;
+	private boolean tag=false,pause=false,islastwj=false,iserji=false,is_updateListview=false;
 	MusicAdpater musicAdpater;
-	ListView listView;
+	private ListView listView;
 	private BroadcastReceiver main,erji,guanji;
 	//int position;
 	Boolean isplay=false;
 	Boolean isdantime=false;
 	int hg=0,huotime;
-	private TextView tv_duration,tv_currentposition,tv_music_title,tv_guqu_num;
+	private TextView tv_duration,tv_currentposition,tv_music_title,tv_guqu_num,tv_network,tv_bendi;
 	private SeekBar pb_music_progress;
-	private Handler mTimeHandler,myTimelenth;
 	int max=0,danqian=0;
 	private Intent intent;
 	private String lujin[];
 	private Boolean islast;
 	private Cursor cursor;
+	private Network_fragment netfragment;
+	private BendiFragment bendiFrament;
+	private FragmentManager fragmentManager;
+	private FragmentTransaction fragmentTransaction;
 	private Fragment mContent;
-	SousuoListFragment sousuo=new SousuoListFragment();
+	private SousuoListFragment sousuo=new SousuoListFragment();
+
+	
 	@Override
 	public void onCreate (Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_NO_TITLE); // 无标题
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		
+		
 		// this.requestPermissions(permissions, requestCode);
 		//File dir=Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
 		//创建广播接收器
@@ -107,7 +103,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 		//Toast.makeText(this, dir.getPath().toString(), 1000).show();
 		
 		findId();
-
+		qiehuanListview(0);
   //读取数据
 		SharedPreferences peizhi=this.getSharedPreferences("peizhi", Context.MODE_PRIVATE);
 		String istile=peizhi.getString("tile", null);
@@ -123,8 +119,8 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 		tv_guqu_num.setText(peizhi.getString("gequ_num", ""));
 		//Log.d("wenti", ""+peizhi.getInt("danqian", 0));
 		Connection();		
-		musicAdpater=new MusicAdpater(this, data,listView,musicIndex);
-		listView.setAdapter(musicAdpater);
+//nnn		musicAdpater=new MusicAdpater(this, data,listView,musicIndex);
+///nnn		listView.setAdapter(musicAdpater);
 		//listView.setSelection(0);
 		
 		setListtem();
@@ -157,27 +153,29 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 			tv_music_title.setText("");
 			islast=false;
 		}
-		listView.setSelection(musicIndex);
+//nn		listView.setSelection(musicIndex);
 		//再次取得danqian的值
 		danqian=pb_music_progress.getProgress();
 		//设置左滑菜单
 		initSlidingMenu(savedInstanceState);
-		listView.setSelection(musicIndex);
-		listView.setOnItemSelectedListener(this);
-		listView.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				// TODO Auto-generated method stub
-				musicIndex=position;
-				islast=false;
-				pb_music_progress.setProgress(0);
-				myplay();
-				
-				}
-			
-			
-		});
+////nnn	listView.setSelection(musicIndex);
+//		listView.setOnItemSelectedListener(this);
+//		listView.setOnItemClickListener(new OnItemClickListener() {
+//
+//			@Override
+//			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//				// TODO Auto-generated method stub
+//				musicIndex=position;
+//				islast=false;
+//				pb_music_progress.setProgress(0);
+//				myplay();
+//				
+//				}
+//			
+//			
+//		});
+		
+		
 		
 		pb_music_progress.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 			
@@ -269,10 +267,12 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 		next.setOnClickListener(this);
 		ibPlayOrPuase.setOnClickListener(this);
 		menu_ico.setOnClickListener(this);
+		tv_network.setOnClickListener(this);
+		tv_bendi.setOnClickListener(this);
 	}
 	//找控件
 	private void findId(){
-		listView=(ListView) findViewById(R.id.listview);
+		
 		ibPlayOrPuase=(ImageButton) findViewById(R.id.ib_play_pause);
 		last=(ImageButton) findViewById(R.id.ib_previous);
 		next=(ImageButton) findViewById(R.id.ib_next);
@@ -283,6 +283,13 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 		tv_guqu_num=(TextView) findViewById(R.id.tv_gequ_num);
 		img_ico=(ImageView) findViewById(R.id.img_ico);
 		menu_ico=(ImageView) findViewById(R.id.menu_ico);
+		tv_network=(TextView) findViewById(R.id.tv_network);
+		tv_bendi=(TextView) findViewById(R.id.tv_bendi);
+
+		
+		
+		
+		
 		
 	}
 	private void Connection(){
@@ -310,7 +317,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub		
 		switch (v.getId()) {
 		case R.id.ib_play_pause:
 			bofang();
@@ -355,10 +362,18 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 		case R.id.menu_ico:
 			toggle();
 			break;
+		case R.id.tv_network:
+			qiehuanListview(1);
+			Log.d("test", "切换到网络视图");
+			break;
+		case R.id.tv_bendi:
+		qiehuanListview(0);
+		Log.d("test", "切换到本地视图");
+			break;
 		default:
 			break;
 		}
-		
+		//fragmentTransaction.commit();
 	}
 
 	@Override
@@ -367,6 +382,24 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 		this.musicIndex=position;
 		//isplay=false;
 	}
+	
+	/**
+	 * 隐藏所以得Frament
+	 */
+		
+	public void yincang() {
+		if (bendiFrament!=null) {
+			//bendiFrament=(BendiFragment) fragmentManager.findFragmentByTag("bendiFrament");
+			fragmentTransaction.hide(bendiFrament);	
+			Log.d("test", "隐藏bendiFrament");
+		}
+		if (netfragment!=null) {
+			//netfragment=(Network_fragment) fragmentManager.findFragmentByTag("netfragment");
+			fragmentTransaction.hide(netfragment);
+			Log.d("test", "隐藏netfragment");
+		}
+	}
+
 	public void myplay() {
 		
         //耳机插拔广播
@@ -589,4 +622,85 @@ private void initSlidingMenu(Bundle savedInstanceState) {
 	sm.setBehindScrollScale(0.0f);
 
 }
+
+@Override
+public void fanhuiView(View view) {
+	// TODO Auto-generated method stub
+	listView=(ListView) view.findViewById(R.id.bendi_listView);
+	if (!is_updateListview) {
+		musicAdpater=new MusicAdpater(this, data,listView,musicIndex,musicid,music_albumId);
+		listView.setAdapter(musicAdpater);
+		//listView.setSelection(musicIndex);
+		listView.setOnItemSelectedListener(this);
+		is_updateListview=true;
+		
+		
+		listView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				// TODO Auto-generated method stub
+				musicIndex=position;
+				islast=false;
+				pb_music_progress.setProgress(0);
+				myplay();
+				
+				}
+			
+			
+		});
+	}
+}
+	
+/**
+ * 切换listviewdeFragment
+ */
+public void qiehuanListview(int index) {
+	// TODO Auto-generated method stub
+	
+	fragmentManager=getFragmentManager();
+	fragmentTransaction=fragmentManager.beginTransaction();
+	yincang();
+	switch (index) {
+	case 0:
+		if (bendiFrament==null) {
+			bendiFrament=new BendiFragment(MainActivity.this);
+			fragmentTransaction.add(R.id.l_contor,bendiFrament,"bendiFrament");
+			tv_bendi.setTextColor(MainActivity.this.getResources().getColor(R.color.white));
+		}else {
+			fragmentTransaction.show(bendiFrament);
+			tv_bendi.setTextColor(MainActivity.this.getResources().getColor(R.color.white));
+			tv_network.setTextColor(MainActivity.this.getResources().getColor(R.color.heise));
+		
+		}
+		break;
+	case 1:
+		if (netfragment==null) {
+			netfragment=new Network_fragment(MainActivity.this);
+			fragmentTransaction.add(R.id.l_contor,netfragment,"netfragment");
+			tv_network.setTextColor(MainActivity.this.getResources().getColor(R.color.white));
+			tv_bendi.setTextColor(MainActivity.this.getResources().getColor(R.color.heise));
+		}else {
+			fragmentTransaction.show(netfragment);
+			tv_network.setTextColor(MainActivity.this.getResources().getColor(R.color.white));
+			tv_bendi.setTextColor(MainActivity.this.getResources().getColor(R.color.heise));
+		}
+		break;
+
+	default:
+		break;
+	}
+	fragmentTransaction.commit();
+}
+/**
+ * net回调
+ */
+@Override
+public void fanhuiView_net(View view) {
+	// TODO Auto-generated method stub
+	
+}
+	
+
+
 }
