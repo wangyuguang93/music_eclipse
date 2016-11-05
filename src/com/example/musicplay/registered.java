@@ -1,11 +1,18 @@
 package com.example.musicplay;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import com.Mysq.service.Mysql;
 import com.Mysq.service.Mysql.DatafiniListener;
+import com.base.Util.AESUtils;
+import com.base.Util.MD5Utils;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -52,7 +59,10 @@ public class registered extends Activity implements OnClickListener{
 			progressBar.setVisibility(View.VISIBLE);
 			tv_regisnull.setVisibility(View.INVISIBLE);
 			xuehao=ed_regId.getText().toString();
-			passwd=ed_regpasswd.getText().toString();
+			passwd=MD5Utils.getMD5(ed_regpasswd.getText().toString());
+			String test1=AESUtils.encrypt("yu9655", ed_regpasswd.getText().toString());
+			Log.d("passMd5", passwd);
+			Log.d("passAES", test1);
 			xb=ed_regxb.getText().toString();
 			bj=ed_redbj.getText().toString();
 			xm=ed_regxm.getText().toString();
@@ -88,4 +98,5 @@ public class registered extends Activity implements OnClickListener{
 			break;
 		}
 	}
+	
 }

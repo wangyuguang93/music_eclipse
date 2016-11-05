@@ -66,10 +66,10 @@ public class Mysql extends AsyncTask<String, Void, String>{
 			try{
 				//String url = "jdbc:mysql://119.29.168.172:3306/stu2015";
 				if (params[0].equals("longin")) {
-					url = "jdbc:mysql://119.29.168.172:3306/stu2015?useUnicode=true&amp;characterEncoding=UTF-8";
+					url = "jdbc:mysql://119.29.168.172:3306/stu2015?useUnicode=true&characterEncoding=UTF-8";
 				}
 				if (params[0].equals("registered")) {
-					url = "jdbc:mysql://119.29.168.172:3306/user?useUnicode=true&amp;characterEncoding=UTF-8";
+					url = "jdbc:mysql://119.29.168.172:3306/user?useUnicode=true&characterEncoding=UTF-8";
 				}
 				
 				Class.forName("com.mysql.jdbc.Driver");
