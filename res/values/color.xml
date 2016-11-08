@@ -3,4 +3,7 @@
     <color name="light_blue">#3399CC</color>
     <color name="white">#FFFFFFFF</color>
     <color name="heise">#000000</color>
+    <color name="translucent_grey">#809E9E9E</color>
+     <color name="red">#F44336</color>
+     <color name="grey">#9E9E9E</color>
 </resources>
