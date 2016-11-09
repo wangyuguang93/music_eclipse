@@ -36,7 +36,7 @@ private Context context;
 @Override
 public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 	// TODO Auto-generated method stub
-	View view=inflater.inflate(R.layout.network, container,false);
+	View view=inflater.inflate(R.layout.network_music_listview, container,false);
 	funhuinet.fanhuiView_net(view);
 	return view;
 }

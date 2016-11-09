@@ -1,9 +1,14 @@
 package com.example.musicplay;
 
 import java.io.File;
+import java.util.List;
 import com.example.musicplay.BendiFragment.Funhui;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+import com.music.network.MusicSearch;
+import com.music.network.MusicSearch.SeachCallback;
+import com.music.network.NetworkAdapter_item;
+import com.music.network.Network_Musicinfo;
 import com.music.network.Network_fragment;
 import com.music.network.Network_fragment.Funhui_net;
 
@@ -36,6 +41,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -55,7 +61,8 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	private MyService musicservice;
 	private boolean tag=false,pause=false,islastwj=false,iserji=false,is_updateListview=false;
 	MusicAdpater musicAdpater;
-	private ListView listView;
+	NetworkAdapter_item networkAdapter_item;
+	private ListView listView,networklistview;
 	private BroadcastReceiver main,erji,guanji;
 	//int position;
 	Boolean isplay=false;
@@ -680,10 +687,12 @@ public void qiehuanListview(int index) {
 			fragmentTransaction.add(R.id.l_contor,netfragment,"netfragment");
 			tv_network.setTextColor(MainActivity.this.getResources().getColor(R.color.white));
 			tv_bendi.setTextColor(MainActivity.this.getResources().getColor(R.color.heise));
+			
 		}else {
 			fragmentTransaction.show(netfragment);
 			tv_network.setTextColor(MainActivity.this.getResources().getColor(R.color.white));
 			tv_bendi.setTextColor(MainActivity.this.getResources().getColor(R.color.heise));
+			
 		}
 		break;
 
@@ -698,9 +707,31 @@ public void qiehuanListview(int index) {
 @Override
 public void fanhuiView_net(View view) {
 	// TODO Auto-generated method stub
-	
+	networklistview=(ListView) view.findViewById(R.id.network_listView);
+	networkplay();
 }
 	
-
+//获取网络歌曲
+public void networkplay() {
+	if (networkAdapter_item==null) {
+		networkAdapter_item=new NetworkAdapter_item(this);		
+	}
+	//test
+	MusicSearch musicSearch=new MusicSearch();
+	musicSearch.search("恋人心");
+	musicSearch.setCallBack(new SeachCallback() {
+		
+		@Override
+		public void onSearchResult(List<Network_Musicinfo> resualt) {
+			// TODO Auto-generated method stub
+			int i=resualt.size();
+			Log.d("i", ""+i);
+			
+		}
+	});
+	
+	networklistview.setAdapter(networkAdapter_item);
+	
+}
 
 }

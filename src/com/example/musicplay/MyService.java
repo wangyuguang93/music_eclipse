@@ -198,6 +198,7 @@ public class MyService extends Service implements OnCompletionListener          
 		isgengxitile=false;
 		
 		playlujin=mylujin[mymusicIndex];
+		//playlujin="http://yinyueshiting.baidu.com/data2/music/121023383/120996718252000128.mp3?xcode=e1febb2e6273d9c8e9c5304b21fec782";
 		//Log.d("hhh", ""+playlujin);
 		
 		if (ismylast) {
@@ -205,8 +206,11 @@ public class MyService extends Service implements OnCompletionListener          
 			mPlayer.reset();
 			//设置播放路径
 			mPlayer.setDataSource(playlujin);
+			Log.d("playlujin", playlujin);
 			//Log.d("uri", playlujin);
 			mPlayer.prepare();
+			//mPlayer.prepareAsync();
+			
 			mPlayer.start();
 			seekTo(seeto);
 			jiemian();
@@ -254,10 +258,11 @@ public class MyService extends Service implements OnCompletionListener          
 			mPlayer.reset();
 			//设置播放路径
 			mPlayer.setDataSource(startlujin);
-			
+			Log.d("playlujin", playlujin);
 			Log.d("当前播放", ""+mymusicIndex);
 			//缓冲
 			mPlayer.prepare();
+			//mPlayer.prepareAsync();
 		//player=new MediaPlayer();
 			mPlayer.setOnPreparedListener(new OnPreparedListener() {
 				
