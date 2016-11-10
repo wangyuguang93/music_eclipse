@@ -436,7 +436,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 			
 		}
 		else{
-		musicservice.play(lujin, musicIndex, tv_duration, tv_currentposition, tv_music_title, pb_music_progress, MainActivity.this,islast,danqian,tv_guqu_num,musicid,music_albumId,img_ico);
+		musicservice.play(data,lujin, musicIndex, tv_duration, tv_currentposition, tv_music_title, pb_music_progress, MainActivity.this,islast,danqian,tv_guqu_num,musicid,music_albumId,img_ico);
 		//Toast.makeText(MainActivity.this, "播放中", 1000).show();
 		tag=true;
 		isplay=true;
@@ -744,19 +744,34 @@ public void qiehuanListview(int index) {
 public void fanhuiView_net(View view) {
 	// TODO Auto-generated method stub
 	networklistview=(ListView) view.findViewById(R.id.network_listView);
+	
 	if (networkAdapter_item==null) {
 		networkAdapter_item=new NetworkAdapter_item(MainActivity.this,net_song_name,net_author,bitmap);		
 		}
 		networklistview.setAdapter(networkAdapter_item);
-	
+	//设置监听器
+		networklistview.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				// TODO Auto-generated method stub
+				musicIndex=position;
+				lujin=net_lujin;
+				data=net_song_name;
+				islast=false;
+				pb_music_progress.setProgress(0);
+				myplay();
+			}
+		});
 }
 	
 //获取网络歌曲
 public void networkplay() {
+	//判断有无网络
 	
 	//test
 	MusicSearch musicSearch=new MusicSearch();
-	musicSearch.search("恋人心");
+	musicSearch.search("严艺丹");
 	musicSearch.setCallBack(new SeachCallback() {
 		
 		@Override
@@ -791,8 +806,12 @@ public void networkplay() {
 				
 				@Override
 				public void getmusic_ico(Bitmap[] resualt) {
-					// TODO Auto-generated method stub
-				bitmap=resualt;	
+//					 TODO Auto-generated method stub
+					
+					for (int j = 0; j < resualt.length; j++) {
+						bitmap[j]=resualt[j];
+					}
+				//bitmap=resualt;	
 				networkAdapter_item.notifyDataSetChanged();
 				Log.d("图片", "图片下载完成");
 				}

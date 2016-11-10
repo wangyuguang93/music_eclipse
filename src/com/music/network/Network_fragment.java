@@ -36,19 +36,21 @@ private Context context;
 @Override
 public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 	// TODO Auto-generated method stub
-	View view=inflater.inflate(R.layout.network_music_listview, container,false);
+	view=inflater.inflate(R.layout.network_music_listview, container,false);
 	funhuinet.fanhuiView_net(view);
 	return view;
 }
+
+
 @Override
 	public void onAttach(Activity activity) {
 		// TODO Auto-generated method stub
 		super.onAttach(activity);
 		try{
-			funhuinet=(Funhui_net) context;
+			funhuinet=(Funhui_net) activity;
 		}catch (ClassCastException e) {
 			// TODO: handle exception
-			throw new ClassCastException(context.toString()+"must implement OnArticleSelectedListene");
+			throw new ClassCastException(activity.toString()+"must implement OnArticleSelectedListene");
 		}
 
 	}

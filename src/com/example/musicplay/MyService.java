@@ -50,7 +50,7 @@ public class MyService extends Service implements OnCompletionListener          
 	private Context mycontext;
 	private Handler mTimeHandler,myhandler;
 	private String tile,playlujin;
-	private String[] mylujin;
+	private String[] mylujin,mdata;
 	private int id[];
 	private long alm[];
 	private int gbpb;
@@ -157,7 +157,7 @@ public class MyService extends Service implements OnCompletionListener          
 	}
 	
 
-	public void play(String lujin[],
+	public void play(String[] data,String lujin[],
 			int musicIndex,TextView tv_duration,
 			final TextView tv_currentposition,TextView tv_music_title,
 			final SeekBar pb_music_progress,
@@ -180,6 +180,7 @@ public class MyService extends Service implements OnCompletionListener          
 		id=musicid;
 		alm=almid;
 		myimg_ico=img_ico;
+		mdata=data;
 		if (bm==null) {
 			wallpaperManager=(WallpaperManager) mycontext.getSystemService(Context.WALLPAPER_SERVICE);				
 			drawable=wallpaperManager.getDrawable();
@@ -257,8 +258,9 @@ public class MyService extends Service implements OnCompletionListener          
 			
 			mPlayer.reset();
 			//设置播放路径
-			mPlayer.setDataSource(startlujin);
 			Log.d("playlujin", playlujin);
+			mPlayer.setDataSource(startlujin);
+			//Log.d("playlujin", playlujin);
 			Log.d("当前播放", ""+mymusicIndex);
 			//缓冲
 			mPlayer.prepare();
@@ -379,13 +381,16 @@ public class MyService extends Service implements OnCompletionListener          
         	//Log.d("data", mydata[mymusicIndex].toString());
         	mytv_guqu_num.setText(gequ_num);
         	final Timezh timezh=new Timezh();
-        	String s1=mylujin[mymusicIndex];
-        	final String s2=s1.substring(s1.lastIndexOf('/')+1);
-        	tile=s2;
-			mytv_music_title.setText(tile);
+        	
+        //音乐标题
+//        	String s1=mylujin[mymusicIndex];
+//        	final String s2=s1.substring(s1.lastIndexOf('/')+1);
+//        	tile=s2;
+//			mytv_music_title.setText(tile);
+        	mytv_music_title.setText(mdata[mymusicIndex]);
+
 			
-			max = mPlayer.getDuration();
-			
+			max = mPlayer.getDuration();			
 			int ss3=timezh.ss(max);
 			String ss2=null;
     		if (ss3<10) {
@@ -396,7 +401,7 @@ public class MyService extends Service implements OnCompletionListener          
     		}
     		length=""+timezh.mm(max)+":"+ss2;
     		mytv_duration.setText(length);
-    		tongzhi();
+ //   		tongzhi();
 
 	        mTimeHandler = new Handler() {
 	        	
@@ -460,8 +465,8 @@ public class MyService extends Service implements OnCompletionListener          
 	            		}
 						danqian_length=""+""+timezh.mm(dantime)+":"+ss1;
 	            		mytv_currentposition.setText(danqian_length);
-	            		Bitmap bitmap = MediaUtil.getArtwork(mycontext, id[mymusicIndex], alm[mymusicIndex], true, true);
-	            		myimg_ico.setImageBitmap(bitmap);
+//	            		Bitmap bitmap = MediaUtil.getArtwork(mycontext, id[mymusicIndex], alm[mymusicIndex], true, true);
+//	            		myimg_ico.setImageBitmap(bitmap);
 	            		
 	            		
 					}

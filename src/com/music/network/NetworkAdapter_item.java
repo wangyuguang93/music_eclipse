@@ -72,10 +72,12 @@ public class NetworkAdapter_item extends BaseAdapter {
        if (net_author!=null) {
     	   viewHolder.artist.setText(net_author[i]); 	   
 	}
-       if (bitmap!=null) {
+       if (bitmap[0]!=null) {
 			viewHolder.image.setImageBitmap(bitmap[i]);
 		}
-        
+        else {
+			viewHolder.image.setImageDrawable(mContext.getResources().getDrawable(R.drawable.deault_zhuanji));
+		}
 
         return view;
     }
