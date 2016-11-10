@@ -5,8 +5,11 @@ import java.util.List;
 import com.example.musicplay.BendiFragment.Funhui;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+import com.music.network.BackAsyTask;
+import com.music.network.BackAsyTask.Getmusic_ico;
 import com.music.network.MusicSearch;
 import com.music.network.MusicSearch.SeachCallback;
+import com.music.network.Net_jiazai;
 import com.music.network.NetworkAdapter_item;
 import com.music.network.Network_Musicinfo;
 import com.music.network.Network_fragment;
@@ -23,10 +26,12 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -73,15 +78,17 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	int max=0,danqian=0;
 	private Intent intent;
 	private String lujin[];
-	private Boolean islast;
+	private String[] net_lujin,net_song_name,net_author,net_pic_small;
+	private Boolean islast,isnetfinish=false;
 	private Cursor cursor;
 	private Network_fragment netfragment;
 	private BendiFragment bendiFrament;
 	private FragmentManager fragmentManager;
+	private Net_jiazai net_jiazai;
 	private FragmentTransaction fragmentTransaction;
 	private Fragment mContent;
 	private SousuoListFragment sousuo=new SousuoListFragment();
-
+	private Bitmap[] bitmap;
 	
 	@Override
 	public void onCreate (Bundle savedInstanceState) {
@@ -371,6 +378,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 			break;
 		case R.id.tv_network:
 			qiehuanListview(1);
+			
 			Log.d("test", "切换到网络视图");
 			break;
 		case R.id.tv_bendi:
@@ -404,6 +412,9 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 			//netfragment=(Network_fragment) fragmentManager.findFragmentByTag("netfragment");
 			fragmentTransaction.hide(netfragment);
 			Log.d("test", "隐藏netfragment");
+		}
+		if (net_jiazai!=null) {
+			fragmentTransaction.hide(net_jiazai);
 		}
 	}
 
@@ -682,6 +693,29 @@ public void qiehuanListview(int index) {
 		}
 		break;
 	case 1:
+		if (!isnetfinish) {
+			if (net_jiazai==null) {
+				net_jiazai=new Net_jiazai();
+				fragmentTransaction.add(R.id.l_contor, net_jiazai,"net_jiazai");
+				tv_network.setTextColor(MainActivity.this.getResources().getColor(R.color.white));
+				tv_bendi.setTextColor(MainActivity.this.getResources().getColor(R.color.heise));
+				networkplay();
+			}
+			else {
+				fragmentTransaction.show(net_jiazai);
+				tv_network.setTextColor(MainActivity.this.getResources().getColor(R.color.white));
+				tv_bendi.setTextColor(MainActivity.this.getResources().getColor(R.color.heise));
+				
+			}
+			//Log.d("加载中", "加载中");
+		}
+			
+		else {
+			
+		if (net_jiazai!=null) {
+			fragmentTransaction.remove(net_jiazai);
+		}
+		
 		if (netfragment==null) {
 			netfragment=new Network_fragment(MainActivity.this);
 			fragmentTransaction.add(R.id.l_contor,netfragment,"netfragment");
@@ -693,6 +727,8 @@ public void qiehuanListview(int index) {
 			tv_network.setTextColor(MainActivity.this.getResources().getColor(R.color.white));
 			tv_bendi.setTextColor(MainActivity.this.getResources().getColor(R.color.heise));
 			
+		}
+		
 		}
 		break;
 
@@ -708,14 +744,16 @@ public void qiehuanListview(int index) {
 public void fanhuiView_net(View view) {
 	// TODO Auto-generated method stub
 	networklistview=(ListView) view.findViewById(R.id.network_listView);
-	networkplay();
+	if (networkAdapter_item==null) {
+		networkAdapter_item=new NetworkAdapter_item(MainActivity.this,net_song_name,net_author,bitmap);		
+		}
+		networklistview.setAdapter(networkAdapter_item);
+	
 }
 	
 //获取网络歌曲
 public void networkplay() {
-	if (networkAdapter_item==null) {
-		networkAdapter_item=new NetworkAdapter_item(this);		
-	}
+	
 	//test
 	MusicSearch musicSearch=new MusicSearch();
 	musicSearch.search("恋人心");
@@ -725,12 +763,44 @@ public void networkplay() {
 		public void onSearchResult(List<Network_Musicinfo> resualt) {
 			// TODO Auto-generated method stub
 			int i=resualt.size();
-			Log.d("i", ""+i);
 			
+			Log.d("i", ""+i);
+			int size = resualt.size(); 
+			net_lujin=new String[size];
+			net_author=new String[size];
+			net_song_name=new String[size];
+			net_pic_small=new String[size];
+			bitmap=new Bitmap[size];
+			
+			Network_Musicinfo arr[] = (Network_Musicinfo[])resualt.toArray(new Network_Musicinfo[size]);//使用了第二种接口，返回值和参数均为结果  
+			
+			for(int j=0;j<size;j++){
+				//System.out.println(arr[i].getmMusicPath().toString());
+				net_lujin[j]=arr[j].getmMusicPath();
+				net_author[j]=arr[j].getMauthor();
+				net_song_name[j]=arr[j].getMtitle();
+				net_pic_small[j]=arr[j].getMpic_small();
+				//System.out.println(net_lujin[j].toString());
+				//update_listview();
+				
+			}
+			BackAsyTask backAsyTask=new BackAsyTask(net_pic_small);
+				
+			backAsyTask.execute("pic");
+			backAsyTask.setGetmusic(new Getmusic_ico() {
+				
+				@Override
+				public void getmusic_ico(Bitmap[] resualt) {
+					// TODO Auto-generated method stub
+				bitmap=resualt;	
+				networkAdapter_item.notifyDataSetChanged();
+				Log.d("图片", "图片下载完成");
+				}
+			});
+			isnetfinish=true;
+			qiehuanListview(1);
 		}
 	});
-	
-	networklistview.setAdapter(networkAdapter_item);
 	
 }
 

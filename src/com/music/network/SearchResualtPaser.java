@@ -10,6 +10,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+
+import android.util.Log;
 import android.util.Xml;
 
 public class SearchResualtPaser {
@@ -57,6 +59,10 @@ public class SearchResualtPaser {
 							info.setMalbum_id(parser.nextText());
 							break;
 						}
+//						if("pic_small".equals(parser.getName())){
+//							info.setMpic_small(parser.nextText());
+//							break;
+//						}
 						if("lrclink".equals(parser.getName())){
 							String lrclink = parser.nextText();
 							if((lrclink != null)&&
@@ -107,10 +113,11 @@ public class SearchResualtPaser {
 	}
 
 	public static void getLinks(Network_Musicinfo info, String rate) throws Exception{
-		String addr = "http://ting.baidu.com/data/music/links?songIds=" + info.getmSongId();
-		if(rate != null){
-			addr += "&rate="+rate;
-		}
+		String addr = "http://music.baidu.com/data/music/links?songIds=" + info.getmSongId();
+//		if(rate != null){
+//			addr += "&rate="+rate;
+//		}
+		Log.d("addr", addr);
 		URL url = new URL(addr);
 		InputStream ips = url.openConnection().getInputStream();
 		
@@ -129,7 +136,7 @@ public class SearchResualtPaser {
 			JSONArray songList = data.getJSONArray("songList");
 			JSONObject item = songList.getJSONObject(0);
 //			String
-			info.setMpic_small(fixLink(item.getString("songPicSmall")));
+			info.setMpic_small(fixLink(item.getString("songPicRadio")));
 //			info.setSongPicBig(fixLink(item.getString("songPicBig")));
 //			info.setSongPicRadio(fixLink(item.getString("songPicRadio")));
 			info.setmMusicPath(fixLink(item.getString("songLink")));

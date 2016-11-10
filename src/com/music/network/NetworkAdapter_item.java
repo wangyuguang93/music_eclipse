@@ -1,6 +1,9 @@
 package com.music.network;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.media.VolumeProvider;
+import android.provider.Settings.SettingNotFoundException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +22,15 @@ public class NetworkAdapter_item extends BaseAdapter {
 
     private Context mContext;
     private LayoutInflater mLayoutInflater;
-    
-
-    public NetworkAdapter_item(Context context)
+    private String[] net_song_name,net_author;
+    private Bitmap[] bitmap;
+    public NetworkAdapter_item(Context context,String[] net_song_name,String[] net_author,Bitmap[] bitmap)
     {
         mContext = context;
         mLayoutInflater = LayoutInflater.from(mContext);
-
+        this.net_author=net_author;
+        this.net_song_name=net_song_name;
+        this.bitmap=bitmap;
        // mList = list;
     }
 
@@ -33,7 +38,7 @@ public class NetworkAdapter_item extends BaseAdapter {
     @Override
     public int getCount() {
        // return mList.size();
-    	return 1;
+    	return net_song_name.length;
     }
 
     @Override
@@ -61,7 +66,15 @@ public class NetworkAdapter_item extends BaseAdapter {
         }else {
             viewHolder = (ViewHolder) view.getTag();
         }
-
+        if (net_song_name!=null) {
+        	viewHolder.title.setText(net_song_name[i]);
+		}
+       if (net_author!=null) {
+    	   viewHolder.artist.setText(net_author[i]); 	   
+	}
+       if (bitmap!=null) {
+			viewHolder.image.setImageBitmap(bitmap[i]);
+		}
         
 
         return view;

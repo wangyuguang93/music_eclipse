@@ -35,8 +35,8 @@ public class Network_Musicinfo implements Parcelable{
 	public String getmSongId() {
 		return mSongId;
 	}
-	public void setmSongId(String mSongId) {
-		this.mSongId = mSongId;
+	public void setmSongId(String string) {
+		this.mSongId = string;
 	}
 	public String getMauthor() {
 		return mauthor;
@@ -53,8 +53,8 @@ public class Network_Musicinfo implements Parcelable{
 	public String getMalbum_id() {
 		return malbum_id;
 	}
-	public void setMalbum_id(String malbum_id) {
-		this.malbum_id = malbum_id;
+	public void setMalbum_id(String string) {
+		this.malbum_id = string;
 	}
 	public String getMalbum_title() {
 		return malbum_title;
@@ -110,8 +110,8 @@ public class Network_Musicinfo implements Parcelable{
 		 mting_uid=in.readString();
 		 mtitle=in.readString();
 		 mSize=in.readString();
-		 mpic_small=in.readString();
 		 mMusicPath=in.readString();
+		 mSongId=in.readString();
 		 
 		 }
 	  public static final Parcelable.Creator<Network_Musicinfo> CREATOR = new Parcelable.Creator<Network_Musicinfo>() {
