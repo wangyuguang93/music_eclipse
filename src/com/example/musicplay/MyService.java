@@ -65,6 +65,7 @@ public class MyService extends Service implements OnCompletionListener          
 	private WallpaperManager wallpaperManager;
 	private Drawable drawable;
 	private Bitmap bm;
+	private Bitmap[] mbendi_tupian;
 	public class MusicBinder extends Binder{
 		MyService getService(){
 			return MyService.this;
@@ -165,7 +166,7 @@ public class MyService extends Service implements OnCompletionListener          
 			int seeto,
 			final TextView tv_guqu_num,
 			int musicid[],long almid[],
-			ImageView img_ico) {
+			ImageView img_ico,Bitmap[] bendi_tupian) {
 		//mydir=dir;
 		//mydata=data;
 		mymusicIndex=musicIndex;
@@ -181,6 +182,7 @@ public class MyService extends Service implements OnCompletionListener          
 		alm=almid;
 		myimg_ico=img_ico;
 		mdata=data;
+		mbendi_tupian=bendi_tupian;
 		if (bm==null) {
 			wallpaperManager=(WallpaperManager) mycontext.getSystemService(Context.WALLPAPER_SERVICE);				
 			drawable=wallpaperManager.getDrawable();
@@ -385,9 +387,9 @@ public class MyService extends Service implements OnCompletionListener          
         //音乐标题
 //        	String s1=mylujin[mymusicIndex];
 //        	final String s2=s1.substring(s1.lastIndexOf('/')+1);
-//        	tile=s2;
-//			mytv_music_title.setText(tile);
-        	mytv_music_title.setText(mdata[mymusicIndex]);
+        	tile=mdata[mymusicIndex];
+			mytv_music_title.setText(tile);
+//        	mytv_music_title.setText(mdata[mymusicIndex]);
 
 			
 			max = mPlayer.getDuration();			
@@ -401,7 +403,7 @@ public class MyService extends Service implements OnCompletionListener          
     		}
     		length=""+timezh.mm(max)+":"+ss2;
     		mytv_duration.setText(length);
- //   		tongzhi();
+    		tongzhi();
 
 	        mTimeHandler = new Handler() {
 	        	
@@ -465,8 +467,8 @@ public class MyService extends Service implements OnCompletionListener          
 	            		}
 						danqian_length=""+""+timezh.mm(dantime)+":"+ss1;
 	            		mytv_currentposition.setText(danqian_length);
-//	            		Bitmap bitmap = MediaUtil.getArtwork(mycontext, id[mymusicIndex], alm[mymusicIndex], true, true);
-//	            		myimg_ico.setImageBitmap(bitmap);
+	            		
+	            		myimg_ico.setImageBitmap(mbendi_tupian[mymusicIndex]);
 	            		
 	            		
 					}
@@ -662,12 +664,12 @@ public class MyService extends Service implements OnCompletionListener          
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
-						// TODO Auto-generated method stub
-						Bitmap bitmap = MediaUtil.getArtwork(mycontext, id[mymusicIndex], alm[mymusicIndex], true, false);
+						// TODO Auto-generated metho stub
+						
 																																	
 						  remoteViews = new RemoteViews(getPackageName(),  
 					                R.layout.customnotice);  
-					        remoteViews.setImageViewBitmap(R.id.widget_album, bitmap);  
+					        remoteViews.setImageViewBitmap(R.id.widget_album, mbendi_tupian[mymusicIndex]);  
 					        remoteViews.setTextViewText(R.id.title, tile);  
 					       // remoteViews.setTextViewText(R.id.widget_artist, info.getArtist());  
 					        if (mPlayer.isPlaying()) {  
@@ -687,8 +689,8 @@ public class MyService extends Service implements OnCompletionListener          
 		 */
 public void setsuoping () {
 	  try {  
-		  Bitmap bitmap = MediaUtil.getArtwork(mycontext, id[mymusicIndex], alm[mymusicIndex], true, false);
-	       wallpaperManager.setBitmap(bitmap);  
+		 // Bitmap bitmap = MediaUtil.getArtwork(mycontext, id[mymusicIndex], alm[mymusicIndex], true, false);
+	       wallpaperManager.setBitmap(mbendi_tupian[mymusicIndex]);  
 	    } catch (Exception e) {  
 	        // TODO Auto-generated catch block  
 	        e.printStackTrace();  

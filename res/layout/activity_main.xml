@@ -113,20 +113,22 @@
 
     <ImageView
         android:id="@+id/img_ico"
-        android:layout_width="wrap_content"
+        android:layout_width="40dp"
         android:layout_height="30dp"
-        android:layout_alignParentLeft="true"
+ 		android:layout_marginLeft="10dp"
         android:layout_centerVertical="true"
-        />
+        android:src="@drawable/deault_zhuanji_mini" />
 
 </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/r_tille"
         android:layout_width="fill_parent"
         android:layout_height="35dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:background="#887755" >
+        android:background="#887755"
+        android:visibility="visible" >
 
         <ImageView
             android:id="@+id/menu_ico"
@@ -163,5 +165,44 @@
 
     </RelativeLayout>
 
+    
+    
+ <LinearLayout
+        android:id="@+id/search_view"
+        android:layout_width="fill_parent"
+        android:layout_height="35dp"
+        android:orientation="horizontal"
+        android:visibility="gone" >
+
+     <ImageView
+         android:id="@+id/net_fanhui"
+         android:layout_width="35dp"
+         android:layout_height="35dp"
+         android:layout_marginLeft="10dp"
+         android:src="@drawable/fanhui" />
+
+        <EditText
+            android:id="@+id/edit_search"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:drawable/editbox_background_normal"
+            android:hint="歌曲  歌手  类型"
+            android:layout_marginLeft="-17dp"
+             />
+
+        <ImageView
+            android:id="@+id/net_search"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/search"
+            android:scaleType="fitCenter" />
+
+    </LinearLayout> 
+    
+    
+    
+    
+    
 
 </RelativeLayout>

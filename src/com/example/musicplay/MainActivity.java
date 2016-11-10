@@ -35,6 +35,7 @@ import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.KeyEvent;
@@ -44,10 +45,13 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -56,13 +60,14 @@ import android.widget.Toast;
 @TargetApi(23)
 public class MainActivity extends SlidingFragmentActivity implements OnClickListener,OnItemSelectedListener,Funhui,Funhui_net{
 	private File dir;
-	private String data[];
+	private String data[],bendi[],bendata[];
+	private Bitmap[] testbendi;
 	private int musicid[];
 	private long music_albumId[];
 	private int musicIndex=0;
 	private ImageButton ibPlayOrPuase,last,next;
-	private ImageView img_ico,menu_ico;
-	private static String TAG="MusicService";
+	private EditText edit_search;
+	private ImageView img_ico,menu_ico,img_start,net_fanhui,net_search;
 	private MyService musicservice;
 	private boolean tag=false,pause=false,islastwj=false,iserji=false,is_updateListview=false;
 	MusicAdpater musicAdpater;
@@ -79,7 +84,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	private Intent intent;
 	private String lujin[];
 	private String[] net_lujin,net_song_name,net_author,net_pic_small;
-	private Boolean islast,isnetfinish=false;
+	private Boolean islast,isnetfinish=false,isfirst_net=true;
 	private Cursor cursor;
 	private Network_fragment netfragment;
 	private BendiFragment bendiFrament;
@@ -88,7 +93,11 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	private FragmentTransaction fragmentTransaction;
 	private Fragment mContent;
 	private SousuoListFragment sousuo=new SousuoListFragment();
-	private Bitmap[] bitmap;
+	private Bitmap[] bitmap,bendi_tupian;
+	private RelativeLayout R_tille;
+	private LinearLayout L_seach;
+	private int num = 0; 
+	private MusicSearch musicSearch;
 	
 	@Override
 	public void onCreate (Bundle savedInstanceState) {
@@ -117,6 +126,17 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 		//Toast.makeText(this, dir.getPath().toString(), 1000).show();
 		
 		findId();
+		Thread thread=new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				for(int i=0;i<musicid.length;i++){
+				testbendi[i] =MediaUtil.getArtwork(MainActivity.this,musicid[i], music_albumId[i], true, true);
+				}
+			}
+		});
+		thread.start();
 		qiehuanListview(0);
   //读取数据
 		SharedPreferences peizhi=this.getSharedPreferences("peizhi", Context.MODE_PRIVATE);
@@ -143,13 +163,15 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 		
 		//检查文件
 		int i=0;
-		for(i=0;i<data.length-1;i++)
+		for(i=0;i<bendata.length-1;i++)
 		{
-			String test=data[i].toString();
+			String test=bendata[i].toString();
 			if (istile==null) {
+				Log.d("aa", istile+"---"+test);
 				break;
 			}
 			if (istile.equals(test)) {
+				Log.d("bb", istile+"---"+test);
 				islastwj=true;
 				System.out.println("文件已找到");
 				musicIndex=i;
@@ -232,10 +254,11 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
 	// 遍历媒体数据库
 	Log.d("music disName=", ""+cursor.getCount());//打印出歌曲名字
-	data=new String[cursor.getCount()];
-	lujin=new String[cursor.getCount()];
+	bendata=new String[cursor.getCount()];
+	bendi=new String[cursor.getCount()];
 	musicid=new int[cursor.getCount()];
 	music_albumId=new long[cursor.getCount()];
+	testbendi =new Bitmap[cursor.getCount()];
 	int j=0;
 	if (cursor.moveToFirst())
 	{
@@ -263,10 +286,11 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	String disName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME));
 	
 	//Log.e("music disName=", ""+cursor.getCount());//打印出歌曲名字
-	data[j]=disName;
-	lujin[j]=url;
+	bendata[j]=disName;
+	bendi[j]=url;
 	musicid[j]=id;
 	music_albumId[j]=albumId;
+	
 	//Log.e("music disName=", ""+test1[j]);//打印出歌曲名字
 	cursor.moveToNext();
 	j++;
@@ -274,6 +298,12 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	cursor.close();
 	}
 	}
+	
+	
+		
+
+		
+	
 	
 	private void setListtem() {
 		// TODO Auto-generated method stub
@@ -283,6 +313,32 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 		menu_ico.setOnClickListener(this);
 		tv_network.setOnClickListener(this);
 		tv_bendi.setOnClickListener(this);
+		img_start.setOnClickListener(this);
+		net_fanhui.setOnClickListener(this);
+		net_search.setOnClickListener(this);
+		
+		
+		 
+		//监听软键盘的删除键  
+		edit_search.setOnKeyListener(new View.OnKeyListener() {  
+		            @Override  
+		            public boolean onKey(View v, int keyCode, KeyEvent event) {  
+		                if (keyCode == KeyEvent.KEYCODE_DEL) {  
+		                    num++;  
+		                    //在这里加判断的原因是点击一次软键盘的删除键,会触发两次回调事件  
+		                    if (num % 2 != 0) {  
+		                        String s = edit_search.getText().toString();  
+		                        if (!TextUtils.isEmpty(s)) {  
+		                        	edit_search.setText("" + s.substring(0, s.length() - 1));  
+		                            //将光标移到最后  
+		                            edit_search.setSelection(edit_search.getText().length());  
+		                        }  
+		                    }  
+		                    return true;  
+		                }  
+		                return false;  
+		            }  
+		        });      
 	}
 	//找控件
 	private void findId(){
@@ -299,9 +355,12 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 		menu_ico=(ImageView) findViewById(R.id.menu_ico);
 		tv_network=(TextView) findViewById(R.id.tv_network);
 		tv_bendi=(TextView) findViewById(R.id.tv_bendi);
-
-		
-		
+		img_start=(ImageView) findViewById(R.id.imageView2);
+		net_fanhui=(ImageView) findViewById(R.id.net_fanhui);
+		net_search=(ImageView) findViewById(R.id.net_search);
+		R_tille=(RelativeLayout) findViewById(R.id.r_tille);
+		L_seach=(LinearLayout) findViewById(R.id.search_view);
+		edit_search=(EditText) findViewById(R.id.edit_search);
 		
 		
 		
@@ -334,6 +393,9 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 		// TODO Auto-generated method stub		
 		switch (v.getId()) {
 		case R.id.ib_play_pause:
+			lujin=bendi;
+			data=bendata;
+			bendi_tupian=testbendi;
 			bofang();
 			intent  = new Intent(); 
 	        intent.putExtra("msg", "update_tongzhi");
@@ -341,6 +403,9 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	        sendBroadcast(intent);  
 			break;
 		case R.id.ib_previous:
+			lujin=bendi;
+			data=bendata;			
+			bendi_tupian=testbendi;
 			if (!tag) {
 				musicIndex--;
 				islast=false;
@@ -358,6 +423,10 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 
 		case R.id.ib_next:
 			//next();
+			lujin=bendi;
+			data=bendata;
+			
+			bendi_tupian=testbendi;
 			if (!tag) {
 				musicIndex++;
 				islast=false;
@@ -377,14 +446,46 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 			toggle();
 			break;
 		case R.id.tv_network:
+			if (isfirst_net) {
+				networkplay("新歌");
+				isfirst_net=false;
+			}
+			
 			qiehuanListview(1);
 			
-			Log.d("test", "切换到网络视图");
+			//Log.d("test", "切换到网络视图");
 			break;
 		case R.id.tv_bendi:
 		qiehuanListview(0);
-		Log.d("test", "切换到本地视图");
+		//Log.d("test", "切换到本地视图");
 			break;
+		case R.id.imageView2:
+			R_tille.setVisibility(View.GONE);
+			L_seach.setVisibility(View.VISIBLE);
+			break;
+		case R.id.net_fanhui:
+			L_seach.setVisibility(View.GONE);
+			R_tille.setVisibility(View.VISIBLE);
+			break;
+		case R.id.net_search:
+			String gequ=edit_search.getText().toString();			
+			if (!gequ.equals("")) {
+				
+//				if (netfragment!=null) {
+//					fragmentTransaction.remove(netfragment);
+//				}
+							
+				isnetfinish=false;
+//				netfragment=null;
+				networkAdapter_item=null;
+				net_jiazai=null;				
+				qiehuanListview(1);
+				netfragment=null;
+				networkplay(gequ);
+				hg=-1;
+			}
+			break;
+	
 		default:
 			break;
 		}
@@ -436,7 +537,17 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 			
 		}
 		else{
-		musicservice.play(data,lujin, musicIndex, tv_duration, tv_currentposition, tv_music_title, pb_music_progress, MainActivity.this,islast,danqian,tv_guqu_num,musicid,music_albumId,img_ico);
+		musicservice.play(data,lujin,
+				musicIndex, tv_duration, 
+				tv_currentposition, 
+				tv_music_title, 
+				pb_music_progress, 
+				MainActivity.this,
+				islast,danqian,
+				tv_guqu_num,
+				musicid,
+				music_albumId,img_ico,
+				bendi_tupian);
 		//Toast.makeText(MainActivity.this, "播放中", 1000).show();
 		tag=true;
 		isplay=true;
@@ -646,7 +757,7 @@ public void fanhuiView(View view) {
 	// TODO Auto-generated method stub
 	listView=(ListView) view.findViewById(R.id.bendi_listView);
 	if (!is_updateListview) {
-		musicAdpater=new MusicAdpater(this, data,listView,musicIndex,musicid,music_albumId);
+		musicAdpater=new MusicAdpater(this, bendata,listView,musicIndex,musicid,music_albumId);
 		listView.setAdapter(musicAdpater);
 		//listView.setSelection(musicIndex);
 		listView.setOnItemSelectedListener(this);
@@ -658,7 +769,10 @@ public void fanhuiView(View view) {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				// TODO Auto-generated method stub
+				lujin=bendi;
+				data=bendata;
 				musicIndex=position;
+				bendi_tupian=testbendi;
 				islast=false;
 				pb_music_progress.setProgress(0);
 				myplay();
@@ -699,7 +813,7 @@ public void qiehuanListview(int index) {
 				fragmentTransaction.add(R.id.l_contor, net_jiazai,"net_jiazai");
 				tv_network.setTextColor(MainActivity.this.getResources().getColor(R.color.white));
 				tv_bendi.setTextColor(MainActivity.this.getResources().getColor(R.color.heise));
-				networkplay();
+				
 			}
 			else {
 				fragmentTransaction.show(net_jiazai);
@@ -743,6 +857,7 @@ public void qiehuanListview(int index) {
 @Override
 public void fanhuiView_net(View view) {
 	// TODO Auto-generated method stub
+	Log.d("aa", "1");
 	networklistview=(ListView) view.findViewById(R.id.network_listView);
 	
 	if (networkAdapter_item==null) {
@@ -758,6 +873,7 @@ public void fanhuiView_net(View view) {
 				musicIndex=position;
 				lujin=net_lujin;
 				data=net_song_name;
+				bendi_tupian=bitmap;
 				islast=false;
 				pb_music_progress.setProgress(0);
 				myplay();
@@ -766,17 +882,21 @@ public void fanhuiView_net(View view) {
 }
 	
 //获取网络歌曲
-public void networkplay() {
+public void networkplay(String guqu) {
 	//判断有无网络
+	Log.d("aa", "2");
+	if (musicSearch==null) {
+		musicSearch=new MusicSearch();
+	}
 	
-	//test
-	MusicSearch musicSearch=new MusicSearch();
-	musicSearch.search("严艺丹");
+	
+	musicSearch.search(guqu);
 	musicSearch.setCallBack(new SeachCallback() {
 		
 		@Override
 		public void onSearchResult(List<Network_Musicinfo> resualt) {
 			// TODO Auto-generated method stub
+			
 			int i=resualt.size();
 			
 			Log.d("i", ""+i);
@@ -799,6 +919,7 @@ public void networkplay() {
 				//update_listview();
 				
 			}
+			
 			BackAsyTask backAsyTask=new BackAsyTask(net_pic_small);
 				
 			backAsyTask.execute("pic");
@@ -810,10 +931,12 @@ public void networkplay() {
 					
 					for (int j = 0; j < resualt.length; j++) {
 						bitmap[j]=resualt[j];
+						networkAdapter_item.notifyDataSetChanged();
 					}
 				//bitmap=resualt;	
-				networkAdapter_item.notifyDataSetChanged();
+				
 				Log.d("图片", "图片下载完成");
+				
 				}
 			});
 			isnetfinish=true;
