@@ -1006,7 +1006,7 @@ public void Kgmusic(String gequ) {
 				net_author[j]=arr[j].getSingername();
 				net_song_name[j]=arr[j].getSongname();
 				String str=arr[j].getImgUrl();
-				net_pic_small[j]=str.replace("{size}", "100");
+				net_pic_small[j]=str.replace("{size}", "200");
 				//System.out.println(net_lujin[j].toString());
 				//update_listview();
 				str=null;
