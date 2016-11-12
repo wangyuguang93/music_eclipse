@@ -7,6 +7,7 @@ import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.music.network.BackAsyTask;
 import com.music.network.BackAsyTask.Getmusic_ico;
+import com.music.network.KGmusicSearch;
 import com.music.network.MusicSearch;
 import com.music.network.MusicSearch.SeachCallback;
 import com.music.network.Net_jiazai;
@@ -460,8 +461,12 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 		//Log.d("test", "切换到本地视图");
 			break;
 		case R.id.imageView2:
-			R_tille.setVisibility(View.GONE);
-			L_seach.setVisibility(View.VISIBLE);
+//			R_tille.setVisibility(View.GONE);
+//			L_seach.setVisibility(View.VISIBLE);
+			
+			KGmusicSearch kGmusicSearch=new KGmusicSearch();
+			kGmusicSearch.search("恋人心");
+			
 			break;
 		case R.id.net_fanhui:
 			L_seach.setVisibility(View.GONE);
