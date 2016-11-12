@@ -95,7 +95,7 @@ public class MyService extends Service implements OnCompletionListener          
         mbcr = new MyBroadCastReceiver();  
         IntentFilter filter = new IntentFilter("guang93");  
         registerReceiver(mbcr, filter);  
-        System.out.println("服务被创建....");  
+        System.out.println("音乐服务被创建....");  
         
         
         
@@ -335,6 +335,12 @@ public class MyService extends Service implements OnCompletionListener          
 
             return rtn;
         }
+  //是否在播放
+        public Boolean isPlay() {
+			// TODO Auto-generated method stub
+        	Boolean isplay=mPlayer.isPlaying();
+        	return isplay;
+		}
         //获取当前播放进度
         public int getMusicCurrentPosition()
         {

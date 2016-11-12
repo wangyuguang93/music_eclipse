@@ -8,7 +8,9 @@ import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.music.network.BackAsyTask;
 import com.music.network.BackAsyTask.Getmusic_ico;
 import com.music.network.KGmusicSearch;
+import com.music.network.KGmusicSearch.KGSeachCallback;
 import com.music.network.MusicSearch;
+import com.music.network.NetKGmusicInfo;
 import com.music.network.MusicSearch.SeachCallback;
 import com.music.network.Net_jiazai;
 import com.music.network.NetworkAdapter_item;
@@ -99,7 +101,8 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	private LinearLayout L_seach;
 	private int num = 0; 
 	private MusicSearch musicSearch;
-	
+	private KGmusicSearch kgmusicSearch;
+	private String gequ;
 	@Override
 	public void onCreate (Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_NO_TITLE); // 无标题
@@ -448,7 +451,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 			break;
 		case R.id.tv_network:
 			if (isfirst_net) {
-				networkplay("新歌");
+				Kgmusic("新歌");
 				isfirst_net=false;
 			}
 			
@@ -461,11 +464,11 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 		//Log.d("test", "切换到本地视图");
 			break;
 		case R.id.imageView2:
-//			R_tille.setVisibility(View.GONE);
-//			L_seach.setVisibility(View.VISIBLE);
+			R_tille.setVisibility(View.GONE);
+			L_seach.setVisibility(View.VISIBLE);
 			
-			KGmusicSearch kGmusicSearch=new KGmusicSearch();
-			kGmusicSearch.search("恋人心");
+//			KGmusicSearch kGmusicSearch=new KGmusicSearch();
+//			kGmusicSearch.search("恋人心");
 			
 			break;
 		case R.id.net_fanhui:
@@ -473,7 +476,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 			R_tille.setVisibility(View.VISIBLE);
 			break;
 		case R.id.net_search:
-			String gequ=edit_search.getText().toString();			
+			gequ=edit_search.getText().toString();			
 			if (!gequ.equals("")) {
 				
 //				if (netfragment!=null) {
@@ -486,7 +489,17 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 				net_jiazai=null;				
 				qiehuanListview(1);
 				netfragment=null;
-				networkplay(gequ);
+				//networkplay(gequ);
+				Runnable runnable=new Runnable() {
+					
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						Kgmusic(gequ);
+					}
+				};
+				Handler handler=new Handler();
+				handler.post(runnable);
 				hg=-1;
 			}
 			break;
@@ -669,12 +682,14 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 			}else {
 				 if(intent.hasExtra("state")){  
 		                if(intent.getIntExtra("state", 0)==0){  
-		                		
-								bofang();
-					        	Intent play  = new Intent(); 
-					        	play.putExtra("msg", "update_tongzhi");
-						        play.setAction("guang93");  
-						        sendBroadcast(play);  
+		                		if (musicservice.isPlay()) {
+		                			bofang();
+						        	Intent play  = new Intent(); 
+						        	play.putExtra("msg", "update_tongzhi");
+							        play.setAction("guang93");  
+							        sendBroadcast(play); 
+								}
+								 
 		 
 		                }  
 		                else if(intent.getIntExtra("state", 0)==1){  
@@ -881,7 +896,16 @@ public void fanhuiView_net(View view) {
 				bendi_tupian=bitmap;
 				islast=false;
 				pb_music_progress.setProgress(0);
-				myplay();
+				Handler playhandler=new Handler();
+				Runnable playrunnable=new Runnable() {
+					
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						myplay();
+					}
+				};
+				playhandler.post(playrunnable);
 			}
 		});
 }
@@ -889,7 +913,7 @@ public void fanhuiView_net(View view) {
 //获取网络歌曲
 public void networkplay(String guqu) {
 	//判断有无网络
-	Log.d("aa", "2");
+	//Log.d("aa", "2");
 	if (musicSearch==null) {
 		musicSearch=new MusicSearch();
 	}
@@ -950,5 +974,67 @@ public void networkplay(String guqu) {
 	});
 	
 }
+/**
+ * 获取KG
+ */
+public void Kgmusic(String gequ) {
+	// TODO Auto-generated method stub
+	if (kgmusicSearch==null) {
+		kgmusicSearch=new KGmusicSearch();
+	}	
+	kgmusicSearch.search(gequ);
+	kgmusicSearch.setKGCallBack(new KGSeachCallback() {
+		
+		@Override
+		public void onSearchResult(List<NetKGmusicInfo> resualt) {
+			// TODO Auto-generated method stub
+			
 
+			int i=resualt.size();
+			
+			Log.d("i", ""+i);
+			int size = resualt.size(); 
+			net_lujin=new String[size];
+			net_author=new String[size];
+			net_song_name=new String[size];
+			net_pic_small=new String[size];
+			bitmap=new Bitmap[size];
+			NetKGmusicInfo arr[] = (NetKGmusicInfo[])resualt.toArray(new NetKGmusicInfo[size]);//使用了第二种接口，返回值和参数均为结果  
+			for(int j=0;j<size;j++){
+				//System.out.println(arr[i].getmMusicPath().toString());
+				net_lujin[j]=arr[j].getUrl320();
+				net_author[j]=arr[j].getSingername();
+				net_song_name[j]=arr[j].getSongname();
+				String str=arr[j].getImgUrl();
+				net_pic_small[j]=str.replace("{size}", "100");
+				//System.out.println(net_lujin[j].toString());
+				//update_listview();
+				str=null;
+			}
+			
+			BackAsyTask backAsyTask=new BackAsyTask(net_pic_small);
+				
+			backAsyTask.execute("pic");
+			backAsyTask.setGetmusic(new Getmusic_ico() {
+				
+				@Override
+				public void getmusic_ico(Bitmap[] resualt) {
+//					 TODO Auto-generated method stub
+					
+					for (int j = 0; j < resualt.length; j++) {
+						bitmap[j]=resualt[j];
+						networkAdapter_item.notifyDataSetChanged();
+					}
+				//bitmap=resualt;	
+				
+				Log.d("图片", "图片下载完成");
+				
+				}
+			});
+			isnetfinish=true;
+			qiehuanListview(1);
+		}
+	});
+	
+}
 }

@@ -23,12 +23,61 @@ public class NetKGmusicInfo implements Parcelable{
 	private String fileSize;
 	private String req_hash;
 	private String imgUrl;
-	private String url;
+	private String url128;
+	private String url320;
+	private String urlsq;
+	private String extName;
+	public String getExtName() {
+		return extName;
+	}
+
+	public void setExtName(String extName) {
+		this.extName = extName;
+	}
+
+	public String getExtNamesq() {
+		return extNamesq;
+	}
+
+	public void setExtNamesq(String extNamesq) {
+		this.extNamesq = extNamesq;
+	}
+
+	private String extNamesq;
+	public String getUrl320() {
+		return url320;
+	}
+
+	public void setUrl320(String url320) {
+		this.url320 = url320;
+	}
+
+	public String getUrlsq() {
+		return urlsq;
+	}
+
+	public void setUrlsq(String urlsq) {
+		this.urlsq = urlsq;
+	}
+
 	//获取歌词
 	private String lycid;
 	private String accesskey;
+	private String fmt;
+	public String getFmt() {
+		return fmt;
+	}
+
+	public void setFmt(String fmt) {
+		this.fmt = fmt;
+	}
+
 	//获取格式写真
 	private String anthor_xiezhen;
+	//构造函数
+	public NetKGmusicInfo() {
+		// TODO Auto-generated constructor stub
+	}
 	
 	public String getFilename() {
 		return filename;
@@ -256,14 +305,14 @@ public class NetKGmusicInfo implements Parcelable{
 
 
 
-	public String getUrl() {
-		return url;
+	public String getUrl128() {
+		return url128;
 	}
 
 
 
-	public void setUrl(String url) {
-		this.url = url;
+	public void setUrl128(String url) {
+		this.url128 = url;
 	}
 
 
@@ -333,9 +382,14 @@ public class NetKGmusicInfo implements Parcelable{
 		dest.writeString(fileSize);
 		dest.writeString(req_hash);
 		dest.writeString(imgUrl);
-		dest.writeString(url);
+		dest.writeString(url128);
+		dest.writeString(url320);
+		dest.writeString(urlsq);
 		dest.writeString(lycid);
 		dest.writeString(accesskey);
+		dest.writeString(extName);
+		dest.writeString(extNamesq);
+		dest.writeString(fmt);
 	}
 	
 	
@@ -359,11 +413,15 @@ public class NetKGmusicInfo implements Parcelable{
 		fileSize=in.readString();
 		req_hash=in.readString();
 		imgUrl=in.readString();
-		url=in.readString();
+		url128=in.readString();
+		url320=in.readString();
+		urlsq=in.readString();
 		lycid=in.readString();
 		accesskey=in.readString();
 		anthor_xiezhen=in.readString();
-		 
+		extName=in.readString();
+		extNamesq=in.readString();
+		fmt=in.readString();
 		 }
 	
 	  public static final Parcelable.Creator<NetKGmusicInfo> CREATOR = new Parcelable.Creator<NetKGmusicInfo>() {

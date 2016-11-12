@@ -14,13 +14,13 @@ import android.util.Log;
 public class KGmusicSearch implements music_API{
 	private String mUrl = null;
 	SearchThread mSearchThread = null;
-	SeachCallback mCallback = null;
+	KGSeachCallback mCallback = null;
 	
-	public interface SeachCallback {
+	public interface KGSeachCallback {
 		public void onSearchResult(List<NetKGmusicInfo> resualt);
 	}
 
-	public void setCallBack(SeachCallback callbakc) {
+	public void setKGCallBack(KGSeachCallback callbakc) {
 		mCallback = callbakc;
 	}
 
@@ -104,6 +104,8 @@ public class KGmusicSearch implements music_API{
 				inStream = conn.getInputStream();
 				List<NetKGmusicInfo> resualt = KGsearchResualt.parse(inStream);
 				onSearchResult(resualt);
+			//	Log.d("test", "test");
+				inStream.close();
 			} catch (Exception e) {
 				//onSearchResult(null);
 				e.printStackTrace();
