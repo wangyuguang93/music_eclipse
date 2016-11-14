@@ -14,7 +14,7 @@
         android:layout_marginTop="127dp" />
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/net_tv_jiazai"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="52dp"

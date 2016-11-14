@@ -16,13 +16,20 @@ import com.base.Util.MD5Utils;
 import com.base.Util.music_API;
 
 import android.os.Environment;
+import android.provider.MediaStore.Images.Thumbnails;
 import android.util.Log;
 
 public class KGsearchResualt implements music_API{
 	private static String isgeci="恋人心88";
+	private static Getmusic getmusic;
+	static ArrayList<NetKGmusicInfo> infos;
+	public static void setinfo() {
+			infos=null;
+	}
 	public static ArrayList<NetKGmusicInfo> parse(InputStream Kg) throws Exception {
-
-		ArrayList<NetKGmusicInfo> infos = new ArrayList<NetKGmusicInfo>();
+		if (infos==null) {
+			infos = new ArrayList<NetKGmusicInfo>();
+		}
 		NetKGmusicInfo info = null;
 		ByteArrayOutputStream outkg = new ByteArrayOutputStream();
 		byte[] kgbuffer = new byte[1024];
@@ -56,10 +63,25 @@ public class KGsearchResualt implements music_API{
 				info.setSingername(kgitem.getString("singername"));
 				info.setSqfilesize(kgitem.getString("sqfilesize"));
 				info.setAlbum_name(kgitem.getString("album_name"));
-				//获取链接
-				getMusinInfo(info);
-				getLinks(info);
-				getLcy(info);
+//				//获取链接
+//				getMusinInfo(info);
+//				getLinks(info);
+//				getLcy(info);
+				
+				getmusic=new Getmusic();
+				try {
+					getmusic.getmusicinfo(info);
+				} catch (Exception e) {
+					// TODO: handle exception
+					Log.d("getmusic", "getmusic失败");
+					e.printStackTrace();
+				}
+				
+				
+//				getmusic.getlink(info);
+//				getmusic.getlrc(info);
+//				getmusic.getlrcdownload(info);
+				
 				infos.add(info);
 				info = null;
 			}
@@ -68,7 +90,7 @@ public class KGsearchResualt implements music_API{
 		}
 		return infos;
 	}
-	public static void getMusinInfo(NetKGmusicInfo info) throws Exception {
+	public static void getMusinInfo (NetKGmusicInfo info) throws Exception {
 		 String addr =KgmusicInfo+info.getHash();				
 				// Log.d("addr", addr);
 				 URL url = new URL(addr);
@@ -277,4 +299,5 @@ public static void lycDownload(NetKGmusicInfo info)throws Exception {
 		}
 		return link;
 	}
+
 }

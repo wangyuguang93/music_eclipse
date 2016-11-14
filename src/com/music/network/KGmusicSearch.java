@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.base.Util.music_API;
 
+import android.os.AsyncTask;
 import android.util.Log;
 public class KGmusicSearch implements music_API{
 	private String mUrl = null;
@@ -30,18 +31,20 @@ public class KGmusicSearch implements music_API{
 		}
 	}
 	
-	public void search(String keys) {
+	public void search(String keys,int index) {
 		try {
 //			mUrl = musicapi1 + "&page_size=" + pageSize + "&page_no="
 //					+ pageNo + "&query=";
 			mUrl = Kgmusic;
 			mUrl += URLEncoder.encode(keys, "UTF-8");
+			mUrl+="&page="+index;
 			Log.d("url", "search mUrl=" + mUrl);
 			if (mSearchThread != null) {
 				mSearchThread.mCancel = true;
 			}
 			mSearchThread = new SearchThread();
-			mSearchThread.start();
+			//mSearchThread.start();
+			mSearchThread.execute();
 		} catch (UnsupportedEncodingException e) {
 			//onSearchResult(null);
 			e.printStackTrace();
@@ -66,7 +69,7 @@ public class KGmusicSearch implements music_API{
 			
 
 			
-			Log.d("xml", ""+inStream.toString());
+			//Log.d("xml", ""+inStream.toString());
 			
 			resualt = KGsearchResualt.parse(inStream);
 		} catch (Exception e) {
@@ -89,11 +92,17 @@ public class KGmusicSearch implements music_API{
 		}
 	}
 
-	class SearchThread extends Thread {
+private	class SearchThread extends AsyncTask<Void, Void, List<NetKGmusicInfo>> {
 		boolean mCancel = false;
 
+//		@Override
+//		public void run() {
+			
+
 		@Override
-		public void run() {
+		protected List<NetKGmusicInfo> doInBackground(Void... params) {
+			// TODO Auto-generated method stub
+			
 			InputStream inStream = null;
 			try {
 				URL url = new URL(mUrl);
@@ -118,7 +127,21 @@ public class KGmusicSearch implements music_API{
 					e.printStackTrace();
 				}
 			}
+		
+			
+			
+			return null;
 		}
+
+		@Override
+		protected void onPostExecute(List<NetKGmusicInfo> result) {
+			// TODO Auto-generated method stub
+			
+			
+			super.onPostExecute(result);
+		}
+		
+		
 	}
 	
 }

@@ -20,6 +20,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnBufferingUpdateListener;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
@@ -40,7 +41,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 @SuppressLint("ServiceCast")
-public class MyService extends Service implements OnCompletionListener                        {
+public class MyService extends Service implements OnCompletionListener, OnPreparedListener, OnBufferingUpdateListener                        {
 	private final IBinder binder=new MusicBinder();
 	private int mymusicIndex=0;
 	private MediaPlayer mPlayer;
@@ -211,12 +212,17 @@ public class MyService extends Service implements OnCompletionListener          
 			mPlayer.setDataSource(playlujin);
 			Log.d("playlujin", playlujin);
 			//Log.d("uri", playlujin);
-			mPlayer.prepare();
-			//mPlayer.prepareAsync();
+			//mPlayer.prepare();
+			mPlayer.prepareAsync();
 			
-			mPlayer.start();
+			
+			tile=mdata[mymusicIndex];
+			mytv_music_title.setText("(正在缓冲...)"+tile);
+			mPlayer.setOnPreparedListener(MyService.this);
+			//mPlayer.start();
+			mPlayer.setOnBufferingUpdateListener(this);
 			seekTo(seeto);
-			jiemian();
+			//jiemian();
 			mPlayer.setOnCompletionListener(this);
 			isSave=true;
 			issuoping=true;
@@ -265,31 +271,33 @@ public class MyService extends Service implements OnCompletionListener          
 			//Log.d("playlujin", playlujin);
 			Log.d("当前播放", ""+mymusicIndex);
 			//缓冲
-			mPlayer.prepare();
-			//mPlayer.prepareAsync();
+			//mPlayer.prepare();
+			mPlayer.prepareAsync();
+			tile=mdata[mymusicIndex];
+			mytv_music_title.setText("(正在缓冲...)"+tile);
 		//player=new MediaPlayer();
-			mPlayer.setOnPreparedListener(new OnPreparedListener() {
-				
-				@Override
-				public void onPrepared(MediaPlayer mp) {
-					// TODO Auto-generated method stub
-					mp.start();
-				}
-			});
-			mPlayer.setOnErrorListener(new OnErrorListener() {
-				
-				@Override
-				public boolean onError(MediaPlayer mp, int what, int extra) {
-					// TODO Auto-generated method stub
-					Log.d("错误", ""+what+" "+ ""+extra);
-					
-					return false;
-				}
-			});
-			
+//			mPlayer.setOnPreparedListener(new OnPreparedListener() {
+//				
+//				@Override
+//				public void onPrepared(MediaPlayer mp) {
+//					// TODO Auto-generated method stub
+//					mp.start();
+//				}
+//			});
+//			mPlayer.setOnErrorListener(new OnErrorListener() {
+//				
+//				@Override
+//				public boolean onError(MediaPlayer mp, int what, int extra) {
+//					// TODO Auto-generated method stub
+//					Log.d("错误", ""+what+" "+ ""+extra);
+//					
+//					return false;
+//				}
+//			});
+			mPlayer.setOnPreparedListener(this);
 			//更新界面
 			
-			jiemian();
+			//jiemian();
 		
 		        	mPlayer.setOnCompletionListener(this);
 						
@@ -573,10 +581,10 @@ public class MyService extends Service implements OnCompletionListener          
 		            // 锁屏  
 		        	  Log.d("sp", "锁屏了"); 
 		        	  isSuopingTAG=true;
-		        	  setsuoping();
+		        //	  setsuoping();
 		        } else if (Intent.ACTION_USER_PRESENT.equals(action)) {  
 		            // 解锁  
-		        	huanyuansuoping();
+		        //	huanyuansuoping();
 		        	 
 		        	 
 		        	 isSuopingTAG=false;
@@ -696,7 +704,7 @@ public class MyService extends Service implements OnCompletionListener          
 public void setsuoping () {
 	  try {  
 		 // Bitmap bitmap = MediaUtil.getArtwork(mycontext, id[mymusicIndex], alm[mymusicIndex], true, false);
-	       wallpaperManager.setBitmap(mbendi_tupian[mymusicIndex]);  
+	     //  wallpaperManager.setBitmap(mbendi_tupian[mymusicIndex]);  
 	    } catch (Exception e) {  
 	        // TODO Auto-generated catch block  
 	        e.printStackTrace();  
@@ -714,6 +722,29 @@ public void huanyuansuoping() {
         e.printStackTrace();  
     } 
 	
+}
+
+@Override
+public void onPrepared(MediaPlayer mp) {
+	// TODO Auto-generated method stub
+	
+	mp.start();
+	try {
+		jiemian();
+	} catch (Exception e) {
+		// TODO: handle exception
+		Log.d("界面更新失败", "界面更新失败");
+		e.printStackTrace();
+	}
+	
+}
+
+@Override
+public void onBufferingUpdate(MediaPlayer mp, int percent) {
+	// TODO Auto-generated method stub
+	tile=mdata[mymusicIndex];
+	mytv_music_title.setText("(正在缓冲"+percent+"%+...)"+tile);
+	 System.out.println("缓冲了的百分比 : " + percent + " %");       
 }
 }
 		

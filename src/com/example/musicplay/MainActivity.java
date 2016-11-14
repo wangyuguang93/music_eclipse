@@ -7,12 +7,15 @@ import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.music.network.BackAsyTask;
 import com.music.network.BackAsyTask.Getmusic_ico;
+import com.music.network.Errorfragment;
 import com.music.network.KGmusicSearch;
 import com.music.network.KGmusicSearch.KGSeachCallback;
+import com.music.network.KGsearchResualt;
 import com.music.network.MusicSearch;
 import com.music.network.NetKGmusicInfo;
 import com.music.network.MusicSearch.SeachCallback;
 import com.music.network.Net_jiazai;
+import com.music.network.NetworkAdapter;
 import com.music.network.NetworkAdapter_item;
 import com.music.network.Network_Musicinfo;
 import com.music.network.Network_fragment;
@@ -45,6 +48,8 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -75,6 +80,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	private boolean tag=false,pause=false,islastwj=false,iserji=false,is_updateListview=false;
 	MusicAdpater musicAdpater;
 	NetworkAdapter_item networkAdapter_item;
+	NetworkAdapter networkAdapter;
 	private ListView listView,networklistview;
 	private BroadcastReceiver main,erji,guanji;
 	//int position;
@@ -91,6 +97,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	private Cursor cursor;
 	private Network_fragment netfragment;
 	private BendiFragment bendiFrament;
+	private Errorfragment errorfragment;
 	private FragmentManager fragmentManager;
 	private Net_jiazai net_jiazai;
 	private FragmentTransaction fragmentTransaction;
@@ -102,7 +109,15 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	private int num = 0; 
 	private MusicSearch musicSearch;
 	private KGmusicSearch kgmusicSearch;
-	private String gequ;
+	private String gequ="新歌";
+	private String str;
+	private NetKGmusicInfo arr[];
+	private Boolean is_can_sousuo=true,isgequfinish=false;
+	private Thread updatethread;
+	private Runnable runnable;
+	private int page=1;
+	int lastItem;
+	private List<NetKGmusicInfo> musiclist;;
 	@Override
 	public void onCreate (Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_NO_TITLE); // 无标题
@@ -320,7 +335,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 		img_start.setOnClickListener(this);
 		net_fanhui.setOnClickListener(this);
 		net_search.setOnClickListener(this);
-		
+		tv_guqu_num.setOnClickListener(this);
 		
 		 
 		//监听软键盘的删除键  
@@ -449,10 +464,134 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 		case R.id.menu_ico:
 			toggle();
 			break;
+		case R.id.tv_gequ_num:
+			page++;
+			if (!gequ.equals("")) {
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																															
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																															//删除歌词缓存目录
+				File lcylujiu=Environment.getExternalStorageDirectory();
+				File lcydir=new File(lcylujiu.toString()+"/kgmusic/"+"/lcy/"+"/Cache/");
+				delete(lcydir);	
+				if (is_can_sousuo) {
+					is_can_sousuo=false;
+					isnetfinish=false;
+//					netfragment=null;
+					networkAdapter_item=null;
+					yincang();
+					net_jiazai=null;				
+					qiehuanListview(1);
+					netfragment=null;
+					//networkplay(gequ);
+					Runnable runnable1=new Runnable() {
+						
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							Kgmusic(gequ,page);
+						}
+					};
+					Handler handler1=new Handler();
+					try {
+						handler1.post(runnable1);
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+					}
+					
+					hg=-1;
+					Runnable runnable2=new Runnable() {
+						
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							
+							try {
+								Thread.sleep(60000);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}	
+					    	
+					    	//String str1=arr[arr.length-1].getFilename();
+							
+					    	if (!is_can_sousuo) {
+					    		try {
+					    			qiehuanListview(2);
+								} catch (Exception e) {
+									// TODO: handle exception
+									is_can_sousuo=true;
+									arr=null;
+									e.printStackTrace();
+								}
+								
+								is_can_sousuo=true;
+								arr=null;
+								
+							}
+					    	
+						}
+					};
+					Thread thread2=new Thread(runnable2);
+					try {
+						thread2.start();
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+					}
+					
+				}else {
+					Toast.makeText(MainActivity.this, "正在搜索", Toast.LENGTH_SHORT).show();
+				}
+
+			
+		}
+			break;
 		case R.id.tv_network:
+			is_can_sousuo=false;
 			if (isfirst_net) {
-				Kgmusic("新歌");
-				isfirst_net=false;
+				Kgmusic("新歌",1);
+				isfirst_net=false;				
+				
+			}
+			Runnable runnable3=new Runnable() {
+				
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					try {
+						Thread.sleep(60000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}	
+			    	
+			    	//String str1=arr[arr.length-1].getFilename();
+			    	if (!is_can_sousuo) {
+			    		try {
+			    			qiehuanListview(2);
+							is_can_sousuo=true;
+							arr=null;
+						} catch (Exception e) {
+							// TODO: handle exception
+							is_can_sousuo=true;
+							arr=null;
+							e.printStackTrace();
+						}
+						
+						
+					}
+			    	
+				}
+			};
+			Thread thread3=new Thread(runnable3);
+			
+			try {
+				thread3.start();
+			} catch (Exception e) {
+				// TODO: handle exception
+				is_can_sousuo=true;
+				arr=null;
+				e.printStackTrace();
 			}
 			
 			qiehuanListview(1);
@@ -476,31 +615,86 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 			R_tille.setVisibility(View.VISIBLE);
 			break;
 		case R.id.net_search:
-			gequ=edit_search.getText().toString();			
+			gequ=edit_search.getText().toString();	
+			KGsearchResualt.setinfo();
 			if (!gequ.equals("")) {
 				
-//				if (netfragment!=null) {
-//					fragmentTransaction.remove(netfragment);
-//				}
-							
-				isnetfinish=false;
-//				netfragment=null;
-				networkAdapter_item=null;
-				net_jiazai=null;				
-				qiehuanListview(1);
-				netfragment=null;
-				//networkplay(gequ);
-				Runnable runnable=new Runnable() {
-					
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						Kgmusic(gequ);
+				//删除歌词缓存目录
+				File lcylujiu=Environment.getExternalStorageDirectory();
+				File lcydir=new File(lcylujiu.toString()+"/kgmusic/"+"/lcy/"+"/Cache/");
+				delete(lcydir);	
+				if (is_can_sousuo) {
+					is_can_sousuo=false;
+					isnetfinish=false;
+//					netfragment=null;
+					networkAdapter_item=null;
+					networkAdapter=null;
+					yincang();
+					net_jiazai=null;				
+					qiehuanListview(1);
+					netfragment=null;
+					//networkplay(gequ);
+					Runnable runnable1=new Runnable() {
+						
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							Kgmusic(gequ,1);
+						}
+					};
+					Handler handler1=new Handler();
+					try {
+						handler1.post(runnable1);
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
 					}
-				};
-				Handler handler=new Handler();
-				handler.post(runnable);
-				hg=-1;
+					
+					hg=-1;
+					Runnable runnable2=new Runnable() {
+						
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							
+							try {
+								Thread.sleep(60000);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}	
+					    	
+					    	//String str1=arr[arr.length-1].getFilename();
+							
+					    	if (!is_can_sousuo) {
+					    		try {
+					    			qiehuanListview(2);
+								} catch (Exception e) {
+									// TODO: handle exception
+									is_can_sousuo=true;
+									arr=null;
+									e.printStackTrace();
+								}
+								
+								is_can_sousuo=true;
+								arr=null;
+								
+							}
+					    	
+						}
+					};
+					Thread thread2=new Thread(runnable2);
+					try {
+						thread2.start();
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+					}
+					
+				}else {
+					Toast.makeText(MainActivity.this, "正在搜索", Toast.LENGTH_SHORT).show();
+				}
+
 			}
 			break;
 	
@@ -534,6 +728,9 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 		}
 		if (net_jiazai!=null) {
 			fragmentTransaction.hide(net_jiazai);
+		}
+		if (errorfragment!=null) {
+			fragmentTransaction.hide(errorfragment);
 		}
 	}
 
@@ -716,10 +913,11 @@ public void bofang() {
 		musicservice.pause();
 		ibPlayOrPuase.setImageResource(android.R.drawable.ic_media_play);
 		pause=false;
-
+		networkAdapter.notifyDataSetChanged();
 	}			
 	else {
 		myplay();
+		networkAdapter.notifyDataSetChanged();
 	}
 	
 }
@@ -782,7 +980,7 @@ public void fanhuiView(View view) {
 		//listView.setSelection(musicIndex);
 		listView.setOnItemSelectedListener(this);
 		is_updateListview=true;
-		
+		is_can_sousuo=true;
 		
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
@@ -865,7 +1063,18 @@ public void qiehuanListview(int index) {
 		
 		}
 		break;
-
+		case 2:
+		if (errorfragment==null) {
+			errorfragment=new Errorfragment(MainActivity.this);
+			fragmentTransaction.add(R.id.l_contor,errorfragment,"errorfragment");
+		//	tv_bendi.setTextColor(MainActivity.this.getResources().getColor(R.color.white));
+		}else {
+			fragmentTransaction.show(errorfragment);
+//			tv_bendi.setTextColor(MainActivity.this.getResources().getColor(R.color.white));
+//			tv_network.setTextColor(MainActivity.this.getResources().getColor(R.color.heise));
+		
+		}
+		break;
 	default:
 		break;
 	}
@@ -878,38 +1087,93 @@ public void qiehuanListview(int index) {
 public void fanhuiView_net(View view) {
 	// TODO Auto-generated method stub
 	Log.d("aa", "1");
-	networklistview=(ListView) view.findViewById(R.id.network_listView);
 	
-	if (networkAdapter_item==null) {
-		networkAdapter_item=new NetworkAdapter_item(MainActivity.this,net_song_name,net_author,bitmap);		
-		}
-		networklistview.setAdapter(networkAdapter_item);
+	networklistview=(ListView) view.findViewById(R.id.network_listView);
+//	
+//	if (networkAdapter_item==null) {
+//		networkAdapter_item=new NetworkAdapter_item(MainActivity.this,net_song_name,net_author,bitmap);	
+//		
+//		}
+/**
+ * 下拉测试	
+ */
+	
+	
+	if (networkAdapter==null) {
+		networkAdapter=new NetworkAdapter(MainActivity.this, musiclist,bitmap);
+	}
+		networklistview.setAdapter(networkAdapter);
+		//networklistview.setAdapter(networkAdapter_item);
+		is_can_sousuo=true;
 	//设置监听器
+	//下拉刷新
+		networklistview.setOnScrollListener(new OnScrollListener() {
+			
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+				// TODO Auto-generated method stub
+				if (lastItem == networklistview.getCount()-1  
+		                && scrollState == OnScrollListener.SCROLL_STATE_IDLE) {  
+		  
+		            Log.e("加载更多", "加载更多歌曲");
+		            page++;
+		            if (page<=5) {
+		            	  kgmusicSearch.search(gequ,page);
+				            kgmusicSearch.setKGCallBack(new KGSeachCallback() {
+								
+								@Override
+								public void onSearchResult(List<NetKGmusicInfo> resualt) {
+									// TODO Auto-generated method stub
+									bitmap=null;
+									setnetlistview(resualt);
+									
+								}
+							});
+					}
+		          
+			}
+			}
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+				// TODO Auto-generated method stub
+				 lastItem = firstVisibleItem + visibleItemCount - 1;
+			      //  Log.i("屏幕滚动","firstVisibleItem:"+firstVisibleItem+"visibleItemCount:"+visibleItemCount+" lastItem:"+lastItem+"networklistview.getCount:"+networklistview.getCount());  
+			}
+		});
+		//点击事件
 		networklistview.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				// TODO Auto-generated method stub
-				musicIndex=position;
-				lujin=net_lujin;
-				data=net_song_name;
-				bendi_tupian=bitmap;
-				islast=false;
-				pb_music_progress.setProgress(0);
-				Handler playhandler=new Handler();
-				Runnable playrunnable=new Runnable() {
+				if (net_lujin[position]==null) {
+					updatethread=new Thread(runnable);
+					updatethread.start();
+				}
+				else {
 					
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						myplay();
-					}
-				};
-				playhandler.post(playrunnable);
+					musicIndex=position;
+					lujin=net_lujin;
+					data=net_song_name;
+					bendi_tupian=bitmap;
+					islast=false;
+					pb_music_progress.setProgress(0);
+					Handler playhandler=new Handler();
+					Runnable playrunnable=new Runnable() {
+						
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							myplay();
+						}
+					};
+					playhandler.post(playrunnable);
+				}
 			}
 		});
+		
 }
-	
+
 //获取网络歌曲
 public void networkplay(String guqu) {
 	//判断有无网络
@@ -977,64 +1241,158 @@ public void networkplay(String guqu) {
 /**
  * 获取KG
  */
-public void Kgmusic(String gequ) {
+public void Kgmusic(String gequ,int index) {
 	// TODO Auto-generated method stub
-	if (kgmusicSearch==null) {
-		kgmusicSearch=new KGmusicSearch();
-	}	
-	kgmusicSearch.search(gequ);
-	kgmusicSearch.setKGCallBack(new KGSeachCallback() {
-		
-		@Override
-		public void onSearchResult(List<NetKGmusicInfo> resualt) {
-			// TODO Auto-generated method stub
+	this.gequ=gequ;
+	try {
+		if (kgmusicSearch==null) {
+			kgmusicSearch=new KGmusicSearch();
+		}	
+		kgmusicSearch.search(this.gequ,page);
+		kgmusicSearch.setKGCallBack(new KGSeachCallback() {
 			
-
-			int i=resualt.size();
-			
-			Log.d("i", ""+i);
-			int size = resualt.size(); 
-			net_lujin=new String[size];
-			net_author=new String[size];
-			net_song_name=new String[size];
-			net_pic_small=new String[size];
-			bitmap=new Bitmap[size];
-			NetKGmusicInfo arr[] = (NetKGmusicInfo[])resualt.toArray(new NetKGmusicInfo[size]);//使用了第二种接口，返回值和参数均为结果  
-			for(int j=0;j<size;j++){
-				//System.out.println(arr[i].getmMusicPath().toString());
-				net_lujin[j]=arr[j].getUrl320();
-				net_author[j]=arr[j].getSingername();
-				net_song_name[j]=arr[j].getSongname();
-				String str=arr[j].getImgUrl();
-				net_pic_small[j]=str.replace("{size}", "200");
-				//System.out.println(net_lujin[j].toString());
-				//update_listview();
-				str=null;
+			@Override
+			public void onSearchResult(List<NetKGmusicInfo> resualt) {
+				
+				setnetlistview(resualt);
+				
 			}
 			
-			BackAsyTask backAsyTask=new BackAsyTask(net_pic_small);
+			
+		});
+
+
+		
+	} catch (Exception e) {
+		// TODO: handle exception
+		is_can_sousuo=true;
+		arr=null;
+		e.printStackTrace();
+	}
+	
+}
+/**
+ * 递归删除文件及文件夹  
+ * @param file
+ */
+public static void delete(File file) {  
+    if (file.isFile()) {  
+        file.delete();  
+        return;  
+    }  
+
+    if(file.isDirectory()){  
+        File[] childFiles = file.listFiles();  
+        if (childFiles == null || childFiles.length == 0) {  
+            file.delete();  
+            return;  
+        }  
+  
+        for (int i = 0; i < childFiles.length; i++) {  
+            delete(childFiles[i]);  
+        }  
+        file.delete();  
+    }  
+}  
+public void setnetlistview(List<NetKGmusicInfo> resualt) {
+
+	// TODO Auto-generated method stub
+	is_can_sousuo=false;
+	musiclist=resualt;
+	int i=resualt.size();
+	
+	Log.d("i", ""+i);
+	int size = resualt.size(); 
+	net_lujin=new String[size];
+	net_author=new String[size];
+	net_song_name=new String[size];
+	net_pic_small=new String[size];
+	str=new String();
+	bitmap=new Bitmap[size];
+	arr = (NetKGmusicInfo[])resualt.toArray(new NetKGmusicInfo[size]);//使用了第二种接口，返回值和参数均为结果  
+	for(int j=0;j<size;j++){
+		//System.out.println(arr[i].getmMusicPath().toString());
+		
+		net_author[j]=arr[j].getSingername();
+		//net_song_name[j]=arr[j].getSongname();
+		net_song_name[j]=arr[j].getFilename();
+		
+		
+
+	}
+	
+	runnable=new Runnable() {  
+	    @Override  
+	    public void run() {  
+	        // TODO Auto-generated method stub  
+	        //要做的事情  
+	    	try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+	    	
+	    	str=arr[arr.length-1].getUrl128();
+			if (str!=null) {
+				for(int a=0;a<arr.length;a++){
+				net_lujin[a]=arr[a].getUrl320();
+				if(net_lujin[a]==null){
+					net_lujin[a]=arr[a].getUrl128();														
+				}
+				try {
+					String pic=arr[a].getImgUrl();
+					net_pic_small[a]=pic.replace("{size}", "200");
+				} catch (Exception e) {
+					// TODO: handle exception
+					e.printStackTrace();
+				}
 				
-			backAsyTask.execute("pic");
-			backAsyTask.setGetmusic(new Getmusic_ico() {
-				
-				@Override
-				public void getmusic_ico(Bitmap[] resualt) {
-//					 TODO Auto-generated method stub
-					
-					for (int j = 0; j < resualt.length; j++) {
-						bitmap[j]=resualt[j];
-						networkAdapter_item.notifyDataSetChanged();
-					}
-				//bitmap=resualt;	
-				
-				Log.d("图片", "图片下载完成");
 				
 				}
-			});
-			isnetfinish=true;
-			qiehuanListview(1);
-		}
-	});
+				BackAsyTask backAsyTask=new BackAsyTask(net_pic_small);				
+				backAsyTask.execute("pic");
+				backAsyTask.setGetmusic(new Getmusic_ico() {
+					
+					@Override
+					public void getmusic_ico(Bitmap[] resualt) {
+//						 TODO Auto-generated method stub
+						
+						for (int j = 0; j < resualt.length; j++) {
+							bitmap[j]=resualt[j];
+							try {
+								//networkAdapter_item.notifyDataSetChanged();
+								networkAdapter.notifyDataSetChanged();
+							} catch (Exception e) {
+								// TODO: handle exception
+								e.printStackTrace();
+							}
+							
+						}
+					//bitmap=resualt;	
+					
+					Log.d("图片", "图片下载完成");
+					
+					}
+				});
+			}
+	      
+	    }  
+	};  
+
+	updatethread=new Thread(runnable);
+	isnetfinish=true;
+	is_can_sousuo=true;
+	qiehuanListview(1);
+	try {
+		updatethread.start();
+	} catch (Exception e) {
+		// TODO: handle exception
+		e.printStackTrace();
+	}
+	
+	
+
 	
 }
 }
