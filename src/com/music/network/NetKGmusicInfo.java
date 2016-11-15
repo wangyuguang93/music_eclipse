@@ -1,5 +1,6 @@
 package com.music.network;
 
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -27,6 +28,15 @@ public class NetKGmusicInfo implements Parcelable{
 	private String url320;
 	private String urlsq;
 	private String extName;
+	private Bitmap pic;
+	public Bitmap getPic() {
+		return pic;
+	}
+
+	public void setPic(Bitmap pic) {
+		this.pic = pic;
+	}
+
 	public String getExtName() {
 		return extName;
 	}
@@ -390,6 +400,7 @@ public class NetKGmusicInfo implements Parcelable{
 		dest.writeString(extName);
 		dest.writeString(extNamesq);
 		dest.writeString(fmt);
+	
 	}
 	
 	

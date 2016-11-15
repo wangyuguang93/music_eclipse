@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import com.base.Util.Base64Util;
 import com.base.Util.MD5Utils;
 import com.base.Util.music_API;
+import com.example.musicplay.MainActivity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +23,7 @@ import android.util.Log;
 
 public class Getmusic implements music_API{
 	//private NetKGmusicInfo info;
-	private Boolean numinfo=true;
+	private Boolean updateview=false;
 	private Context context;
 	// 回调info接口
 	GetInfo getInfo = null;
@@ -350,6 +351,11 @@ public class Getmusic implements music_API{
 		@Override
 		protected void onPostExecute(NetKGmusicInfo result) {
 			// TODO Auto-generated method stub
+			if (updateview==false) {
+				MainActivity.Update();
+				updateview=true;
+			}
+			
 			getlrc(result);
 			super.onPostExecute(result);
 		}

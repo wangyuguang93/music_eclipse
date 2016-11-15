@@ -25,7 +25,13 @@ public class KGsearchResualt implements music_API{
 	static ArrayList<NetKGmusicInfo> infos;
 	public static void setinfo() {
 			infos=null;
+			getmusic=null;
 	}
+	public static void setupdatelistview() {
+		
+		getmusic=null;
+}
+	
 	public static ArrayList<NetKGmusicInfo> parse(InputStream Kg) throws Exception {
 		if (infos==null) {
 			infos = new ArrayList<NetKGmusicInfo>();
@@ -63,12 +69,11 @@ public class KGsearchResualt implements music_API{
 				info.setSingername(kgitem.getString("singername"));
 				info.setSqfilesize(kgitem.getString("sqfilesize"));
 				info.setAlbum_name(kgitem.getString("album_name"));
-//				//获取链接
-//				getMusinInfo(info);
-//				getLinks(info);
-//				getLcy(info);
+//				
+				if (getmusic==null) {
+					getmusic=new Getmusic();
+				}
 				
-				getmusic=new Getmusic();
 				try {
 					getmusic.getmusicinfo(info);
 				} catch (Exception e) {

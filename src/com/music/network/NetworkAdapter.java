@@ -89,9 +89,9 @@ public class NetworkAdapter extends BaseAdapter {
         if (stile!=null) {
         	viewHolder.artist.setText(sartist);
 		}
-       
-        if (bitmap[i]!=null) {
-			viewHolder.image.setImageBitmap(bitmap[i]);
+       Bitmap pic=arr[i].getPic();
+        if (pic!=null) {
+			viewHolder.image.setImageBitmap(pic);
 		}
         else {
 			viewHolder.image.setImageDrawable(mContext.getResources().getDrawable(R.drawable.deault_zhuanji));

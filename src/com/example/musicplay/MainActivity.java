@@ -37,11 +37,13 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
+import android.text.style.UpdateAppearance;
 import android.util.Log;
 import android.view.View;
 import android.view.KeyEvent;
@@ -80,7 +82,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	private boolean tag=false,pause=false,islastwj=false,iserji=false,is_updateListview=false;
 	MusicAdpater musicAdpater;
 	NetworkAdapter_item networkAdapter_item;
-	NetworkAdapter networkAdapter;
+	static NetworkAdapter networkAdapter;
 	private ListView listView,networklistview;
 	private BroadcastReceiver main,erji,guanji;
 	//int position;
@@ -113,10 +115,18 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	private String str;
 	private NetKGmusicInfo arr[];
 	private Boolean is_can_sousuo=true,isgequfinish=false;
-	private Thread updatethread;
-	private Runnable runnable;
+	private static Thread updatethread;
+	private static Runnable runnable;
 	private int page=1;
 	int lastItem;
+    private Handler updateview = new Handler() {  
+        @Override  
+        public void handleMessage(Message msg) {  
+            if (msg.what == 1) {  
+            	networkAdapter.notifyDataSetChanged();
+            }  
+        }  
+    };  
 	private List<NetKGmusicInfo> musiclist;;
 	@Override
 	public void onCreate (Bundle savedInstanceState) {
@@ -559,7 +569,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 				public void run() {
 					// TODO Auto-generated method stub
 					try {
-						Thread.sleep(60000);
+						Thread.sleep(40000);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -629,6 +639,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 //					netfragment=null;
 					networkAdapter_item=null;
 					networkAdapter=null;
+					
 					yincang();
 					net_jiazai=null;				
 					qiehuanListview(1);
@@ -639,7 +650,8 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 						@Override
 						public void run() {
 							// TODO Auto-generated method stub
-							Kgmusic(gequ,1);
+							page=1;
+							Kgmusic(gequ,page);
 						}
 					};
 					Handler handler1=new Handler();
@@ -658,7 +670,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 							// TODO Auto-generated method stub
 							
 							try {
-								Thread.sleep(60000);
+								Thread.sleep(40000);
 							} catch (InterruptedException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -1115,16 +1127,19 @@ public void fanhuiView_net(View view) {
 				if (lastItem == networklistview.getCount()-1  
 		                && scrollState == OnScrollListener.SCROLL_STATE_IDLE) {  
 		  
-		            Log.e("加载更多", "加载更多歌曲");
+		          
 		            page++;
 		            if (page<=5) {
+		            	KGsearchResualt.setupdatelistview();
 		            	  kgmusicSearch.search(gequ,page);
 				            kgmusicSearch.setKGCallBack(new KGSeachCallback() {
 								
 								@Override
 								public void onSearchResult(List<NetKGmusicInfo> resualt) {
 									// TODO Auto-generated method stub
+									  Log.e("加载更多", "加载更多歌曲");
 									bitmap=null;
+									
 									setnetlistview(resualt);
 									
 								}
@@ -1271,6 +1286,11 @@ public void Kgmusic(String gequ,int index) {
 	}
 	
 }
+public static void Update(){
+	updatethread=new Thread(runnable);
+	updatethread.start();
+}
+
 /**
  * 递归删除文件及文件夹  
  * @param file
@@ -1327,7 +1347,7 @@ public void setnetlistview(List<NetKGmusicInfo> resualt) {
 	        // TODO Auto-generated method stub  
 	        //要做的事情  
 	    	try {
-				Thread.sleep(2000);
+				Thread.sleep(10);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1359,18 +1379,21 @@ public void setnetlistview(List<NetKGmusicInfo> resualt) {
 //						 TODO Auto-generated method stub
 						
 						for (int j = 0; j < resualt.length; j++) {
-							bitmap[j]=resualt[j];
-							try {
-								//networkAdapter_item.notifyDataSetChanged();
-								networkAdapter.notifyDataSetChanged();
-							} catch (Exception e) {
-								// TODO: handle exception
-								e.printStackTrace();
-							}
+							//bitmap[j]=resualt[j];
+							arr[j].setPic(resualt[j]);
+//							try {
+//								//networkAdapter_item.notifyDataSetChanged();
+//								networkAdapter.notifyDataSetChanged();
+//							} catch (Exception e) {
+//								// TODO: handle exception
+//								e.printStackTrace();
+//							}
+							
+							Message msg = new Message();  
+				            msg.what = 1;  
+				            updateview.sendMessage(msg);  
 							
 						}
-					//bitmap=resualt;	
-					
 					Log.d("图片", "图片下载完成");
 					
 					}
@@ -1384,15 +1407,12 @@ public void setnetlistview(List<NetKGmusicInfo> resualt) {
 	isnetfinish=true;
 	is_can_sousuo=true;
 	qiehuanListview(1);
-	try {
-		updatethread.start();
-	} catch (Exception e) {
-		// TODO: handle exception
-		e.printStackTrace();
-	}
-	
-	
-
+//	try {
+//		updatethread.start();
+//	} catch (Exception e) {
+//		// TODO: handle exception
+//		e.printStackTrace();
+//	}
 	
 }
 }
