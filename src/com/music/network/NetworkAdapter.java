@@ -120,7 +120,7 @@ public class NetworkAdapter extends BaseAdapter implements OnClickListener {
 			//Toast.makeText(mContext, "点击了img", Toast.LENGTH_SHORT).show();
 			 showPopupMenu(v);
 			break;
-
+			
 		default:
 			break;
 		}
