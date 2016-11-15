@@ -481,8 +481,13 @@ public class MyService extends Service implements OnCompletionListener, OnPrepar
 	            		}
 						danqian_length=""+""+timezh.mm(dantime)+":"+ss1;
 	            		mytv_currentposition.setText(danqian_length);
+	            		try {
+	            			myimg_ico.setImageBitmap(mbendi_tupian[mymusicIndex]);
+						} catch (Exception e) {
+							// TODO: handle exception
+							e.printStackTrace();
+						}
 	            		
-	            		myimg_ico.setImageBitmap(mbendi_tupian[mymusicIndex]);
 	            		
 	            		
 					}
@@ -683,7 +688,13 @@ public class MyService extends Service implements OnCompletionListener, OnPrepar
 																																	
 						  remoteViews = new RemoteViews(getPackageName(),  
 					                R.layout.customnotice);  
-					        remoteViews.setImageViewBitmap(R.id.widget_album, mbendi_tupian[mymusicIndex]);  
+						  try {
+							  remoteViews.setImageViewBitmap(R.id.widget_album, mbendi_tupian[mymusicIndex]);  
+						} catch (Exception e) {
+							// TODO: handle exception
+							e.printStackTrace();
+						}
+					        
 					        remoteViews.setTextViewText(R.id.title, tile);  
 					       // remoteViews.setTextViewText(R.id.widget_artist, info.getArtist());  
 					        if (mPlayer.isPlaying()) {  

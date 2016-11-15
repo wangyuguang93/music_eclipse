@@ -50,7 +50,14 @@ public class BackAsyTask extends AsyncTask<String, Void, Bitmap[]> {
 	public BackAsyTask(String[] pic_small) {
 		// TODO Auto-generated constructor stub
 		this.pic_small = pic_small;
-		bitmap = new Bitmap[pic_small.length];
+		try {
+			bitmap = new Bitmap[pic_small.length];
+		} catch (Exception e) {
+			// TODO: handle exception
+			Log.d("设置bitmap出错", "设置bitmap出错");
+			e.printStackTrace();
+		}
+		
 
 	}
 

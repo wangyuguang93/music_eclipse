@@ -39,6 +39,6 @@
         android:layout_height="40dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-         />
+        android:src="@drawable/ic_music_list_icon_more" />
 
 </RelativeLayout>

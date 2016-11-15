@@ -243,6 +243,9 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int network_listView=0x7f04004c;
         public static final int next=0x7f040023;
         public static final int notice=0x7f04001c;
+        public static final int option_download=0x7f04006a;
+        public static final int option_play=0x7f040069;
+        public static final int option_xiangqing=0x7f04006b;
         public static final int pb_music_progress=0x7f040008;
         public static final int play=0x7f040022;
         public static final int progressBar1=0x7f040052;
@@ -316,6 +319,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     }
     public static final class menu {
         public static final int main=0x7f090000;
+        public static final int option=0x7f090001;
     }
     public static final class string {
         public static final int action_exit=0x7f070004;

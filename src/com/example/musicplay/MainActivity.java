@@ -118,12 +118,16 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	private static Thread updatethread;
 	private static Runnable runnable;
 	private int page=1;
+	private Boolean isjiazai=true;
 	int lastItem;
     private Handler updateview = new Handler() {  
         @Override  
         public void handleMessage(Message msg) {  
             if (msg.what == 1) {  
-            	networkAdapter.notifyDataSetChanged();
+            	if (networkAdapter!=null) {
+            		networkAdapter.notifyDataSetChanged();
+				}
+            	
             }  
         }  
     };  
@@ -650,6 +654,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 						@Override
 						public void run() {
 							// TODO Auto-generated method stub
+							isjiazai=false;
 							page=1;
 							Kgmusic(gequ,page);
 						}
@@ -1127,10 +1132,15 @@ public void fanhuiView_net(View view) {
 				if (lastItem == networklistview.getCount()-1  
 		                && scrollState == OnScrollListener.SCROLL_STATE_IDLE) {  
 		  
-		          
-		            page++;
-		            if (page<=5) {
+		          Log.d("isjiazai", ""+isjiazai);
+		          if (isjiazai) {
+		        	  page++;
+				}
+		            
+		            if (page<=5&&isjiazai) {
 		            	KGsearchResualt.setupdatelistview();
+		            	is_can_sousuo=false;
+		            	isjiazai=false;
 		            	  kgmusicSearch.search(gequ,page);
 				            kgmusicSearch.setKGCallBack(new KGSeachCallback() {
 								
@@ -1138,7 +1148,7 @@ public void fanhuiView_net(View view) {
 								public void onSearchResult(List<NetKGmusicInfo> resualt) {
 									// TODO Auto-generated method stub
 									  Log.e("加载更多", "加载更多歌曲");
-									bitmap=null;
+								//	bitmap=null;
 									
 									setnetlistview(resualt);
 									
@@ -1161,6 +1171,8 @@ public void fanhuiView_net(View view) {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				// TODO Auto-generated method stub
+				//networkAdapter.getView(position, view, networklistview);
+				
 				if (net_lujin[position]==null) {
 					updatethread=new Thread(runnable);
 					updatethread.start();
@@ -1379,7 +1391,7 @@ public void setnetlistview(List<NetKGmusicInfo> resualt) {
 //						 TODO Auto-generated method stub
 						
 						for (int j = 0; j < resualt.length; j++) {
-							//bitmap[j]=resualt[j];
+							bitmap[j]=resualt[j];
 							arr[j].setPic(resualt[j]);
 //							try {
 //								//networkAdapter_item.notifyDataSetChanged();
@@ -1395,7 +1407,7 @@ public void setnetlistview(List<NetKGmusicInfo> resualt) {
 							
 						}
 					Log.d("图片", "图片下载完成");
-					
+					isjiazai=true;
 					}
 				});
 			}
@@ -1415,4 +1427,5 @@ public void setnetlistview(List<NetKGmusicInfo> resualt) {
 //	}
 	
 }
+
 }
