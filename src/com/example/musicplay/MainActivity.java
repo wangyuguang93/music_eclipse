@@ -1,10 +1,12 @@
 package com.example.musicplay;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import com.example.musicplay.BendiFragment.Funhui;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+import com.music.bendi.Bendi_music;
 import com.music.network.BackAsyTask;
 import com.music.network.BackAsyTask.Getmusic_ico;
 import com.music.network.Errorfragment;
@@ -120,7 +122,10 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	private int page=1;
 	private Boolean isjiazai=true;
 	int lastItem;
+	private Bendi_music[] bm;
 	private String istile;
+	private List<Bendi_music> bendi_musics;
+	private Bendi_music music;
     private Handler updateview = new Handler() {  
         @Override  
         public void handleMessage(Message msg) {  
@@ -160,17 +165,21 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 		//Toast.makeText(this, dir.getPath().toString(), 1000).show();
 		
 		findId();
-		Thread thread=new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				for(int i=0;i<musicid.length;i++){
-				testbendi[i] =MediaUtil.getArtwork(MainActivity.this,musicid[i], music_albumId[i], true, true);
-				}
-			}
-		});
-		thread.start();
+//		Thread thread=new Thread(new Runnable() {
+//			
+//			@Override
+//			public void run() {
+//				// TODO Auto-generated method stub
+//				for(int i=0;i<musicid.length;i++){
+//				testbendi[i] =MediaUtil.getArtwork(MainActivity.this,musicid[i], music_albumId[i], true, true);
+//				}
+//			}
+//		});
+//		thread.start();
+		bm=bendi_musics.toArray(new Bendi_music[bendi_musics.size()]);
+		for(int i=0;i<musicid.length;i++){
+		testbendi[i]=bm[i].getBnendi_pic();
+		}
 		qiehuanListview(0);
   //读取数据
 		try {
@@ -289,6 +298,10 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	
 	public void ScannerMusic()
 	{
+		if (bendi_musics==null) {
+			bendi_musics=new ArrayList<Bendi_music>();
+		}
+		
 	// 查询媒体数据库
 	cursor = this.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null,
 	MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
@@ -304,7 +317,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	{
 	while (!cursor.isAfterLast())
 	{
-		
+		music=new Bendi_music();
 	// 歌曲编号
 	int id = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
 	// 歌曲id
@@ -321,7 +334,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	int duration = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
 	long albumId = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
 	// 歌曲文件的大小 ：MediaStore.Audio.Media.SIZE
-	Long size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE));
+	long size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE));
 	// 歌曲文件显示名字
 	String disName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME));
 	
@@ -329,8 +342,20 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	bendata[j]=disName;
 	bendi[j]=url;
 	musicid[j]=id;
-	music_albumId[j]=albumId;
 	
+	music_albumId[j]=albumId;	
+	music.setAlbumId(id);
+	music.setAlbum(album);
+	music.setArtist(artist);
+	music.setDisName(disName);
+	music.setSize(size);
+	music.setTitle(title);
+	music.setUrl(url);
+	music.setDuration(duration);
+	music.setTrackId(trackId);
+	music.setBnendi_pic(MediaUtil.getArtwork(MainActivity.this,id, albumId, true, true));
+	bendi_musics.add(music);
+	music=null;
 	//Log.e("music disName=", ""+test1[j]);//打印出歌曲名字
 	cursor.moveToNext();
 	j++;
@@ -642,7 +667,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 				
 				//删除歌词缓存目录
 				File lcylujiu=Environment.getExternalStorageDirectory();
-				File lcydir=new File(lcylujiu.toString()+"/kgmusic/"+"/lcy/"+"/Cache/");
+				File lcydir=new File(lcylujiu.toString()+"/kgmusic/"+"/lrc/"+"/Cache/");
 				delete(lcydir);	
 				if (is_can_sousuo) {
 					is_can_sousuo=false;
@@ -843,7 +868,6 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
         public void onReceive(Context context, Intent intent) {  
             // TODO Auto-generated method stub 
         	String msg=intent.getStringExtra("msg");
-        	String action=intent.getAction();
         	if (msg.equals("play")) {
         		Log.d("test", msg);
         	bofang();
@@ -863,24 +887,11 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 				finish();
 			}
 
-        	if (msg.equals("listview")) {
-//        		int zhi=intent.getIntExtra("zhi", musicIndex);
-//        		musicAdpater.update(musicIndex, zhi);
-//        		musicIndex=zhi;
-//        		//Log.d("gggg", ""+zhi);
-//        		 Handler handler=new Handler();
-//        		 Runnable add=new Runnable(){
-//        			 @Override
-//        			 public void run() {
-//        			  // TODO Auto-generated method stub
-//        			 //arr.add("增加一项");//增加一项
-//        			  musicAdpater.notifyDataSetChanged();    
-//        			}  
-//        		 };
-//        	
-//        		 handler.post(add);
-//        		musicAdpater.notifyDataSetChanged();
-//        		//listView.setAdapter(musicAdpater);
+        	if (msg.equals("updatemusicdate")) {
+        		bendi_musics.clear();
+        		ScannerMusic();
+        		musicAdpater.notifyDataSetChanged();
+        		//listView.setAdapter(musicAdpater);
            	}
         }
     }  	
@@ -999,7 +1010,8 @@ public void fanhuiView(View view) {
 	// TODO Auto-generated method stub
 	listView=(ListView) view.findViewById(R.id.bendi_listView);
 	if (!is_updateListview) {
-		musicAdpater=new MusicAdpater(this, bendata,listView,musicIndex,musicid,music_albumId);
+		//musicAdpater=new MusicAdpater(this, bendata,listView,musicIndex,musicid,music_albumId);
+		musicAdpater=new MusicAdpater(this, bendi_musics);
 		listView.setAdapter(musicAdpater);
 		//listView.setSelection(musicIndex);
 		listView.setOnItemSelectedListener(this);
@@ -1124,7 +1136,7 @@ public void fanhuiView_net(View view) {
 	
 	
 	if (networkAdapter==null) {
-		networkAdapter=new NetworkAdapter(MainActivity.this, musiclist,bitmap);
+		networkAdapter=new NetworkAdapter(MainActivity.this, musiclist);
 	}
 		networklistview.setAdapter(networkAdapter);
 		//networklistview.setAdapter(networkAdapter_item);

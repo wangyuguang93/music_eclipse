@@ -31,7 +31,7 @@ public class NetworkAdapter extends BaseAdapter{
     private Bitmap[] bitmap;
     private String[] net_pic_small;
    private int i;
-    public NetworkAdapter(Context context,List<NetKGmusicInfo> musiclist,Bitmap[] bitmap)
+    public NetworkAdapter(Context context,List<NetKGmusicInfo> musiclist)
     {
         mContext = context;
         mLayoutInflater = LayoutInflater.from(mContext);
@@ -154,6 +154,7 @@ public class NetworkAdapter extends BaseAdapter{
 				if (url==null) {
 					url=arr[index].getUrl128();
 				}
+				System.out.print(arr[index].getFilesize320());
 				Net_music_download net_music_download=new Net_music_download(mContext);
 				net_music_download.execute(url,songname,extname);
 				Toast.makeText(mContext, "开始下载", Toast.LENGTH_SHORT).show();

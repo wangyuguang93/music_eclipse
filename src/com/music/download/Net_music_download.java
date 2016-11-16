@@ -7,18 +7,55 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import android.content.Context;
+import android.content.Intent;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
 public class Net_music_download extends AsyncTask<String, Integer, String>{
 	private URL url;
-	private String songname;
 	private String extname;
     final int DOWN_THREAD_NUM = 4;
     private Context context;
-    String OUT_FILE_NAME;  
+    String OUT_FILE_NAME="";  
+    private int jishu=0;
+    private Handler downloadfinish=new Handler(){
+
+		@Override
+		public void handleMessage(Message msg) {
+			// TODO Auto-generated method stub
+			if (msg.what==1) {
+				jishu++;
+				if (jishu==4) {
+					Toast.makeText(context, OUT_FILE_NAME+" 下载完成", Toast.LENGTH_SHORT).show();
+					//Intent scanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+					
+					//MediaScannerConnection.scanFile(context, new String[]{Environment.getExternalStorageDirectory().getAbsolutePath() + "/kgmusic/download/",OUT_FILE_NAME}, null, null);
+					  MediaScannerConnection.scanFile(context,
+			                    new String[] { Environment.getExternalStorageDirectory().getAbsolutePath() + "/kgmusic/download/"+OUT_FILE_NAME }, null,
+			                    new MediaScannerConnection.OnScanCompletedListener() {
+			                public void onScanCompleted(String path, Uri uri) {
+			                    Log.i("ExternalStorage", "Scanned " + path + ":");
+			                    Log.i("ExternalStorage", "-> uri=" + uri);
+			                     Intent intent  = new Intent(); 
+			    		        intent.putExtra("msg", "updatemusicdate");
+			    		        intent.setAction("main");  
+			    		        context.sendBroadcast(intent);  
+			                }
+			            });
+				}
+				
+				
+               // context.sendBroadcast(scanIntent);
+			}
+		}
+    	
+    };
     InputStream[] isArr = new InputStream[DOWN_THREAD_NUM];  
     RandomAccessFile[] outArr = new RandomAccessFile[DOWN_THREAD_NUM];  
     //构造函数
@@ -37,9 +74,10 @@ public class Net_music_download extends AsyncTask<String, Integer, String>{
 				
 			}
 			
-			OUT_FILE_NAME=params[1]+"."+params[2];
+			OUT_FILE_NAME=params[1]+"."+extname;
 			url=new URL(params[0]);
 			if (url!=null) {
+				Log.d("下载链接", ""+url);
 	            isArr[0] = url.openStream();  
 	            long fileLen = getFileLength(url);  
 	            System.out.println("网络资源的大小" + fileLen);  
@@ -65,7 +103,7 @@ public class Net_music_download extends AsyncTask<String, Integer, String>{
 	            try {
 //	            	 for (int i = 0; i < fileLen; i++) {  
 //	 	                outArr[0].write(0);  
-	            	outArr[0].setLength(numPerThred);
+	            	outArr[0].setLength(fileLen);
 	 	            
 				} catch (Exception e) {
 					// TODO: handle exception
@@ -81,13 +119,7 @@ public class Net_music_download extends AsyncTask<String, Integer, String>{
 	                    // 以URL打开多个输入流  
 	                    isArr[i] = url.openStream();  
 	                    // 以指定输出文件创建多个RandomAccessFile对象  
-	                    boolean test=songdir.canRead();
-	                    boolean test2=songdir.canWrite();
-	                    Log.d("test", ""+test);
-	                    Log.d("test2", ""+test2);
-	                    outArr[i] = new RandomAccessFile(OUT_FILE_NAME, "rw"); 
-	                    int gg;
-	                    outArr[i].setLength(numPerThred);
+	                    outArr[i] = new RandomAccessFile(songdir, "rw"); 	              	                  
 	                }  
 	                // 分别启动多个线程来下载网络资源  
 	                if (i == DOWN_THREAD_NUM - 1) {  
@@ -122,7 +154,7 @@ public class Net_music_download extends AsyncTask<String, Integer, String>{
 	
     @Override
 	protected void onPostExecute(String result) {
-    	Toast.makeText(context, "下载完成", Toast.LENGTH_SHORT).show();
+    	
 		// TODO Auto-generated method stub
 		super.onPostExecute(result);
 	}
@@ -182,8 +214,12 @@ public class Net_music_download extends AsyncTask<String, Integer, String>{
                         break;  
                     }  
                     draf.write(buff, 0, hasRead); 
-                    
+                  
                 }  
+              	Message message=new Message();
+            	message.what=1;
+            	downloadfinish.sendMessage(message);
+
             } catch (Exception ex) {  
                 ex.printStackTrace();  
             }  

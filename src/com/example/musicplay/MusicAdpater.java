@@ -3,6 +3,8 @@ package com.example.musicplay;
 import java.util.List;
 
 import com.example.musicplay.R.id;
+import com.music.bendi.Bendi_music;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -23,11 +25,13 @@ public class MusicAdpater extends BaseAdapter{
 	private String Data[];
 	private int ysq;
 	private Bitmap bitmap[];
+	private List<Bendi_music> bendi_musics;
 	//private View view;
 //	private TextView tv1;
 //	private ImageView img_ysq,imaglab;
 	private int musicid[];
 	private	long almid[];
+	private Bendi_music[] bm;
 	//private Context context;
 
 	public MusicAdpater(Context context,String data[],ListView listview,int musicIndex,int musicid[],long almid[]) {
@@ -45,17 +49,24 @@ public class MusicAdpater extends BaseAdapter{
 		}
 		
 	}
-
+	public MusicAdpater(Context context,List<Bendi_music> bendi_musics) {
+		// TODO Auto-generated constructor stub
+		this.bendi_musics=bendi_musics;
+		this.context=context;
+		 mInflater = LayoutInflater.from(context);
+		
+	}
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
-		return Data.length;
+		//return Data.length;
+		return bendi_musics.size();
 	}
 
 	@Override
 	public Object getItem(int position) {
 		// TODO Auto-generated method stub
-		return null;
+		return position;
 
 	}
 
@@ -69,6 +80,7 @@ public class MusicAdpater extends BaseAdapter{
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
+		bm=bendi_musics.toArray(new Bendi_music[bendi_musics.size()]);
 		ViewHolder holder;
 		if (convertView == null) {
 		
@@ -103,31 +115,21 @@ public class MusicAdpater extends BaseAdapter{
 		
 		
 			
-			holder.tv1.setText(Data[position]);			
-			holder.imaglab.setImageBitmap(bitmap[position]);	
+			holder.tv1.setText(bm[position].getDisName());			
+			
+		    Bitmap pic=bm[position].getBnendi_pic();
+	        if (pic!=null) {
+	        	holder.imaglab.setImageBitmap(bm[position].getBnendi_pic());
+			}
+	        else {
+	        	holder.imaglab.setImageDrawable(context.getResources().getDrawable(R.drawable.deault_zhuanji));
+			}
 //			System.out.println(almid[position]);
 //		}
 		
 		 convertView.setTag(holder);
 		
 		return convertView;
-	}
-	public void update(int posi,int posi2) {
-//		ViewHolder viewHolder1=new ViewHolder();
-//		for(int i=0;i<Data.length-1;i++)
-//		{
-//			if (i==posi) {
-//				viewHolder1.img_ysq.setImageDrawable(null);
-//				//img_ysq.setimg
-//				viewHolder1.tv1.setText(Data[ysq]);
-//			}
-//			if (i==posi2) {
-//				viewHolder1.img_ysq.setImageDrawable(view.getResources().getDrawable(R.drawable.ysq));
-//				//img_ysq.setimg
-//				viewHolder1.tv1.setText(Data[ysq]);
-//			}
-//		}
-		
 	}
 	
 	 static class ViewHolder {
