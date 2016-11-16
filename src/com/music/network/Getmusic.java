@@ -217,7 +217,7 @@ public class Getmusic implements music_API{
 							String geciname=info.getSongname()+"."+info.getFmt();
 							//歌词缓存目录
 							File lcylujiu=Environment.getExternalStorageDirectory();
-							File lcydir=new File(lcylujiu+"/kgmusic/"+"/lcy/"+"/Cache/");
+							File lcydir=new File(lcylujiu+"/kgmusic/"+"/lrc/"+"/Cache/");
 							if (!lcydir.exists()) {
 								lcydir.mkdirs();
 								

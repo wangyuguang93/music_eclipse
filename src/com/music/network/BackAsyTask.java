@@ -101,7 +101,10 @@ public class BackAsyTask extends AsyncTask<String, Void, Bitmap[]> {
 							murl="http://45.76.107.227/mtw.jpg";
 						}
 						url = new URL(murl);
-						Log.d("picUrl", pic_small[a]);
+						if (pic_small[a]!=null) {
+							Log.d("picUrl", pic_small[a]);
+						}
+						
 					} catch (MalformedURLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -171,7 +174,9 @@ public class BackAsyTask extends AsyncTask<String, Void, Bitmap[]> {
 									murl="http://45.76.107.227/mtw.jpg";
 								}
 								url = new URL(murl);
-								Log.d("picUrl", pic_small[b]);
+								if (pic_small[b]!=null) {
+									Log.d("picUrl", pic_small[b]);
+								}
 							} catch (MalformedURLException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -242,7 +247,9 @@ public class BackAsyTask extends AsyncTask<String, Void, Bitmap[]> {
 									murl="http://45.76.107.227/mtw.jpg";
 								}
 								url = new URL(murl);
-								Log.d("picUrl", pic_small[c]);
+								if (pic_small[c]!=null) {
+									Log.d("picUrl", pic_small[c]);
+								}
 							} catch (MalformedURLException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -313,7 +320,9 @@ public class BackAsyTask extends AsyncTask<String, Void, Bitmap[]> {
 									murl="http://45.76.107.227/mtw.jpg";
 								}
 								url = new URL(murl);
-								Log.d("picUrl", pic_small[d]);
+								if (pic_small[d]!=null) {
+									Log.d("picUrl", pic_small[d]);
+								}
 							} catch (MalformedURLException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();

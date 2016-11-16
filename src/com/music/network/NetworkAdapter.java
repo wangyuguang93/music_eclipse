@@ -17,12 +17,13 @@ import android.widget.Toast;
 import java.util.List;
 
 import com.example.musicplay.R;
+import com.music.download.Net_music_download;
 import com.music.network.BackAsyTask.Getmusic_ico;
 
 /**
  * Created by Xiamin on 2016/8/28.
  */
-public class NetworkAdapter extends BaseAdapter implements OnClickListener {
+public class NetworkAdapter extends BaseAdapter{
 	private NetKGmusicInfo arr[];
     private Context mContext;
     private LayoutInflater mLayoutInflater;
@@ -56,7 +57,7 @@ public class NetworkAdapter extends BaseAdapter implements OnClickListener {
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
+    public View getView(final int i, View view, ViewGroup viewGroup) {
     	 arr = (NetKGmusicInfo[])amusiclist.toArray(new NetKGmusicInfo[amusiclist.size()]);
 //    	 net_pic_small=new String[amusiclist.size()];
 //    	 net_pic_small[i]=arr[i].getImgUrl();
@@ -101,7 +102,27 @@ public class NetworkAdapter extends BaseAdapter implements OnClickListener {
         else {
 			viewHolder.image.setImageDrawable(mContext.getResources().getDrawable(R.drawable.deault_zhuanji));
 		}
-       viewHolder.iv_more.setOnClickListener(this);
+       viewHolder.iv_more.setOnClickListener(new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			// TODO Auto-generated method stub
+			
+			switch (v.getId()) {
+			case R.id.iv_more:
+				//Toast.makeText(mContext, "点击了img", Toast.LENGTH_SHORT).show();
+				
+				 showPopupMenu(v,i);
+				 
+				break;
+				
+			default:
+				break;
+			}
+		}
+	});
+      
         return view;
     }
 
@@ -112,24 +133,12 @@ public class NetworkAdapter extends BaseAdapter implements OnClickListener {
         ImageView iv_more;
     }
 
-	@Override
-	public void onClick(View v) {
-		// TODO Auto-generated method stub
-		switch (v.getId()) {
-		case R.id.iv_more:
-			//Toast.makeText(mContext, "点击了img", Toast.LENGTH_SHORT).show();
-			 showPopupMenu(v);
-			break;
-			
-		default:
-			break;
-		}
-	}
-
-	 private void showPopupMenu(View view) {
+	 private void showPopupMenu(View view,final int index) {
 		 // View当前PopupMenu显示的相对View的位置
 		 PopupMenu popupMenu = new PopupMenu(mContext, view);
 		 // menu布局
+		 view.getId();
+		
 		 popupMenu.getMenuInflater().inflate(R.menu.option, popupMenu.getMenu());
 		 // menu的item点击事件
 		 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -137,8 +146,17 @@ public class NetworkAdapter extends BaseAdapter implements OnClickListener {
 		  public boolean onMenuItemClick(MenuItem item) {
 		 // Toast.makeText(mContext, item.getTitle(), Toast.LENGTH_SHORT).show();
 			  switch (item.getItemId()) {
-			case R.id.option_xiangqing:
-				Toast.makeText(mContext, arr[0].getSongname(), Toast.LENGTH_SHORT).show();
+			case R.id.option_download:
+				//Toast.makeText(mContext, arr[index].getSongname(), Toast.LENGTH_SHORT).show();
+				String songname=arr[index].getFilename();
+				String extname=arr[index].getExtName();
+				String url=arr[index].getUrl320();
+				if (url==null) {
+					url=arr[index].getUrl128();
+				}
+				Net_music_download net_music_download=new Net_music_download(mContext);
+				net_music_download.execute(url,songname,extname);
+				Toast.makeText(mContext, "开始下载", Toast.LENGTH_SHORT).show();
 				break;
 
 			default:

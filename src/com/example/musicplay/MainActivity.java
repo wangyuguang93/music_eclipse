@@ -120,6 +120,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	private int page=1;
 	private Boolean isjiazai=true;
 	int lastItem;
+	private String istile;
     private Handler updateview = new Handler() {  
         @Override  
         public void handleMessage(Message msg) {  
@@ -172,18 +173,24 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 		thread.start();
 		qiehuanListview(0);
   //读取数据
-		SharedPreferences peizhi=this.getSharedPreferences("peizhi", Context.MODE_PRIVATE);
-		String istile=peizhi.getString("tile", null);
-		tv_music_title.setText(istile);
-		max=peizhi.getInt("max", 0);
-		pb_music_progress.setMax(max);
-		pb_music_progress.setProgress(peizhi.getInt("dantime", 0));
-		tv_duration.setText(peizhi.getString("length", null));
-		tv_currentposition.setText(peizhi.getString("danqian_length", null));
-		musicIndex=peizhi.getInt("musicIndex", 0);
-		islast=peizhi.getBoolean("ismylast", false);
-		danqian=peizhi.getInt("dantime", 0);
-		tv_guqu_num.setText(peizhi.getString("gequ_num", ""));
+		try {
+			SharedPreferences peizhi=this.getSharedPreferences("peizhi", Context.MODE_PRIVATE);
+			istile=peizhi.getString("tile", null);
+			tv_music_title.setText(istile);
+			max=peizhi.getInt("max", 0);
+			pb_music_progress.setMax(max);
+			pb_music_progress.setProgress(peizhi.getInt("dantime", 0));
+			tv_duration.setText(peizhi.getString("length", null));
+			tv_currentposition.setText(peizhi.getString("danqian_length", null));
+			musicIndex=peizhi.getInt("musicIndex", 0);
+			islast=peizhi.getBoolean("ismylast", false);
+			danqian=peizhi.getInt("dantime", 0);
+			tv_guqu_num.setText(peizhi.getString("gequ_num", ""));
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
 		//Log.d("wenti", ""+peizhi.getInt("danqian", 0));
 		Connection();		
 //nnn		musicAdpater=new MusicAdpater(this, data,listView,musicIndex);
