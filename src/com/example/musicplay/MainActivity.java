@@ -176,10 +176,10 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 //			}
 //		});
 //		thread.start();
-		bm=bendi_musics.toArray(new Bendi_music[bendi_musics.size()]);
-		for(int i=0;i<musicid.length;i++){
-		testbendi[i]=bm[i].getBnendi_pic();
-		}
+//		bm=bendi_musics.toArray(new Bendi_music[bendi_musics.size()]);
+//		for(int i=0;i<musicid.length;i++){
+//		testbendi[i]=bm[i].getBnendi_pic();
+//		}
 		qiehuanListview(0);
   //读取数据
 		try {
@@ -354,6 +354,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	music.setDuration(duration);
 	music.setTrackId(trackId);
 	music.setBnendi_pic(MediaUtil.getArtwork(MainActivity.this,id, albumId, true, true));
+	testbendi[j]=music.getBnendi_pic();
 	bendi_musics.add(music);
 	music=null;
 	//Log.e("music disName=", ""+test1[j]);//打印出歌曲名字
