@@ -9,6 +9,7 @@ import java.net.URLConnection;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
 public class Net_music_download extends AsyncTask<String, Integer, String>{
@@ -29,7 +30,12 @@ public class Net_music_download extends AsyncTask<String, Integer, String>{
 	protected String doInBackground(String... params) {
 		// TODO Auto-generated method stub
 		try {
-			
+			extname=params[2];
+			if (extname==null) {
+				//String s1=mylujin[mymusicIndex];
+				extname=params[0].substring(params[0].lastIndexOf('.')+1);
+				
+			}
 			
 			OUT_FILE_NAME=params[1]+"."+params[2];
 			url=new URL(params[0]);
@@ -49,17 +55,24 @@ public class Net_music_download extends AsyncTask<String, Integer, String>{
 //					songdir.mkdirs();
 //					
 //				}
-				
-	            
-	            outArr[0] = new RandomAccessFile(songdir, "rw");
-	            // 创建一个与下载资源相同大小的空文件  
-	            for (int i = 0; i < fileLen; i++) {  
-	                outArr[0].write(0);  
-	            }  
-	            // 每线程应该下载的字节数  
+				  // 每线程应该下载的字节数  
 	            long numPerThred = fileLen / DOWN_THREAD_NUM;  
 	            // 整个下载资源整除后剩下的余数取模  
-	            long left = fileLen % DOWN_THREAD_NUM;  
+	            long left = fileLen % DOWN_THREAD_NUM;
+	            Log.d("songdir", ""+songdir);
+	            outArr[0] = new RandomAccessFile(songdir, "rw");
+	            // 创建一个与下载资源相同大小的空文件  
+	            try {
+//	            	 for (int i = 0; i < fileLen; i++) {  
+//	 	                outArr[0].write(0);  
+	            	outArr[0].setLength(numPerThred);
+	 	            
+				} catch (Exception e) {
+					// TODO: handle exception
+					e.printStackTrace();
+				}
+	           
+	            
 	            for (int i = 0; i < DOWN_THREAD_NUM; i++) {  
 	                // 为每个线程打开一个输入流、一个RandomAccessFile对象，  
 	                // 让每个线程分别负责下载资源的不同部分。  
@@ -68,7 +81,13 @@ public class Net_music_download extends AsyncTask<String, Integer, String>{
 	                    // 以URL打开多个输入流  
 	                    isArr[i] = url.openStream();  
 	                    // 以指定输出文件创建多个RandomAccessFile对象  
-	                    outArr[i] = new RandomAccessFile(OUT_FILE_NAME, "rw");  
+	                    boolean test=songdir.canRead();
+	                    boolean test2=songdir.canWrite();
+	                    Log.d("test", ""+test);
+	                    Log.d("test2", ""+test2);
+	                    outArr[i] = new RandomAccessFile(OUT_FILE_NAME, "rw"); 
+	                    int gg;
+	                    outArr[i].setLength(numPerThred);
 	                }  
 	                // 分别启动多个线程来下载网络资源  
 	                if (i == DOWN_THREAD_NUM - 1) {  
@@ -128,10 +147,10 @@ public class Net_music_download extends AsyncTask<String, Integer, String>{
         private long end;  
           
         // 下载资源对应的输入流  
-        private InputStream is;  
+        private InputStream dis;  
           
         // 将下载到的字节输出到raf中  
-        private RandomAccessFile raf;  
+        private RandomAccessFile draf;  
       
           
         // 构造器，传入输入流，输出流和下载起始点、结束点  
@@ -140,14 +159,14 @@ public class Net_music_download extends AsyncTask<String, Integer, String>{
             System.out.println(start + "---->" + end);  
             this.start = start;  
             this.end = end;  
-            this.is = is;  
-            this.raf = raf;  
+            dis = is;  
+            draf = raf;  
         }  
       
         public void run() {  
             try {  
-                is.skip(start);  
-                raf.seek(start);  
+                dis.skip(start);  
+                draf.seek(start);  
                 // 定义读取输入流内容的的缓存数组（竹筒）  
                 byte[] buff = new byte[BUFF_LEN];  
                 // 本线程负责下载资源的大小  
@@ -157,12 +176,13 @@ public class Net_music_download extends AsyncTask<String, Integer, String>{
                 // 实际读取的字节数  
                 int hasRead = 0;  
                 for (int i = 0; i < times; i++) {  
-                    hasRead = is.read(buff);  
+                    hasRead = dis.read(buff);  
                     // 如果读取的字节数小于0，则退出循环！  
                     if (hasRead < 0) {  
                         break;  
                     }  
-                    raf.write(buff, 0, hasRead);  
+                    draf.write(buff, 0, hasRead); 
+                    
                 }  
             } catch (Exception ex) {  
                 ex.printStackTrace();  
@@ -170,11 +190,12 @@ public class Net_music_download extends AsyncTask<String, Integer, String>{
             // 使用finally块来关闭当前线程的输入流、输出流  
             finally {  
                 try {  
-                    if (is != null) {  
-                        is.close();  
+                    if (dis != null) {  
+                        dis.close(); 
+                        
                     }  
-                    if (raf != null) {  
-                        raf.close();  
+                    if (draf != null) {  
+                        draf.close();  
                     }  
                 } catch (Exception ex) {  
                     ex.printStackTrace();  

@@ -1398,7 +1398,13 @@ public void setnetlistview(List<NetKGmusicInfo> resualt) {
 //						 TODO Auto-generated method stub
 						
 						for (int j = 0; j < resualt.length; j++) {
-							bitmap[j]=resualt[j];
+							try {
+								bitmap[j]=resualt[j];
+							} catch (Exception e) {
+								// TODO: handle exception
+								e.printStackTrace();
+							}
+							
 							arr[j].setPic(resualt[j]);
 //							try {
 //								//networkAdapter_item.notifyDataSetChanged();
