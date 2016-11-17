@@ -82,7 +82,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	private ImageView img_ico,menu_ico,img_start,net_fanhui,net_search;
 	private MyService musicservice;
 	private boolean tag=false,pause=false,islastwj=false,iserji=false,is_updateListview=false;
-	MusicAdpater musicAdpater;
+	static MusicAdpater musicAdpater;
 	NetworkAdapter_item networkAdapter_item;
 	static NetworkAdapter networkAdapter;
 	private ListView listView,networklistview;
@@ -128,7 +128,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	private Bendi_music music;
     private Handler updateview = new Handler() {  
         @Override  
-        public void handleMessage(Message msg) {  
+        public  void handleMessage(Message msg) {  
             if (msg.what == 1) {  
             	if (networkAdapter!=null) {
             		networkAdapter.notifyDataSetChanged();
@@ -137,6 +137,12 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
             }  
         }  
     };  
+    public static void deleteupdate() {
+    	if (musicAdpater!=null) {
+    		musicAdpater.notifyDataSetChanged();
+		}
+	}
+    
 	private List<NetKGmusicInfo> musiclist;;
 	@Override
 	public void onCreate (Bundle savedInstanceState) {
@@ -894,6 +900,44 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
         		musicAdpater.notifyDataSetChanged();
         		//listView.setAdapter(musicAdpater);
            	}
+        	if (msg.equals("bendiplay")) {
+        		int index=intent.getIntExtra("bendiindex", 0);
+        		lujin=bendi;
+				data=bendata;
+				musicIndex=index;
+				bendi_tupian=testbendi;
+				islast=false;
+				pb_music_progress.setProgress(0);
+				myplay();
+			}
+        	if (msg.equals("netplay")) {
+        		int index=intent.getIntExtra("netindex", 0);
+        		if (net_lujin[index]==null) {
+					updatethread=new Thread(runnable);
+					updatethread.start();
+				}
+				else {
+					
+					musicIndex=index;
+					lujin=net_lujin;
+					data=net_song_name;
+					bendi_tupian=bitmap;
+					islast=false;
+					pb_music_progress.setProgress(0);
+					Handler playhandler=new Handler();
+					Runnable playrunnable=new Runnable() {
+						
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							myplay();
+						}
+					};
+					playhandler.post(playrunnable);
+					is_can_sousuo=true;
+				}
+			}	
+		      
         }
     }  	
 	private class erjiReceiver extends BroadcastReceiver{

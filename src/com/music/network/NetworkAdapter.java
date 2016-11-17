@@ -4,6 +4,7 @@ import android.R.string;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -124,7 +125,7 @@ public class NetworkAdapter extends BaseAdapter{
 				 showPopupMenu(v,i);
 				 
 				break;
-				
+
 			default:
 				break;
 			}
@@ -217,20 +218,49 @@ public class NetworkAdapter extends BaseAdapter{
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						// TODO Auto-generated method stub
-						String songname=arr[index].getFilename();
-						String extname=arr[index].getExtName();
-						if (url==null) {
-							url=durl[0];
+						try {
+							String songname=arr[index].getFilename();
+							String extname=arr[index].getExtName();
+							if (url==null) {
+								url=durl[0];
+							}
+							System.out.print(arr[index].getFilesize320());
+							Net_music_download net_music_download=new Net_music_download(mContext);
+							net_music_download.execute(url,songname,extname);
+							Toast.makeText(mContext, "开始下载", Toast.LENGTH_SHORT).show();
+						} catch (Exception e) {
+							// TODO: handle exception
+							e.printStackTrace();
 						}
-						System.out.print(arr[index].getFilesize320());
-						Net_music_download net_music_download=new Net_music_download(mContext);
-						net_music_download.execute(url,songname,extname);
-						Toast.makeText(mContext, "开始下载", Toast.LENGTH_SHORT).show();
+						
 					}
 				});
 				download.create().show();
 				//Toast.makeText(mContext, arr[index].getSongname(), Toast.LENGTH_SHORT).show();
 				
+				break;
+			case R.id.option_xiangqing:
+				try {
+					DecimalFormat   fnum   =   new   DecimalFormat("##0.00");
+					 float size=Float.parseFloat(arr[index].getFilesize320());
+					  size=++size/1024/1024;
+					  String   dd=fnum.format(size); 
+					AlertDialog.Builder netxiangqing=new AlertDialog.Builder(mContext);
+					netxiangqing.setTitle("详情");
+					netxiangqing.setMessage("文件名："+arr[index].getFilename()+"\n"+"专辑:"+arr[index].getAlbum_name()+"\n"+"大小:"+dd+"M");
+					netxiangqing.create().show();
+				} catch (Exception e) {
+					// TODO: handle exception
+					e.printStackTrace();
+				}
+				 
+				break;
+			case R.id.option_play:
+				Intent intent = new Intent();
+				intent.putExtra("msg", "netplay");
+				intent.putExtra("netindex",index);
+				intent.setAction("main");
+				mContext.sendBroadcast(intent);
 				break;
 
 			default:

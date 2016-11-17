@@ -236,6 +236,7 @@ public class MyService extends Service implements OnCompletionListener, OnPrepar
 			ismylast=true;
 			isSave=true;
 			issuoping=true;
+			mPlayer.setOnBufferingUpdateListener(this);
 		}
 
 		//初始化锁屏广播
@@ -511,20 +512,23 @@ public class MyService extends Service implements OnCompletionListener, OnPrepar
 			mp.setDataSource(playlujin);
 			//Log.d("当前播放", ""+this.musicIndex);
 			//缓冲
-			mp.prepare();
-			mp.setOnPreparedListener(new OnPreparedListener() {
-				
-				@Override
-				public void onPrepared(MediaPlayer mp) {
-					// TODO Auto-generated method stub
-					mp.start();
-				}
-			});
+			mp.prepareAsync();
+			mp.setOnPreparedListener(this);
+			mPlayer.setOnBufferingUpdateListener(this);
+//			mp.prepare();
+//			mp.setOnPreparedListener(new OnPreparedListener() {
+//				
+//				@Override
+//				public void onPrepared(MediaPlayer mp) {
+//					// TODO Auto-generated method stub
+//					mp.start();
+//				}
+//			});
+//			
 			
-
 			//更新界面
 		
-			jiemian();
+//			jiemian();
 			
 			//更新listview
 			Intent listv = new Intent();
@@ -754,8 +758,14 @@ public void onPrepared(MediaPlayer mp) {
 public void onBufferingUpdate(MediaPlayer mp, int percent) {
 	// TODO Auto-generated method stub
 	tile=mdata[mymusicIndex];
-	mytv_music_title.setText("(正在缓冲"+percent+"%+...)"+tile);
-	 System.out.println("缓冲了的百分比 : " + percent + " %");       
+	if (percent<99) {
+		mytv_music_title.setText("(正在缓冲"+percent+"%+...)"+tile);
+	}else {
+		mytv_music_title.setText(tile);
+	}
+	
+	 System.out.println("缓冲了的百分比 : " + percent + " %");
+	 mypb_music_progress.setSecondaryProgress(percent);
 }
 }
 		

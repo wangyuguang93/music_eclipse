@@ -190,10 +190,13 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     public static final class id {
         public static final int LinearLayout1=0x7f04003f;
         public static final int RelativeLayout1=0x7f040029;
-        public static final int action_exit=0x7f040067;
-        public static final int action_settings=0x7f040066;
+        public static final int action_exit=0x7f04006a;
+        public static final int action_settings=0x7f040069;
         public static final int bendi_FrameLayout=0x7f04001a;
         public static final int bendi_listView=0x7f04001b;
+        public static final int bendi_option_delete=0x7f040067;
+        public static final int bendi_option_play=0x7f040066;
+        public static final int bendi_option_xiangqing=0x7f040068;
         public static final int btn_exit=0x7f040064;
         public static final int btn_login=0x7f040035;
         public static final int btn_registered=0x7f04004e;
@@ -243,9 +246,9 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int network_listView=0x7f04004c;
         public static final int next=0x7f040023;
         public static final int notice=0x7f04001c;
-        public static final int option_download=0x7f04006a;
-        public static final int option_play=0x7f040069;
-        public static final int option_xiangqing=0x7f04006b;
+        public static final int option_download=0x7f04006d;
+        public static final int option_play=0x7f04006c;
+        public static final int option_xiangqing=0x7f04006e;
         public static final int pb_music_progress=0x7f040008;
         public static final int play=0x7f040022;
         public static final int progressBar1=0x7f040052;
@@ -255,7 +258,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int selected_view=0x7f040000;
         public static final int setting=0x7f040028;
         public static final int slidingmenumain=0x7f04005c;
-        public static final int sousuo=0x7f040068;
+        public static final int sousuo=0x7f04006b;
         public static final int tV_userName=0x7f04002d;
         public static final int textView1=0x7f040031;
         public static final int textView3=0x7f040030;
@@ -318,8 +321,9 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int welcome=0x7f030011;
     }
     public static final class menu {
-        public static final int main=0x7f090000;
-        public static final int option=0x7f090001;
+        public static final int bendi_option=0x7f090000;
+        public static final int main=0x7f090001;
+        public static final int option=0x7f090002;
     }
     public static final class string {
         public static final int action_exit=0x7f070004;
