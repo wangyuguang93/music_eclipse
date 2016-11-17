@@ -42,7 +42,7 @@ public class Net_music_download extends AsyncTask<String, Integer, String>{
 			                public void onScanCompleted(String path, Uri uri) {
 			                    Log.i("ExternalStorage", "Scanned " + path + ":");
 			                    Log.i("ExternalStorage", "-> uri=" + uri);
-			                     Intent intent  = new Intent(); 
+			                    Intent intent  = new Intent(); 
 			    		        intent.putExtra("msg", "updatemusicdate");
 			    		        intent.setAction("main");  
 			    		        context.sendBroadcast(intent);  
@@ -67,12 +67,12 @@ public class Net_music_download extends AsyncTask<String, Integer, String>{
 	protected String doInBackground(String... params) {
 		// TODO Auto-generated method stub
 		try {
-			extname=params[2];
-			if (extname==null) {
+//			extname=params[2];
+//			if (extname==null) {
 				//String s1=mylujin[mymusicIndex];
 				extname=params[0].substring(params[0].lastIndexOf('.')+1);
 				
-			}
+//			}
 			
 			OUT_FILE_NAME=params[1]+"."+extname;
 			url=new URL(params[0]);

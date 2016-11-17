@@ -27,6 +27,15 @@ public class NetKGmusicInfo implements Parcelable{
 	private String url128;
 	private String url320;
 	private String urlsq;
+	private String urlmv;
+	public String getUrlmv() {
+		return urlmv;
+	}
+
+	public void setUrlmv(String urlmv) {
+		this.urlmv = urlmv;
+	}
+
 	private String extName;
 	private Bitmap pic;
 	public Bitmap getPic() {
@@ -400,7 +409,7 @@ public class NetKGmusicInfo implements Parcelable{
 		dest.writeString(extName);
 		dest.writeString(extNamesq);
 		dest.writeString(fmt);
-	
+		dest.writeString(urlmv);
 	}
 	
 	
@@ -433,6 +442,7 @@ public class NetKGmusicInfo implements Parcelable{
 		extName=in.readString();
 		extNamesq=in.readString();
 		fmt=in.readString();
+		urlmv=in.readString();
 		 }
 	
 	  public static final Parcelable.Creator<NetKGmusicInfo> CREATOR = new Parcelable.Creator<NetKGmusicInfo>() {

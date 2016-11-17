@@ -1,6 +1,9 @@
 package com.music.network;
 
+import android.R.string;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +17,9 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.StreamCorruptedException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.example.musicplay.R;
@@ -30,6 +36,8 @@ public class NetworkAdapter extends BaseAdapter{
     private List<NetKGmusicInfo> amusiclist;
     private Bitmap[] bitmap;
     private String[] net_pic_small;
+    private String url;
+    private String durl[];
    private int i;
     public NetworkAdapter(Context context,List<NetKGmusicInfo> musiclist)
     {
@@ -147,17 +155,82 @@ public class NetworkAdapter extends BaseAdapter{
 		 // Toast.makeText(mContext, item.getTitle(), Toast.LENGTH_SHORT).show();
 			  switch (item.getItemId()) {
 			case R.id.option_download:
-				//Toast.makeText(mContext, arr[index].getSongname(), Toast.LENGTH_SHORT).show();
-				String songname=arr[index].getFilename();
-				String extname=arr[index].getExtName();
-				String url=arr[index].getUrl320();
-				if (url==null) {
-					url=arr[index].getUrl128();
+				List<String> list=new ArrayList<String>();
+				List<String> downloadurl=new ArrayList<String>();
+				String url128=arr[index].getUrl128();
+				String url320=arr[index].getUrl320();
+				String urlsq=arr[index].getUrlsq();
+				String urlmv=arr[index].getUrlmv();
+
+				if (url320!=null) {
+					
+					float size=Float.parseFloat(arr[index].getFilesize320());
+					  DecimalFormat   fnum   =   new   DecimalFormat("##0.00");
+					  size=++size/1024/1024;
+					  String   dd=fnum.format(size); 
+					list.add("高清音质"+"("+dd+"M)");
+					downloadurl.add(url320);
 				}
-				System.out.print(arr[index].getFilesize320());
-				Net_music_download net_music_download=new Net_music_download(mContext);
-				net_music_download.execute(url,songname,extname);
-				Toast.makeText(mContext, "开始下载", Toast.LENGTH_SHORT).show();
+				if (url128!=null) {
+					float size=Float.parseFloat(arr[index].getFilesize128());
+					  DecimalFormat   fnum   =   new   DecimalFormat("##0.00");
+					  size=++size/1024/1024;
+					  String   dd=fnum.format(size); 
+					list.add("标准音质"+"("+dd+"M)");
+					downloadurl.add(url128);
+				}
+				if (urlsq!=null) {
+					float size=Float.parseFloat(arr[index].getSqfilesize());
+					  DecimalFormat   fnum   =   new   DecimalFormat("##0.00");
+					  size=++size/1024/1024;
+					  String   dd=fnum.format(size); 
+					list.add("无损音质"+"("+dd+"M)");
+					downloadurl.add(urlsq);
+				}
+				if (urlmv!=null) {
+					float size=Float.parseFloat(arr[index].getSqfilesize());
+					  DecimalFormat   fnum   =   new   DecimalFormat("##0.00");
+					  size=++size/1024/1024;
+					  String   dd=fnum.format(size); 
+					list.add("MV"+"("+dd+"M)");
+					downloadurl.add(urlmv);
+				}
+				final String dl[]=list.toArray(new String[list.size()]);
+				durl=downloadurl.toArray(new String[list.size()]);
+				AlertDialog.Builder download=new AlertDialog.Builder(mContext);
+				download.setTitle("请选择");
+				download.setSingleChoiceItems(dl, 0, new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						int d=which;
+						if (d==-1) {
+							d=0;
+						}
+						url=durl[d];
+					}
+				});
+				
+				download.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						String songname=arr[index].getFilename();
+						String extname=arr[index].getExtName();
+						if (url==null) {
+							url=durl[0];
+						}
+						System.out.print(arr[index].getFilesize320());
+						Net_music_download net_music_download=new Net_music_download(mContext);
+						net_music_download.execute(url,songname,extname);
+						Toast.makeText(mContext, "开始下载", Toast.LENGTH_SHORT).show();
+					}
+				});
+				download.create().show();
+				//Toast.makeText(mContext, arr[index].getSongname(), Toast.LENGTH_SHORT).show();
+				
 				break;
 
 			default:
