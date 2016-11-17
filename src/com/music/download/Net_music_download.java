@@ -98,12 +98,13 @@ public class Net_music_download extends AsyncTask<String, Integer, String>{
 	            // 整个下载资源整除后剩下的余数取模  
 	            long left = fileLen % DOWN_THREAD_NUM;
 	            Log.d("songdir", ""+songdir);
+	            RandomAccessFile songfile=new RandomAccessFile(songdir, "rw");;
 	            outArr[0] = new RandomAccessFile(songdir, "rw");
 	            // 创建一个与下载资源相同大小的空文件  
 	            try {
 //	            	 for (int i = 0; i < fileLen; i++) {  
 //	 	                outArr[0].write(0);  
-	            	outArr[0].setLength(fileLen);
+	            	songfile.setLength(fileLen);
 	 	            
 				} catch (Exception e) {
 					// TODO: handle exception
