@@ -1355,12 +1355,13 @@ public void setnetlistview(List<NetKGmusicInfo> resualt) {
 				e.printStackTrace();
 			}	
 	    	
-	    	str=arr[arr.length-1].getUrl128();
+	    	str=arr[arr.length-1].getFilename();
 			if (str!=null) {
 				for(int a=0;a<arr.length;a++){
 				net_lujin[a]=arr[a].getUrl320();
 				if(net_lujin[a]==null){
-					net_lujin[a]=arr[a].getUrl128();														
+					net_lujin[a]=arr[a].getUrl128();
+					
 				}
 				try {
 					String pic=arr[a].getImgUrl();

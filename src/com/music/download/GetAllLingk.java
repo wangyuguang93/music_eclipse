@@ -289,6 +289,7 @@ public class GetAllLingk extends AsyncTask<String, Integer, String> implements m
 		if (gecijishu == num) {
 			//
 			MainActivity.Update();
+			//Log.e("碧娜", "碧娜");
 			for (int i = 1; i <= num; i++) {
 				int start = (i - 1) * 4;
 				int end = i * 4;
