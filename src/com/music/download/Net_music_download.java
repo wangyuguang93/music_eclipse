@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
+import com.example.musicplay.MainActivity;
 import com.music.download.DemoLoader.DownLoadThread;
 
 import android.content.Context;
@@ -23,45 +24,24 @@ import android.widget.Toast;
 public class Net_music_download extends AsyncTask<String, Integer, String> {
 	private URL url;
 	private String extname;
-	final int DOWN_THREAD_NUM = 4;
+	final int DOWN_THREAD_NUM = 5;
 	private Context context;
 	String OUT_FILE_NAME = "";
 	private int jishu = 0;
+	private int errorjishu=0;
+	private File songdir;
 	private Handler downloadfinish = new Handler() {
 
 		@Override
 		public void handleMessage(Message msg) {
 			// TODO Auto-generated method stub
 			if (msg.what == 1) {
-				jishu++;
-				if (jishu == DOWN_THREAD_NUM) {
-					Toast.makeText(context, OUT_FILE_NAME + " 下载完成", Toast.LENGTH_SHORT).show();
-					// Intent scanIntent = new
-					// Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-
-					// MediaScannerConnection.scanFile(context, new
-					// String[]{Environment.getExternalStorageDirectory().getAbsolutePath()
-					// + "/kgmusic/download/",OUT_FILE_NAME}, null, null);
-					MediaScannerConnection.scanFile(context,
-							new String[] { Environment.getExternalStorageDirectory().getAbsolutePath()
-									+ "/kgmusic/download/" + OUT_FILE_NAME },
-							null, new MediaScannerConnection.OnScanCompletedListener() {
-								public void onScanCompleted(String path, Uri uri) {
-									Log.i("ExternalStorage", "Scanned " + path + ":");
-									Log.i("ExternalStorage", "-> uri=" + uri);
-									Intent intent = new Intent();
-									intent.putExtra("msg", "updatemusicdate");
-									intent.setAction("main");
-									context.sendBroadcast(intent);
-								}
-							});
-				}
-
-				// context.sendBroadcast(scanIntent);
+				finish();
 			}
 		}
 
 	};
+	
 	InputStream[] isArr = new InputStream[DOWN_THREAD_NUM];
 
 	// 构造函数
@@ -92,8 +72,7 @@ public class Net_music_download extends AsyncTask<String, Integer, String> {
 
 				// 下载目录
 				File lujiu = Environment.getExternalStorageDirectory();
-				File songdir = new File(lujiu + "/kgmusic/" + "/download/", OUT_FILE_NAME);
-
+				songdir = new File(lujiu + "/kgmusic/" + "/download/", OUT_FILE_NAME);
 
 				RandomAccessFile raf = new RandomAccessFile(songdir, "rwd");
 				raf.setLength(fileLen);
@@ -116,6 +95,7 @@ public class Net_music_download extends AsyncTask<String, Integer, String> {
 			}
 
 		} catch (Exception e) {
+			
 			e.printStackTrace();
 		}
 
@@ -201,8 +181,48 @@ public class Net_music_download extends AsyncTask<String, Integer, String> {
 				raf.close();
 				System.out.println("歌曲下载线程：" + threadId + ",下载完成");
 			} catch (Exception e) {
+				errorjishu++;
+				Message message = new Message();
+				message.what = 1;
+				downloadfinish.sendMessage(message);
 				e.printStackTrace();
 			}
 		}
 	}
+	/**
+	 * 下载情况
+	 */
+	public void finish() {
+
+		jishu++;
+		if (jishu == DOWN_THREAD_NUM&&errorjishu==0) {
+			Toast.makeText(context, OUT_FILE_NAME + " 下载完成", Toast.LENGTH_SHORT).show();
+			// Intent scanIntent = new
+			// Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+
+			// MediaScannerConnection.scanFile(context, new
+			// String[]{Environment.getExternalStorageDirectory().getAbsolutePath()
+			// + "/kgmusic/download/",OUT_FILE_NAME}, null, null);
+			MediaScannerConnection.scanFile(context,
+					new String[] { Environment.getExternalStorageDirectory().getAbsolutePath()
+							+ "/kgmusic/download/" + OUT_FILE_NAME },
+					null, new MediaScannerConnection.OnScanCompletedListener() {
+						public void onScanCompleted(String path, Uri uri) {
+							Log.i("ExternalStorage", "Scanned " + path + ":");
+							Log.i("ExternalStorage", "-> uri=" + uri);
+							Intent intent = new Intent();
+							intent.putExtra("msg", "updatemusicdate");
+							intent.setAction("main");
+							context.sendBroadcast(intent);
+						}
+					});
+		}
+		if (jishu==DOWN_THREAD_NUM&&errorjishu!=0) {
+			Toast.makeText(context, OUT_FILE_NAME + " 下载失败", Toast.LENGTH_SHORT).show();
+			MainActivity.delete(songdir);
+		}
+		// context.sendBroadcast(scanIntent);
+	
+	}
+	
 }

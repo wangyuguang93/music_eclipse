@@ -764,7 +764,7 @@ public void onBufferingUpdate(MediaPlayer mp, int percent) {
 		mytv_music_title.setText(tile);
 	}
 	
-	 System.out.println("缓冲了的百分比 : " + percent + " %");
+	// System.out.println("缓冲了的百分比 : " + percent + " %");
 	 mypb_music_progress.setSecondaryProgress(percent);
 }
 }

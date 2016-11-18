@@ -52,6 +52,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
@@ -590,7 +591,12 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 			R_tille.setVisibility(View.VISIBLE);
 			break;
 		case R.id.net_search:
-			gequ=edit_search.getText().toString();	
+			gequ=edit_search.getText().toString();
+			//关闭软键盘
+			edit_search.clearFocus();
+			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); 
+			imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS); 
+			
 			KGsearchResualt.setinfo();
 			if (!gequ.equals("")) {
 				

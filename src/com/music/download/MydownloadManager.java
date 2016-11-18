@@ -42,12 +42,13 @@ public class MydownloadManager {
 	     // 下载目录
 	        final String extname=url.substring(url.lastIndexOf('.') + 1);
 	        
-	      //  String lujiu = Environment.getExternalStorageDirectory()+"/kgmusic/" + "/download/";
-			//File songdir = new File(lujiu + "/kgmusic/" + "/download/", filename);
+	        String lujiu = Environment.getExternalStorageDirectory()+"/kgmusic/" + "/download/";
+			File songdir = new File(lujiu + "/kgmusic/" + "/download/", filename+"."+extname);
 	        
 			musicrequest = new DownloadManager.Request(uri);  //得到连接请求对象
 //			musicrequest.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI);   //指定在什么网络下进行下载，这里我指定了WIFI网络
-			musicrequest.setDestinationInExternalPublicDir("/kgmusic/download/",filename+"."+extname);  //制定下载文件的保存路径，我这里保存到根目录
+			musicrequest.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC,filename+"."+extname);  //制定下载文件的保存路径，我这里保存到根目录
+		
 			musicrequest.setVisibleInDownloadsUi(true);  //设置显示下载界面
 			musicrequest.allowScanningByMediaScanner();  //表示允许MediaScanner扫描到这个文件，默认不允许。
 			musicrequest.setTitle("正在下载："+filename);      //设置下载中通知栏的提示消息
