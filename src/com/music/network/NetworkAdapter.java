@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.musicplay.R;
+import com.music.download.MydownloadManager;
 import com.music.download.Net_music_download;
 import com.music.network.BackAsyTask.Getmusic_ico;
 
@@ -225,8 +226,12 @@ public class NetworkAdapter extends BaseAdapter{
 								url=durl[0];
 							}
 							System.out.print(arr[index].getFilesize320());
-							Net_music_download net_music_download=new Net_music_download(mContext);
-							net_music_download.execute(url,songname,extname);
+//							Net_music_download net_music_download=new Net_music_download(mContext);
+//							net_music_download.execute(url,songname,extname);
+							//使用系统下载管理
+							MydownloadManager manager=new MydownloadManager(mContext, url, songname);
+							manager.downloadmusic();
+							
 							Toast.makeText(mContext, "开始下载", Toast.LENGTH_SHORT).show();
 						} catch (Exception e) {
 							// TODO: handle exception

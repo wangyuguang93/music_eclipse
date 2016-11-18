@@ -106,7 +106,6 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	private Net_jiazai net_jiazai;
 	private FragmentTransaction fragmentTransaction;
 	private Fragment mContent;
-	private SousuoListFragment sousuo=new SousuoListFragment();
 	private Bitmap[] bitmap,bendi_tupian;
 	private RelativeLayout R_tille;
 	private LinearLayout L_seach;
@@ -116,7 +115,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	private String gequ="新歌";
 	private String str;
 	private NetKGmusicInfo arr[];
-	private Boolean is_can_sousuo=true,isgequfinish=false;
+	private Boolean is_can_sousuo=true;
 	private static Thread updatethread;
 	private static Runnable runnable;
 	private int page=1;
@@ -126,11 +125,12 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 	private String istile;
 	private List<Bendi_music> bendi_musics;
 	private Bendi_music music;
-    private Handler updateview = new Handler() {  
+    private static Handler updateview = new Handler() {  
         @Override  
         public  void handleMessage(Message msg) {  
             if (msg.what == 1) {  
             	if (networkAdapter!=null) {
+            		
             		networkAdapter.notifyDataSetChanged();
 				}
             	
@@ -518,86 +518,8 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 			toggle();
 			break;
 		case R.id.tv_gequ_num:
-			page++;
-			if (!gequ.equals("")) {
-																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																															
-																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																															//删除歌词缓存目录
-				File lcylujiu=Environment.getExternalStorageDirectory();
-				File lcydir=new File(lcylujiu.toString()+"/kgmusic/"+"/lcy/"+"/Cache/");
-				delete(lcydir);	
-				if (is_can_sousuo) {
-					is_can_sousuo=false;
-					isnetfinish=false;
-//					netfragment=null;
-					networkAdapter_item=null;
-					yincang();
-					net_jiazai=null;				
-					qiehuanListview(1);
-					netfragment=null;
-					//networkplay(gequ);
-					Runnable runnable1=new Runnable() {
-						
-						@Override
-						public void run() {
-							// TODO Auto-generated method stub
-							Kgmusic(gequ,page);
-						}
-					};
-					Handler handler1=new Handler();
-					try {
-						handler1.post(runnable1);
-					} catch (Exception e) {
-						// TODO: handle exception
-						e.printStackTrace();
-					}
-					
-					hg=-1;
-					Runnable runnable2=new Runnable() {
-						
-						@Override
-						public void run() {
-							// TODO Auto-generated method stub
-							
-							try {
-								Thread.sleep(60000);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}	
-					    	
-					    	//String str1=arr[arr.length-1].getFilename();
-							
-					    	if (!is_can_sousuo) {
-					    		try {
-					    			qiehuanListview(2);
-								} catch (Exception e) {
-									// TODO: handle exception
-									is_can_sousuo=true;
-									arr=null;
-									e.printStackTrace();
-								}
-								
-								is_can_sousuo=true;
-								arr=null;
-								
-							}
-					    	
-						}
-					};
-					Thread thread2=new Thread(runnable2);
-					try {
-						thread2.start();
-					} catch (Exception e) {
-						// TODO: handle exception
-						e.printStackTrace();
-					}
-					
-				}else {
-					Toast.makeText(MainActivity.this, "正在搜索", Toast.LENGTH_SHORT).show();
-				}
-
 			
-		}
+		
 			break;
 		case R.id.tv_network:
 			is_can_sousuo=false;
@@ -851,6 +773,7 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 		if (guanji!=null) {
 			unregisterReceiver(guanji);
 		}
+		android.os.Process.killProcess(android.os.Process.myPid()); 
 		super.onDestroy();
 	}
 	
@@ -997,7 +920,10 @@ public void bofang() {
 	}			
 	else {
 		myplay();
-		networkAdapter.notifyDataSetChanged();
+		if (networkAdapter!=null) {
+			networkAdapter.notifyDataSetChanged();
+		}
+		
 	}
 	
 }
@@ -1453,14 +1379,22 @@ public void setnetlistview(List<NetKGmusicInfo> resualt) {
 					@Override
 					public void getmusic_ico(Bitmap[] resualt) {
 //						 TODO Auto-generated method stub
-						
-						for (int j = 0; j < resualt.length; j++) {
-							try {
-								bitmap[j]=resualt[j];
-							} catch (Exception e) {
-								// TODO: handle exception
-								e.printStackTrace();
+						int j=0;
+						int size=resualt.length/20;
+						for(int p=0;p<size;p++){
+							if (p!=0) {
+								j=j+20;
 							}
+						}
+						for (; j < resualt.length; j++) {
+							
+//							try {
+//								bitmap[j]=resualt[j];
+//							} catch (Exception e) {
+//								// TODO: handle exception
+//								e.printStackTrace();
+//							}
+							
 							
 							arr[j].setPic(resualt[j]);
 //							try {
@@ -1471,11 +1405,23 @@ public void setnetlistview(List<NetKGmusicInfo> resualt) {
 //								e.printStackTrace();
 //							}
 							
-							Message msg = new Message();  
-				            msg.what = 1;  
-				            updateview.sendMessage(msg);  
+							 
 							
 						}
+						for (int k = 0; k < arr.length; k++) {
+							try {
+								bitmap[k]=arr[k].getPic();
+							} catch (Exception e) {
+								// TODO: handle exception
+								e.printStackTrace();
+							}
+							
+						}
+						
+						
+						Message msg = new Message();  
+			            msg.what = 1;  
+			            updateview.sendMessage(msg); 
 					Log.d("图片", "图片下载完成");
 					isjiazai=true;
 					}
@@ -1485,7 +1431,7 @@ public void setnetlistview(List<NetKGmusicInfo> resualt) {
 	    }  
 	};  
 
-	updatethread=new Thread(runnable);
+	//updatethread=new Thread(runnable);
 	isnetfinish=true;
 	is_can_sousuo=true;
 	qiehuanListview(1);

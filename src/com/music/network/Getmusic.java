@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,6 +16,7 @@ import com.base.Util.MD5Utils;
 import com.base.Util.music_API;
 import com.example.musicplay.MainActivity;
 
+import android.Manifest.permission;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -379,4 +381,6 @@ public class Getmusic implements music_API{
 		GetLinks getLinks=new GetLinks(info);
 		getLinks.execute();
 	}
+	
+
 }

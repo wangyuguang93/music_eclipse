@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import com.base.Util.Base64Util;
 import com.base.Util.MD5Utils;
 import com.base.Util.music_API;
+import com.music.download.GetAllLingk;
 
 import android.os.Environment;
 import android.provider.MediaStore.Images.Thumbnails;
@@ -70,17 +71,17 @@ public class KGsearchResualt implements music_API{
 				info.setSqfilesize(kgitem.getString("sqfilesize"));
 				info.setAlbum_name(kgitem.getString("album_name"));
 //				
-				if (getmusic==null) {
-					getmusic=new Getmusic();
-				}
-				
-				try {
-					getmusic.getmusicinfo(info);
-				} catch (Exception e) {
-					// TODO: handle exception
-					Log.d("getmusic", "getmusic失败");
-					e.printStackTrace();
-				}
+//				if (getmusic==null) {
+//					getmusic=new Getmusic();
+//				}
+//				
+//				try {
+//					getmusic.getmusicinfo(info);
+//				} catch (Exception e) {
+//					// TODO: handle exception
+//					Log.d("getmusic", "getmusic失败");
+//					e.printStackTrace();
+//				}
 				
 				
 //				getmusic.getlink(info);
@@ -93,6 +94,8 @@ public class KGsearchResualt implements music_API{
 		} else {
 			Log.d("找不到没有歌曲", "找不到没有歌曲");
 		}
+		GetAllLingk allLingk=new GetAllLingk(infos);
+		allLingk.execute();
 		return infos;
 	}
 	public static void getMusinInfo (NetKGmusicInfo info) throws Exception {

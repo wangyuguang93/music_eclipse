@@ -11,6 +11,7 @@ import java.net.URL;
 import java.util.List;
 
 import com.example.musicplay.MainActivity;
+import com.music.download.GetAllLingk.DownLoadThread;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,6 +26,7 @@ public class BackAsyTask extends AsyncTask<String, Void, Bitmap[]> {
 	private Bitmap[] bitmap;
 	private boolean isfinish;
 	private int size, jishu = 0;
+	private int xianchengnum=5;//线程数
 	Thread thread;
 	Thread thread2;
 	Thread thread3;
@@ -144,8 +146,12 @@ public class BackAsyTask extends AsyncTask<String, Void, Bitmap[]> {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
-								bitmap[a] = BitmapFactory.decodeByteArray(imagebytes, 0, imagebytes.length);
-								//return bitmap;
+								try {
+									bitmap[a] = BitmapFactory.decodeByteArray(imagebytes, 0, imagebytes.length);
+								} catch (Exception e) {
+									// TODO: handle exception
+									e.printStackTrace();
+								}
 
 							} catch (IOException e) {
 								// TODO Auto-generated catch block
@@ -216,9 +222,12 @@ public class BackAsyTask extends AsyncTask<String, Void, Bitmap[]> {
 											// TODO Auto-generated catch block
 											e.printStackTrace();
 										}
-										bitmap[b] = BitmapFactory.decodeByteArray(imagebytes, 0, imagebytes.length);
-										//return bitmap;
-
+										try {
+											bitmap[b] = BitmapFactory.decodeByteArray(imagebytes, 0, imagebytes.length);
+										} catch (Exception e) {
+											// TODO: handle exception
+											e.printStackTrace();
+										}
 									} catch (IOException e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
@@ -289,8 +298,12 @@ public class BackAsyTask extends AsyncTask<String, Void, Bitmap[]> {
 											// TODO Auto-generated catch block
 											e.printStackTrace();
 										}
-										bitmap[c] = BitmapFactory.decodeByteArray(imagebytes, 0, imagebytes.length);
-										//return bitmap;
+										try {
+											bitmap[c] = BitmapFactory.decodeByteArray(imagebytes, 0, imagebytes.length);
+										} catch (Exception e) {
+											// TODO: handle exception
+											e.printStackTrace();
+										}
 
 									} catch (IOException e) {
 										// TODO Auto-generated catch block
@@ -362,7 +375,13 @@ public class BackAsyTask extends AsyncTask<String, Void, Bitmap[]> {
 											// TODO Auto-generated catch block
 											e.printStackTrace();
 										}
-										bitmap[d] = BitmapFactory.decodeByteArray(imagebytes, 0, imagebytes.length);
+										try {
+											bitmap[d] = BitmapFactory.decodeByteArray(imagebytes, 0, imagebytes.length);
+										} catch (Exception e) {
+											// TODO: handle exception
+											e.printStackTrace();
+										}
+										
 										//return bitmap;
 
 									} catch (IOException e) {
@@ -394,11 +413,30 @@ public class BackAsyTask extends AsyncTask<String, Void, Bitmap[]> {
 		thread2=new Thread(runnable2);
 		thread3=new Thread(runnable3);
 		thread4=new Thread(runnable4);
+//		
+//		thread.start();
+//		thread2.start();
+//		thread3.start();
+//		thread4.start();
+		size=pic_small.length/20;
+
+		for (int i = 1; i <= xianchengnum; i++) {
+			int start = (i - 1) * 4;
+			int end = i * 4;
+			for (int j = 0; j < size; j++) {
+				if (j!=0) {
+					start=(start+20);
+					end=(end+20);
+				}
+				
+			}
+			new myrun(start, end).start();
+			System.out.println("图片下载线程：" + i + ",下载：" + start + "--->" + end);
 		
-		thread.start();
-		thread2.start();
-		thread3.start();
-		thread4.start();
+			
+		}
+		
+		
 		return bitmap;
 		
 	}
@@ -409,4 +447,103 @@ public class BackAsyTask extends AsyncTask<String, Void, Bitmap[]> {
 		super.onPostExecute(result);
 	}
 
+	public class myrun extends Thread {
+		private int start,end;
+		public myrun(int start,int end) {
+			// TODO Auto-generated constructor stub
+			this.start=start;
+			this.end=end;
+		}
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			
+				String murl;
+				InputStream inputStream = null;
+				URL url = null;
+				for (int i = start; i < end; i++) {
+					
+
+					try {
+						murl=pic_small[i];
+						if (murl==null) {
+							murl="http://45.76.107.227/mtw.jpg";
+						}
+						url = new URL(murl);
+						if (pic_small[i]!=null) {
+							Log.d("picUrl", pic_small[i]);
+						}
+						
+					} catch (MalformedURLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} // 服务器地址
+					if (url != null) {
+						// 打开连接
+						HttpURLConnection httpURLConnection = null;
+						try {
+							httpURLConnection = (HttpURLConnection) url.openConnection();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						httpURLConnection.setConnectTimeout(3000);// 设置网络连接超时的时间为3秒
+						try {
+							httpURLConnection.setRequestMethod("GET");
+						} catch (ProtocolException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} // 设置请求方法为GET
+						httpURLConnection.setDoInput(true); // 打开输入流
+						int responseCode = 0;
+						try {
+							responseCode = httpURLConnection.getResponseCode();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} // 获取服务器响应值
+						if (responseCode == HttpURLConnection.HTTP_OK) { // 正常连接
+							try {
+								inputStream = httpURLConnection.getInputStream();
+
+								byte[] imagebytes = null;
+								try {
+									imagebytes = StreamTool.getBytes(inputStream);
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								try {
+									bitmap[i] = BitmapFactory.decodeByteArray(imagebytes, 0, imagebytes.length);
+								} catch (Exception e) {
+									// TODO: handle exception
+									e.printStackTrace();
+								}
+
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} // 获取输入流
+						}
+					}
+				
+					
+					
+					
+				
+			}
+			bitmap();
+			
+		}
+		
+		
+	}
+	public void bitmap() {
+		jishu++;
+		if (jishu==xianchengnum) {
+			Log.d("设置Bitmap", "设置Bitmap");
+			getmusic_ico.getmusic_ico(bitmap);
+		}
+		
+	}
 }
