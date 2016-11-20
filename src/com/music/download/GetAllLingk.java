@@ -41,21 +41,25 @@ public class GetAllLingk extends AsyncTask<String, Integer, String> implements m
 		size=info.length/20;
 		
 		//num = 5*size/20;// 线程数
-		
-		for (int i = 1; i <= num; i++) {
-			int start = (i - 1) * 4;
-			int end = i * 4;
-		for (int j = 0; j < size; j++) {
-			if (j!=0) {
-				start=start+20;
-				end=end+20;
+		if (info.length>=20) {
+			for (int i = 1; i <= num; i++) {
+				int start = (i - 1) * 4;
+				int end = i * 4;
+			for (int j = 0; j < size; j++) {
+				if (j!=0) {
+					start=start+20;
+					end=end+20;
+				}
 			}
+				new DownLoadThread(start, end, info,i).start();
+				
+				System.out.println("线程：" + i + ",下载：" + start + "--->" + end);
+				
+			}
+		}else {
+			new DownLoadThread(0, info.length, info, 1);
 		}
-			new DownLoadThread(start, end, info,i).start();
-			
-			System.out.println("线程：" + i + ",下载：" + start + "--->" + end);
-			
-		}
+		
 		
 		
 
@@ -149,25 +153,30 @@ public class GetAllLingk extends AsyncTask<String, Integer, String> implements m
 	 * 下载歌曲链接方法
 	 */
 	public void getGlink() {
-		jishu++;
-		if (jishu == num) {
-			// 下载歌曲链接
-			
-			for (int i = 1; i <= num; i++) {
-				int start = (i - 1) * 4;
-				int end = i * 4;
-				for (int j = 0; j < size; j++) {
-					if (j!=0) {
-						start=start+20;
-						end=end+20;
-					}
-				}
+		if (info.length>=20) {
+			jishu++;
+			if (jishu == num) {
+				// 下载歌曲链接
 				
-				new Getlink(start, end, info).start();
+				for (int i = 1; i <= num; i++) {
+					int start = (i - 1) * 4;
+					int end = i * 4;
+					for (int j = 0; j < size; j++) {
+						if (j!=0) {
+							start=start+20;
+							end=end+20;
+						}
+					}
+					
+					new Getlink(start, end, info).start();
+
+				}
 
 			}
-
+		}else {
+			new Getlink(0, info.length, info).start();
 		}
+
 	}
 
 	/**

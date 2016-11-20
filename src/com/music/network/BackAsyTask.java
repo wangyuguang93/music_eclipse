@@ -419,22 +419,27 @@ public class BackAsyTask extends AsyncTask<String, Void, Bitmap[]> {
 //		thread3.start();
 //		thread4.start();
 		size=pic_small.length/20;
-
-		for (int i = 1; i <= xianchengnum; i++) {
-			int start = (i - 1) * 4;
-			int end = i * 4;
-			for (int j = 0; j < size; j++) {
-				if (j!=0) {
-					start=(start+20);
-					end=(end+20);
+		if (pic_small.length>=20) {
+			for (int i = 1; i <= xianchengnum; i++) {
+				int start = (i - 1) * 4;
+				int end = i * 4;
+				for (int j = 0; j < size; j++) {
+					if (j!=0) {
+						start=(start+20);
+						end=(end+20);
+					}
+					
 				}
+				new myrun(start, end).start();
+				System.out.println("图片下载线程：" + i + ",下载：" + start + "--->" + end);
+			
 				
 			}
-			new myrun(start, end).start();
-			System.out.println("图片下载线程：" + i + ",下载：" + start + "--->" + end);
-		
-			
+		}else {
+			new myrun(1, pic_small.length).start();
+			System.out.println("图片下载线程：" + 1 + ",下载：" + 1 + "--->" + pic_small.length);
 		}
+		
 		
 		
 		return bitmap;
