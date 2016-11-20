@@ -1,12 +1,10 @@
 package com.music.network;
 
-import android.R.string;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,15 +16,12 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.StreamCorruptedException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.example.musicplay.R;
-import com.music.download.MydownloadManager;
 import com.music.download.Net_music_download;
-import com.music.network.BackAsyTask.Getmusic_ico;
 
 /**
  * Created by Xiamin on 2016/8/28.
@@ -36,17 +31,14 @@ public class NetworkAdapter extends BaseAdapter{
     private Context mContext;
     private LayoutInflater mLayoutInflater;
     private List<NetKGmusicInfo> amusiclist;
-    private Bitmap[] bitmap;
-    private String[] net_pic_small;
     private String url;
     private String durl[];
-   private int i;
-    public NetworkAdapter(Context context,List<NetKGmusicInfo> musiclist)
+   public NetworkAdapter(Context context,List<NetKGmusicInfo> musiclist)
     {
         mContext = context;
         mLayoutInflater = LayoutInflater.from(mContext);
         amusiclist=musiclist;
-        this.bitmap=bitmap;
+       
         
     }
     @Override
@@ -69,20 +61,7 @@ public class NetworkAdapter extends BaseAdapter{
     @Override
     public View getView(final int i, View view, ViewGroup viewGroup) {
     	 arr = (NetKGmusicInfo[])amusiclist.toArray(new NetKGmusicInfo[amusiclist.size()]);
-//    	 net_pic_small=new String[amusiclist.size()];
-//    	 net_pic_small[i]=arr[i].getImgUrl();
-//    	 Thread thread =new Thread(runnable);
-//    	 if (i==amusiclist.size()-1) {
-//    		 try {
-//    				thread.start();
-//    			} catch (Exception e) {
-//    				// TODO: handle exception
-//    				Log.d("不能下载图片", "不能下载图片");
-//    				e.printStackTrace();
-//    			}
-//		}
-    	this.i=i;
-        ViewHolder viewHolder;
+    	 ViewHolder viewHolder;
         if(view == null)
         {
             view = mLayoutInflater.inflate(R.layout.netmusic_list_item, null);
@@ -234,6 +213,7 @@ public class NetworkAdapter extends BaseAdapter{
 //							manager.downloadmusic();
 							
 							Toast.makeText(mContext, "开始下载:"+songname, Toast.LENGTH_SHORT).show();
+							url=null;
 						} catch (Exception e) {
 							// TODO: handle exception
 							e.printStackTrace();

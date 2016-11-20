@@ -29,7 +29,10 @@ public class Net_music_download extends AsyncTask<String, Integer, String> {
 	String OUT_FILE_NAME = "";
 	private int jishu = 0;
 	private int errorjishu=0;
-	private File songdir;
+	private File songdir;//路径及文件名
+	private File songdirtemp;//临时路径及文件名
+	private int cs=0;
+	private Thread[] threads=new Thread[DOWN_THREAD_NUM];
 	private Handler downloadfinish = new Handler() {
 
 		@Override
@@ -73,8 +76,16 @@ public class Net_music_download extends AsyncTask<String, Integer, String> {
 				// 下载目录
 				File lujiu = Environment.getExternalStorageDirectory();
 				songdir = new File(lujiu + "/kgmusic/" + "/download/", OUT_FILE_NAME);
-
-				RandomAccessFile raf = new RandomAccessFile(songdir, "rwd");
+				for (int i = 1; i < 10; i++) {
+					if (songdir.exists()) {
+						songdir = new File(lujiu + "/kgmusic/" + "/download/", params[1]+"("+i+")"+"."+extname);
+						
+					}
+					
+				}
+				
+				songdirtemp = new File(lujiu + "/kgmusic/" + "/download/", OUT_FILE_NAME+".temp");
+				RandomAccessFile raf = new RandomAccessFile(songdirtemp, "rwd");
 				raf.setLength(fileLen);
 				raf.close();
 				// 假设三个线程下载
@@ -85,9 +96,11 @@ public class Net_music_download extends AsyncTask<String, Integer, String> {
 					if (threadId == DOWN_THREAD_NUM) {
 						endIndex = fileLen;
 					}
-					System.out.println("线程：" + threadId + ",下载：" + startIndex + "--->" + endIndex);
+					System.out.println("歌曲下载线程：" + threadId + ",下载：" + startIndex + "--->" + endIndex);
 					// 开始下载
-					new DownLoadThread(threadId, startIndex, endIndex, url, songdir).start();
+					threads[threadId-1]=new DownLoadThread(threadId, startIndex, endIndex, url, songdirtemp);
+					threads[threadId-1].start();
+;
 				}
 				System.out.println("文件总长度为：" + fileLen);
 			} else {
@@ -126,7 +139,7 @@ public class Net_music_download extends AsyncTask<String, Integer, String> {
 		private long endIndex;
 		private URL murl;
 		private File dlFile;
-
+		private long dan;
 		/**
 		 * 
 		 * @param threadId
@@ -145,6 +158,7 @@ public class Net_music_download extends AsyncTask<String, Integer, String> {
 			this.endIndex = endIndex2;
 			this.murl = murl;
 			dlFile = songdir;
+			dan=startIndex2;
 		}
 
 		@Override
@@ -153,6 +167,7 @@ public class Net_music_download extends AsyncTask<String, Integer, String> {
 			// URL url;
 			// try {
 			// url = new URL(path);
+			
 			try {
 				HttpURLConnection connection = (HttpURLConnection) murl.openConnection();
 				// 请求服务器下载部分的文件，制定开始的位置，和结束位置
@@ -168,11 +183,12 @@ public class Net_music_download extends AsyncTask<String, Integer, String> {
 				// 随机写文件的时候，从什么时候开始
 				raf.seek(startIndex);
 				int len = 0;
-				byte[] buff = new byte[1024];
+				byte[] buff = new byte[1024*1024];
 				while ((len = is.read(buff)) != -1) {
 					raf.write(buff, 0, len);
-
+					dan=(dan+len);
 				}
+				
 				Message message = new Message();
 				message.what = 1;
 				downloadfinish.sendMessage(message);
@@ -181,11 +197,30 @@ public class Net_music_download extends AsyncTask<String, Integer, String> {
 				raf.close();
 				System.out.println("歌曲下载线程：" + threadId + ",下载完成");
 			} catch (Exception e) {
-				errorjishu++;
-				Message message = new Message();
-				message.what = 1;
-				downloadfinish.sendMessage(message);
-				e.printStackTrace();
+				
+//				Message message = new Message();
+//				message.what = 1;
+//				downloadfinish.sendMessage(message);
+//				e.printStackTrace();
+				try {
+					sleep(3000);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				if (cs<=200) {
+					
+					Log.d("下载失败", "歌曲下载线程："+threadId+"正在重试"+"-->从"+dan+" ---到"+endIndex);
+					new DownLoadThread(threadId, dan, endIndex, murl, dlFile).start();
+					cs++;
+				}
+				if (cs>200) {
+					errorjishu++;
+					Message message = new Message();
+					message.what = 1;
+					downloadfinish.sendMessage(message);
+				}
+				
 			}
 		}
 	}
@@ -197,6 +232,10 @@ public class Net_music_download extends AsyncTask<String, Integer, String> {
 		jishu++;
 		if (jishu == DOWN_THREAD_NUM&&errorjishu==0) {
 			Toast.makeText(context, OUT_FILE_NAME + " 下载完成", Toast.LENGTH_SHORT).show();
+			File rename=new File(songdirtemp.
+					toString());
+			rename.renameTo(songdir);
+			rename.delete();
 			// Intent scanIntent = new
 			// Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
 
@@ -204,8 +243,7 @@ public class Net_music_download extends AsyncTask<String, Integer, String> {
 			// String[]{Environment.getExternalStorageDirectory().getAbsolutePath()
 			// + "/kgmusic/download/",OUT_FILE_NAME}, null, null);
 			MediaScannerConnection.scanFile(context,
-					new String[] { Environment.getExternalStorageDirectory().getAbsolutePath()
-							+ "/kgmusic/download/" + OUT_FILE_NAME },
+					new String[] { songdir.toString() },
 					null, new MediaScannerConnection.OnScanCompletedListener() {
 						public void onScanCompleted(String path, Uri uri) {
 							Log.i("ExternalStorage", "Scanned " + path + ":");
@@ -219,10 +257,11 @@ public class Net_music_download extends AsyncTask<String, Integer, String> {
 		}
 		if (jishu==DOWN_THREAD_NUM&&errorjishu!=0) {
 			Toast.makeText(context, OUT_FILE_NAME + " 下载失败", Toast.LENGTH_SHORT).show();
-			MainActivity.delete(songdir);
+			 
 		}
 		// context.sendBroadcast(scanIntent);
 	
 	}
+	
 	
 }

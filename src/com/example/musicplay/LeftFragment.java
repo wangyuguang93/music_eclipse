@@ -1,5 +1,6 @@
 package com.example.musicplay;
 import java.io.FileInputStream;
+import com.music.download.DownloadFragment;
 
 import android.app.Activity;
 import android.content.Context;
@@ -31,6 +32,7 @@ public class LeftFragment extends Fragment implements OnClickListener{
 	private View shoucanView;
 	private View settingView;
 	private View exittesView;
+	private View downloadView;
 	private TextView loginView;
 	private View view;
 	private Boolean is_denglu=false;
@@ -101,6 +103,7 @@ public class LeftFragment extends Fragment implements OnClickListener{
 		shoucanView = view.findViewById(R.id.tv_shoucan);
 		settingView = view.findViewById(R.id.setting);
 		exittesView = view.findViewById(R.id.exit);
+		downloadView = view.findViewById(R.id.tv_downloadMagager);
 		loginView=(TextView) view.findViewById(R.id.login);
 		headImage = (ImageView) view. findViewById(R.id.touxiang);
 		todayView.setOnClickListener(this);
@@ -108,6 +111,7 @@ public class LeftFragment extends Fragment implements OnClickListener{
 		settingView.setOnClickListener(this);
 		exittesView.setOnClickListener(this);
 		loginView.setOnClickListener(this);
+		downloadView.setOnClickListener(this);
 	}
 	
 	@Override
@@ -148,6 +152,8 @@ public class LeftFragment extends Fragment implements OnClickListener{
 			}
 			
 			break;
+		case R.id.tv_downloadMagager://下载管理
+			//newContent = new DownloadFragment(activity);
 		default:
 			break;
 		}

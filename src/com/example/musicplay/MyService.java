@@ -1,7 +1,4 @@
 package com.example.musicplay;
-import java.io.File;
-
-import android.Manifest.permission;
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.Notification.Builder;
@@ -16,25 +13,17 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnBufferingUpdateListener;
 import android.media.MediaPlayer.OnCompletionListener;
-import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Binder;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.IBinder;
-import android.provider.SyncStateContract.Constants;
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RemoteViews;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -52,15 +41,13 @@ public class MyService extends Service implements OnCompletionListener, OnPrepar
 	private Handler mTimeHandler,myhandler;
 	private String tile,playlujin;
 	private String[] mylujin,mdata;
-	private int id[];
-	private long alm[];
 	private int gbpb;
 	private int max,dantime;
 	private Boolean ismylast,isSave=false,issuoping=false;
 	private BroadcastReceiver mbcr,suoping;
 	private NotificationManager manager;
 	private RemoteViews remoteViews;
-	private Boolean isgengxitile,isSuopingTAG=false;
+	private Boolean isSuopingTAG=false;
 	private Notification notify;
 	private ImageView myimg_ico;
 	private WallpaperManager wallpaperManager;
@@ -179,8 +166,6 @@ public class MyService extends Service implements OnCompletionListener, OnPrepar
 		ismylast=islast;
 		mytv_guqu_num=tv_guqu_num;
 		mylujin=lujin;
-		id=musicid;
-		alm=almid;
 		myimg_ico=img_ico;
 		mdata=data;
 		mbendi_tupian=bendi_tupian;
@@ -199,8 +184,6 @@ public class MyService extends Service implements OnCompletionListener, OnPrepar
 			mPlayer=new MediaPlayer();
 			
 		}
-		isgengxitile=false;
-		
 		playlujin=mylujin[mymusicIndex];
 		//playlujin="http://yinyueshiting.baidu.com/data2/music/121023383/120996718252000128.mp3?xcode=e1febb2e6273d9c8e9c5304b21fec782";
 		//Log.d("hhh", ""+playlujin);
@@ -759,6 +742,7 @@ public void onBufferingUpdate(MediaPlayer mp, int percent) {
 	// TODO Auto-generated method stub
 	tile=mdata[mymusicIndex];
 	if (percent<99) {
+		
 		mytv_music_title.setText("(正在缓冲"+percent+"%+...)"+tile);
 	}else {
 		mytv_music_title.setText(tile);

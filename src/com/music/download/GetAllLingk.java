@@ -156,6 +156,13 @@ public class GetAllLingk extends AsyncTask<String, Integer, String> implements m
 			for (int i = 1; i <= num; i++) {
 				int start = (i - 1) * 4;
 				int end = i * 4;
+				for (int j = 0; j < size; j++) {
+					if (j!=0) {
+						start=start+20;
+						end=end+20;
+					}
+				}
+				
 				new Getlink(start, end, info).start();
 
 			}
@@ -293,6 +300,12 @@ public class GetAllLingk extends AsyncTask<String, Integer, String> implements m
 			for (int i = 1; i <= num; i++) {
 				int start = (i - 1) * 4;
 				int end = i * 4;
+				for (int j = 0; j < size; j++) {
+					if (j!=0) {
+						start=start+20;
+						end=end+20;
+					}
+				}
 				new GetLrc(start, end, info).start();
 
 			}
@@ -398,6 +411,12 @@ public class GetAllLingk extends AsyncTask<String, Integer, String> implements m
 			for (int i = 1; i <= num; i++) {
 				int start = (i - 1) * 4;
 				int end = i * 4;
+				for (int j = 0; j < size; j++) {
+					if (j!=0) {
+						start=start+20;
+						end=end+20;
+					}
+				}
 				new Getdownloadlrc(start, end, info).start();
 
 			}

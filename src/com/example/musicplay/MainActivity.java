@@ -593,9 +593,12 @@ public class MainActivity extends SlidingFragmentActivity implements OnClickList
 		case R.id.net_search:
 			gequ=edit_search.getText().toString();
 			//关闭软键盘
-			edit_search.clearFocus();
 			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); 
 			imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS); 
+			net_fanhui.setFocusable(true);
+			net_fanhui.setFocusableInTouchMode(true);
+			net_fanhui.requestFocus();
+			net_fanhui.requestFocusFromTouch();
 			
 			KGsearchResualt.setinfo();
 			if (!gequ.equals("")) {
@@ -922,7 +925,9 @@ public void bofang() {
 		musicservice.pause();
 		ibPlayOrPuase.setImageResource(android.R.drawable.ic_media_play);
 		pause=false;
-		networkAdapter.notifyDataSetChanged();
+		if (networkAdapter!=null) {
+			networkAdapter.notifyDataSetChanged();
+		}
 	}			
 	else {
 		myplay();
