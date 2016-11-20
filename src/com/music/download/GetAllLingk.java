@@ -51,13 +51,14 @@ public class GetAllLingk extends AsyncTask<String, Integer, String> implements m
 					end=end+20;
 				}
 			}
-				new DownLoadThread(start, end, info,i).start();
+				new DownLoadThread(start, end, info,1).start();
 				
 				System.out.println("线程：" + i + ",下载：" + start + "--->" + end);
 				
 			}
 		}else {
-			new DownLoadThread(0, info.length, info, 1);
+			new DownLoadThread(0, info.length, info, 1).start();
+			System.out.println("歌曲数线程：" + 1 + ",下载：" + 0 + "--->" + info.length);
 		}
 		
 		
@@ -173,9 +174,10 @@ public class GetAllLingk extends AsyncTask<String, Integer, String> implements m
 				}
 
 			}
-		}else {
-			new Getlink(0, info.length, info).start();
 		}
+	if (info.length<20) {
+		new Getlink(0, info.length, info).start();
+	}
 
 	}
 
@@ -301,24 +303,30 @@ public class GetAllLingk extends AsyncTask<String, Integer, String> implements m
 	 * 获取歌词链接方法
 	 */
 	public void getLrc() {
-		gecijishu++;
-		if (gecijishu == num) {
-			//
-			MainActivity.Update();
-			//Log.e("碧娜", "碧娜");
-			for (int i = 1; i <= num; i++) {
-				int start = (i - 1) * 4;
-				int end = i * 4;
-				for (int j = 0; j < size; j++) {
-					if (j!=0) {
-						start=start+20;
-						end=end+20;
+		if (info.length>=20) {
+			gecijishu++;
+			if (gecijishu == num) {
+				//
+				MainActivity.Update();
+				//Log.e("碧娜", "碧娜");
+				for (int i = 1; i <= num; i++) {
+					int start = (i - 1) * 4;
+					int end = i * 4;
+					for (int j = 0; j < size; j++) {
+						if (j!=0) {
+							start=start+20;
+							end=end+20;
+						}
 					}
-				}
-				new GetLrc(start, end, info).start();
+					new GetLrc(start, end, info).start();
 
+				}
 			}
+		}else {
+			new GetLrc(0, info.length, info).start();
+			MainActivity.Update();
 		}
+		
 	}
 
 	/**
@@ -415,21 +423,26 @@ public class GetAllLingk extends AsyncTask<String, Integer, String> implements m
 	 * 下载歌词方法
 	 */
 	public void getdownload() {
-		downloadjishu++;
-		if (downloadjishu == num) {
-			for (int i = 1; i <= num; i++) {
-				int start = (i - 1) * 4;
-				int end = i * 4;
-				for (int j = 0; j < size; j++) {
-					if (j!=0) {
-						start=start+20;
-						end=end+20;
+		if (info.length>=20) {
+			downloadjishu++;
+			if (downloadjishu == num) {
+				for (int i = 1; i <= num; i++) {
+					int start = (i - 1) * 4;
+					int end = i * 4;
+					for (int j = 0; j < size; j++) {
+						if (j!=0) {
+							start=start+20;
+							end=end+20;
+						}
 					}
-				}
-				new Getdownloadlrc(start, end, info).start();
+					new Getdownloadlrc(start, end, info).start();
 
+				}
 			}
+		}else {
+			new Getdownloadlrc(0, info.length, info).start();
 		}
+		
 	}
 
 	/**
